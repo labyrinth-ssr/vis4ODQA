@@ -54,11 +54,11 @@ export default {
       // array of objects for the graph legend text
       legendData: [//仅仅是给句子tsne用的
         {
-          Text: 'Sentence 1',
+          Text: 'Sentence1',
           Sentence1: 'Yes',
         },
         {
-          Text: 'Sentence 2',
+          Text: 'Sentence2',
           Sentence1: '',
         },
       ],
@@ -265,7 +265,13 @@ export default {
           divTool
             .style('opacity', 0)
             .style('display', 'none');
-        });
+        })
+        //和tokentable
+        .on('click',(event,d)=>{
+          console.log(d.index);
+          bus.$emit('tsne_to_table',d.index);
+
+        })
 
       // one dot for each label in the legend
       if(this.showtype=="sentence"){

@@ -220,6 +220,11 @@ d3.select('#AttrTreeSvg').remove()
       .attr('text-anchor','start')
 
       d3.select('#AttrTreeSvg').attr('height',document.getElementById('g-sankey-scale').getBBox().height+margin.top)
+      d3.select('#AttrTreeSvg').style('background-color','white')
+        .style("border-radius",'10px')
+        .style("margin",'10px')
+        .style('margin-left','0px')
+
 
     },
     getAll(){
@@ -267,21 +272,20 @@ d3.select('#AttrTreeSvg').remove()
 
 #attr-tree{
   margin: 10px;
-
-
-  height: 92%;
+  margin-left: 0px;
+  height: 100%;
   text-align: center;
-  width:100%;
+  width:66.67%;
   overflow: auto;
 }
-#AttrTreeSvg{
+/* #AttrTreeSvg{
  border-radius: 10px;
-
-
+position: relative;
+margin: 10px;
   background-color: white;
 
 
-}
+} */
 
 </style>
 

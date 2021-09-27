@@ -20,6 +20,18 @@ export default {
             d3.select('#node-'+val).selectChild('rect').style('fill','Lavender')
 
         })
+        bus.$on('tsne_to_table',val=>{
+            d3.select('#node-'+val).selectChild('rect').style('stroke','blue')
+
+            if( d3.select('#node-'+val).style('stroke')=='blue'){
+
+           
+                        d3.select('#node-'+val).style("stroke",undefined)
+                    }
+                    else d3.select('#node-'+val).attr("stroke","#ff6131")
+
+
+        })
         bus.$on('unhighlight',val=>{
             d3.select('#node-'+val).selectChild('rect').style('fill','white')
         })

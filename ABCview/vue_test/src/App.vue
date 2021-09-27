@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-
     <div id="leftCol">
       <div id="row1">
         <div id="tableContainer" class="container">
@@ -23,16 +22,13 @@
       </div>
     </div>
 
-    <div id='middleCol'>
-      <div id='attnMapContainer'>
-        <attnMap></attnMap>
-        </div>
-    </div>
-
     <div id="rightCol">
       <div id="attrTree_container" class="container">
         <ThresholdSelected />
-        <AttrTree></AttrTree>
+        <div id="bottomRow">
+          <attnMap></attnMap>
+          <AttrTree></AttrTree>
+        </div>
       </div>
     </div>
 
@@ -88,16 +84,9 @@ body {
 
 }
 #rightCol {
-  width: 30%;
+  width: 45%;
 }
-#middleCol{
-  width: 15%;
 
-}
-#attnMapContainer{
-  height: 100%;
-  width: 100%;
-}
 #row1 {
   display: flex;
   box-sizing: border-box;
@@ -143,6 +132,19 @@ body {
   width: 100%;
   height: 100%;
 }
+#bottomRow{
+  top: 15%;
+  height: 85%;
+  display: flex;
+  flex-direction: row;
+}
+
+
+/* #AttrTree{
+  width: 66.67%;
+  
+} */
+
 
 /* .ant-row {
   box-sizing: border-box;

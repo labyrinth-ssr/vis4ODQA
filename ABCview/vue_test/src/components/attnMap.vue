@@ -14,7 +14,6 @@ export default {
       this.tokens = val[0];
       this.sentence_selected = val[1];
       this.token_selected=[];
-
       this.getAll();
     });
     bus.$on("dispatchheadtoshow", (val) => {
@@ -28,12 +27,11 @@ export default {
 
       this.draw(this.singleAttn, this.tokens);
     });
-    bus.$on("dispatchtokentoshow", (val) => {
+    bus.$on("dispatchtokentoshow", (val) => {//监听到选择时,,,
       if (this.token_selected.indexOf(val) >= 0) {
         this.token_selected.splice(this.token_selected.indexOf(val), 1);
       } else this.token_selected.push(val);
       this.draw(this.singleAttn, this.tokens);
-      console.log(this.token_selected);
     });
   },
   data() {
@@ -107,6 +105,8 @@ export default {
   },
   methods: {
     draw(req_data, tokens) {
+      var tokenId=this.token_selected;
+
 
       const min = d3.min(req_data,ele=>ele.val)
       const max = d3.max(req_data,ele=>ele.val)
@@ -143,6 +143,7 @@ export default {
          .style('background-color','white')
         .style("border-radius",'10px')
         .style("margin",'10px')
+        .style('margin-right','0px')
         .append("g")
         .attr('id','svg-g')
         .attr("transform", `translate(${margin.left}, ${margin.top})`);
@@ -199,10 +200,6 @@ export default {
             unhighlightSelection();
           });
 
-          
-
-        
-
         svg
           .append("g")
           .style("font-size", 10)
@@ -246,7 +243,7 @@ export default {
           return attrScale(+d.val)
         });
 
-      function stephighlight(index){
+      function stephighlight(index){//根据index高亮
         d3.select('#tokenContainer'+index)
         .attr("fill", background_color)
           .style("opacity", 0.3);
@@ -256,30 +253,27 @@ export default {
       }
 
       if(this.token_selected.length!==0){
-            console.log(this.token_selected)
       d3.selectAll('.attn').style('opacity',0)
       this.token_selected.forEach(function (token) {
           stephighlight(token);
         });
 
           }
-
-      // function highlightSelection(index) {
-      //   //  var targets=[]
-      //   d3.selectAll(".tokenContainer")
-      //     .attr("fill", background_color)
-      //     .style("opacity", function (d) {
-      //       return d[0] == index ? 0.3 : 0.0;
-      //     });
-      //   d3.selectAll(".attn").style("opacity", function (d) {
-      //     return d.source == +index ? 1.0 : 0.0;
-      //   });
-
-      // }
+      
 
       function unhighlightSelection() {
-        d3.selectAll(".tokenContainer").style("opacity", 0.0);
+             d3.selectAll(".tokenContainer").style("opacity", 0.0);
+        if(tokenId.length!==0){
+          console.log("tokens length:"+tokens.length)
+      d3.selectAll('.attn').style('opacity',0)
+      tokenId.forEach(function (token) {
+          stephighlight(token);
+        });
+
+          }
+          else{
         d3.selectAll(".attn").style("opacity", 1);
+          }
       }
     },
 
@@ -290,20 +284,13 @@ export default {
         .get(path)
         .then((res) => {
           this.all_attn = res.data.detail;
-
           console.log(this.all_attn);
-
           this.singleAttn = this.all_attn.filter(
             (ele) => ele.layer === this.layer && ele.head === this.head
           )[0].attn;
-
-          console.log(this.singleAttn);
-
           this.draw(this.singleAttn, this.tokens);
-
         })
         .catch((error) => {
-          // eslint-disable-next-line
           console.error(error);
         });
     },
@@ -318,13 +305,10 @@ export default {
 <style scoped>
 #attnMap {
   margin: 10px;
- 
+  margin-right: 5px;
   position: relative;
-  top: 8%;
-  height: 92%;
-  width: 100%;
+  width: 33.33%;
+  height: 100%;
 }
-/* #attnMapSvg{
-  
-} */
+
 </style>
