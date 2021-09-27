@@ -1,5 +1,8 @@
 <template>
-<div id='threshold-container'>
+<div id='threshold-button-container'>
+  <div id="title" class="chart-title">
+      <a-button id="resetButton" type="primary" size="small" v-on:click="reset_tokens">Clear tokens></a-button>
+    </div>
   <div id="threshold-selected">
     <a-slider :marks='marks' :max=0.5 :min=0.1 :step=0.1 :default-value="0.4" 
       @afterChange="onAfterChange" 
@@ -37,7 +40,8 @@ export default {
 </script>
 
 <style>
-#threshold-container{
+#threshold-button-container{
+  display: flex;
   width: 100;
   height: 8%;
   overflow: hidden;
@@ -45,7 +49,11 @@ export default {
 #threshold-selected{
   position: relative;
   left: 10%;
-  width:80%;
+  width:50%;
   height: 100%;
+}
+#title{
+  margin: 0px 40px;
+
 }
 </style>

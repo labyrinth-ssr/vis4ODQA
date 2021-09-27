@@ -40,6 +40,7 @@ export default {
       tokens:[],
       nodes:[],
       threshold:0.4
+      
     };
   },
   methods: {
@@ -47,9 +48,8 @@ update(){
       
       this.getAll();
     },
-
-
     draw(sankeydata,textData,nodesData) {//sankeydata:node,link
+    console.log(nodesData);
 d3.select('#AttrTreeSvg').remove()
       d3.select('#AttrTreeSvg')
         .selectAll('*')
@@ -59,11 +59,6 @@ d3.select('#AttrTreeSvg').remove()
         height = document.getElementById('attr-tree').clientHeight - margin.top - margin.bottom;
       const sankeyWidth=width,snakeyHeight=height;
 
-      // format variables
-      // var formatNumber = d3.format(",.0f"), // zero decimal places
-      //   format = function (d) {
-      //     return formatNumber(d);
-      //   },
       var  color = d3.scaleOrdinal(d3.schemePaired);
       
       const textData_index=Object.keys(textData)
@@ -83,24 +78,11 @@ d3.select('#AttrTreeSvg').remove()
         .attr('id','g-sankey-scale')
         .attr("transform", " translate(" + (margin.left) + "," +( margin.top )+ ") ")
 
-      // d3.select("svg")
-      // .append('g')
-      //   .attr("transform", " translate(" + (margin.left) + "," +( margin.top +height)+ ')')
-      // .style('font-size',7)
-      // .call(d3.axisBottom(x).tickPadding(0))
-      // .selectAll('.tick')
-      // .data(textData)
-      // .select('text')
-      // .text(function(d){
-      //   return d;
-      // })
-
       // Set the sankey diagram properties
       var sankey = d3Sankey()
         .nodeWidth(36)
         .nodePadding(0)//最好换成一个函数
         .size([sankeyWidth,snakeyHeight])
-        // .nodeAlign(d3[`sankey${align[0].toUpperCase()}${align.slice(1)}`])
         .nodeId(function id(d) {
           return d.node;
         })
@@ -119,6 +101,7 @@ d3.select('#AttrTreeSvg').remove()
           node.y0=newY
           node.y1=newY+yGAp
         });
+        // console.log(graph.nodes);
 
         graph.links.forEach(link => {
           link.width=x.bandwidth()
@@ -224,12 +207,20 @@ d3.select('#AttrTreeSvg').remove()
         .style("border-radius",'10px')
         .style("margin",'10px')
         .style('margin-left','0px')
+      
+      var valued_nodes=graph.nodes.filter(node=>node.targetLinks.length+node.sourceLinks.length!==0).map(node=>node.index);
+      if(this.threshold===0.4){
+        console.log(valued_nodes)
+      bus.$emit('init_tokens',valued_nodes);
+
+
+      }
+
 
 
     },
     getAll(){
       const path='http://10.192.9.11:5000/query_attr_tree/'+this.sentence_selected
-      console.log(path)
       axios.get(path)
         .then((res) => {
           var nodeLinkData = res.data.node_link;
@@ -237,8 +228,8 @@ d3.select('#AttrTreeSvg').remove()
         if(this.tokens.length!=0){
             tokens=this.tokens
           }
-        var nodesData=nodeLinkData.nodes
-        if(this.nodes.length!=0){
+        var nodesData=nodeLinkData.nodes//未选过sentence，直接获得？？？
+        if(this.nodes.length!=0){//普通情况：nodes在选sentence时被存了
           nodesData=this.nodes
         }
         this.draw(nodeLinkData,tokens,nodesData);

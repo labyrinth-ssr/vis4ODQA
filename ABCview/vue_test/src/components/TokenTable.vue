@@ -43,7 +43,18 @@ export default {
                         d3.select('#node-'+val).attr("stroke",undefined)
                     }
                     else d3.select('#node-'+val).attr("stroke","#ff6131")
-        })
+        }),
+        bus.$on('reset_tokens',()=>{
+            d3.selectAll('.node').attr("stroke",undefined)
+
+        }),
+        bus.$on('init_tokens',valued_nodes_group=>{
+            d3.selectAll('.node').attr("stroke",undefined)
+        valued_nodes_group.forEach(node_id => {
+          d3.select('#node-'+node_id).attr("stroke","#ff6131")
+          
+      });
+    })
     },
     data(){
         return{
@@ -181,7 +192,8 @@ export default {
                 .attr('id', function(){
                     count += 1;
                     return `node-${count}`
-                });
+                })
+                .attr('class','node');
                 // .on('mouseover', tokenNodeMouseover)
                 // .on('mouseleave', tokenNodeMouseleave);
 

@@ -37,6 +37,15 @@ export default {
       }
       else this.token_selected.push(val)
       this.getAll();
+    }),
+    bus.$on('reset_tokens',()=>{
+      this.token_selected=[];
+      this.getAll();
+    }),
+    bus.$on('init_tokens',valued_nodes_group=>{
+      
+      this.token_selected=valued_nodes_group
+      this.getAll();
     })
   },
   data(){

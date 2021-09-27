@@ -1,8 +1,12 @@
 <template>
+
+    
   <div id="attnMap"></div>
 </template>
 
+
 <script>
+//实现一键取消
 import * as d3 from "d3";
 import axios from "axios";
 import bus from "./bus";
@@ -10,11 +14,12 @@ import bus from "./bus";
 export default {
   name: "attnMap",
   created() {
+    
     bus.$on("dispatchsentencetoshow", (val) => {
       this.tokens = val[0];
       this.sentence_selected = val[1];
       this.token_selected=[];
-      this.getAll();
+      this.getAll();//后台读取
     });
     bus.$on("dispatchheadtoshow", (val) => {
       this.layer = val[0];
@@ -24,15 +29,24 @@ export default {
       );
       this.singleAttn = temp[0].attn;
       console.log(this.singleAttn);
-
       this.draw(this.singleAttn, this.tokens);
     });
     bus.$on("dispatchtokentoshow", (val) => {//监听到选择时,,,
-      if (this.token_selected.indexOf(val) >= 0) {
+      if (this.token_selected.indexOf(val) >= 0) {//
         this.token_selected.splice(this.token_selected.indexOf(val), 1);
       } else this.token_selected.push(val);
       this.draw(this.singleAttn, this.tokens);
     });
+    bus.$on('reset_tokens',()=>{
+      this.token_selected=[];
+      this.draw(this.singleAttn, this.tokens);
+    }),
+    bus.$on('init_tokens',valued_nodes_group=>{
+        this.token_selected=valued_nodes_group;
+      this.draw(this.singleAttn, this.tokens);
+
+    })
+    
   },
   data() {
     return {
@@ -104,6 +118,10 @@ export default {
     };
   },
   methods: {
+    reset_tokens(){
+      bus.$emit('reset_tokens');
+
+    },
     draw(req_data, tokens) {
       var tokenId=this.token_selected;
 
