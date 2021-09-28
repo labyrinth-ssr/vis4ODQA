@@ -3,6 +3,7 @@
 </template>
 
 <script>
+//增加控件的话，其实最好是搞个默认..
 import * as d3 from "d3";
 import axios from "axios";
 import {
@@ -24,13 +25,18 @@ export default {
       this.nodes=temp
       this.sentence_selected = val[1];
 
-      this.setThreshold(this.threshold)
+      this.set_para(this.threshold,this.layer)
     }),
     bus.$on('dispatchthreshold',val=>{
       this.threshold=val;
       console.log('on val:'+val)
       
-      this.setThreshold(this.threshold)
+      this.set_para(this.threshold,this.layer)
+    }),
+    bus.$on('set_layer',val=>{
+      this.layer=val;
+      this.set_para(this.threshold,this.layer)
+
     })
   },
   data() {
@@ -39,7 +45,8 @@ export default {
       sentence_selected:5, //初始时自动选择第6句
       tokens:[],
       nodes:[],
-      threshold:0.4
+      threshold:0.4,
+      layer:12
       
     };
   },
@@ -240,9 +247,9 @@ d3.select('#AttrTreeSvg').remove()
           console.error(error);
         });
     },
-    setThreshold(threshold){
+    set_para(threshold,layer){
       const path='http://10.192.9.11:5000/query_attr_tree/'+this.sentence_selected
-      axios.post(path,{'sts_id':this.sentence_selected,'threshold':threshold})
+      axios.post(path,{'sts_id':this.sentence_selected,'threshold':threshold,'layer':layer-1})
       .then(()=>{
         this.getAll()
         
@@ -251,7 +258,7 @@ d3.select('#AttrTreeSvg').remove()
     }
   },
   mounted() {
-    this.setThreshold(this.threshold)
+    this.set_para(this.threshold,this.layer)
     // this.getAll()
   },
 };

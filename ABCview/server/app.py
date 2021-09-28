@@ -7,7 +7,7 @@ from head_importance import process_impo
 from functools import reduce
 import re
 import ndjson
-from attribution_tree import attribution_tree
+from attribution_tree_multilayer import attribution_tree
 
 
 FILENAME1 = './sentence_token_pred_100.json'
@@ -60,8 +60,9 @@ def query_attr_tree(sentence_id):
     if request.method=='POST':
         post_data=request.get_json()
         threshold=post_data['threshold']
+        layer=post_data['layer']
         py_data= attribution_tree('../output/att_attr_all/attr_zero_base_exp'+str(sentence_id)+'.json',
-        '../output/tokens_and_pred_100.json',sentence_id,threshold)
+        '../output/tokens_and_pred_100.json',sentence_id,threshold,layer)
         with open("./tokens.json", 'r') as load_f2:
             py_data2 = json.load(load_f2)
         nodes_list = []

@@ -118,10 +118,7 @@ export default {
     };
   },
   methods: {
-    reset_tokens(){
-      bus.$emit('reset_tokens');
-
-    },
+    
     draw(req_data, tokens) {
       var tokenId=this.token_selected;
 
