@@ -28,12 +28,13 @@ export default {
     }),
     bus.$on("dispatchsentencetoshow",val =>{
       this.sentence_selected = val[1];
-      this.token_selected=[];
-      this.getAll();
+      // this.token_selected=[];
+      // this.getAll();
     })
     bus.$on("dispatchtokentoshow",val =>{
       if(this.token_selected.indexOf(val)>=0){
         this.token_selected.splice(this.token_selected.indexOf(val),1)
+        console.log
       }
       else this.token_selected.push(val)
       this.getAll();
@@ -43,7 +44,6 @@ export default {
       this.getAll();
     }),
     bus.$on('init_tokens',valued_nodes_group=>{
-      
       this.token_selected=valued_nodes_group
       this.getAll();
     })
@@ -53,7 +53,7 @@ export default {
       // api provided by freeCodeCamp
       showtype: "sentence",
       tsnedata: [], //所有的data
-      sentence_selected:0, //初始时自动选择第一句
+      sentence_selected:5, //初始时自动选择第6句
       layer_selected: [0,1,2,3,4,5,6,7,8,9,10,11], //被选中的layer，用于过滤
       token_selected: [], //被选中的token的index，用于过滤（注意是index（int)而不是token(str)，以防多个词反复出现时选取错误）
       data_to_show: [],
@@ -164,7 +164,6 @@ export default {
           var index = this.token_selected.indexOf(element.index)
           element.color = this.color[index]
         });
-        console.log(this.data_to_show)
       }else {
         this.data_to_show = this.tsnedata.filter(datum =>{
           return ((datum.index==this.sentence_selected)
@@ -277,7 +276,6 @@ export default {
         })
         //和tokentable
         .on('click',(event,d)=>{
-          console.log(d.index);
           bus.$emit('tsne_to_table',d.index);
 
         })
@@ -327,7 +325,6 @@ export default {
           var tokenmaxlen=d3.max(this.tokenlegendData,function(d){
             return d.tokens.length
             })
-          console.log(tokenmaxlen)
           legendG.selectAll('text')
           .data(this.tokenlegendData)
           .enter()
@@ -384,8 +381,6 @@ export default {
           .attr("d", line)
           .attr("stroke",color)
           // .attr("stroke", `url(#${Gradientid})`)
-
-
           
           d3.select("#startLine").on("click", function(){
           d3.selectAll('.datacurve')

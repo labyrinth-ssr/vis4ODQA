@@ -21,14 +21,14 @@ export default {
 
         })
         bus.$on('tsne_to_table',val=>{
-            d3.select('#node-'+val).selectChild('rect').style('stroke','blue')
+            
 
             if( d3.select('#node-'+val).style('stroke')=='blue'){
 
            
                         d3.select('#node-'+val).style("stroke",undefined)
                     }
-                    else d3.select('#node-'+val).attr("stroke","#ff6131")
+                    else d3.select('#node-'+val).selectChild('rect').style('stroke','blue')
 
 
         })
@@ -70,20 +70,62 @@ export default {
             height:400,
             tokens: [
                 "[CLS]",
-                "The",
-                "new",
-                "rights",
-                "are",
-                "nice",
-                "enough",
-                "[SEP]",
-                "Everyone",
-                "really",
-                "likes",
-                "the",
-                "newest",
-                "benefits",
-                "[SEP]"
+      "well",
+      "that",
+      "would",
+      "be",
+      "a",
+      "help",
+      "i",
+      "wish",
+      "they",
+      "would",
+      "do",
+      "that",
+      "here",
+      "we",
+      "have",
+      "got",
+      "so",
+      "little",
+      "land",
+      "##fill",
+      "space",
+      "left",
+      "that",
+      "we",
+      "'",
+      "re",
+      "going",
+      "to",
+      "run",
+      "out",
+      "before",
+      "the",
+      "end",
+      "of",
+      "this",
+      "decade",
+      "and",
+      "it",
+      "'",
+      "s",
+      "really",
+      "going",
+      "to",
+      "be",
+      "[SEP]",
+      "We",
+      "have",
+      "plenty",
+      "of",
+      "space",
+      "in",
+      "the",
+      "land",
+      "##fill",
+      ".",
+      "[SEP]"
             ],
         }
     },
@@ -250,7 +292,9 @@ export default {
                     //     d3.select(this).attr("stroke",undefined)
                     // }
                     // else d3.select(this).attr("stroke","#ff6131")
-                    bus.$emit("dispatchtokentoshow",i)//单击事件：传递需要在tsne视图中显示或删除的token的index
+                    bus.$emit("dispatchtokentoshow",i)
+                    //单击事件：传递需要在tsne视图中显示或删除的token的index
+                    console.log("emit")
                 })
             })
 

@@ -28,13 +28,15 @@ export default {
         (ele) => ele.layer === this.layer && ele.head === this.head
       );
       this.singleAttn = temp[0].attn;
-      console.log(this.singleAttn);
       this.draw(this.singleAttn, this.tokens);
     });
     bus.$on("dispatchtokentoshow", (val) => {//监听到选择时,,,
-      if (this.token_selected.indexOf(val) >= 0) {//
-        this.token_selected.splice(this.token_selected.indexOf(val), 1);
-      } else this.token_selected.push(val);
+      // if (this.token_selected.indexOf(val) >= 0) {//
+      //   this.token_selected.splice(this.token_selected.indexOf(val), 1);
+      // }
+      // else {this.token_selected.push(val);}
+      console.log("dispatch token to show in attnpmap")
+      console.log(this.token_selected)
       this.draw(this.singleAttn, this.tokens);
     });
     bus.$on('reset_tokens',()=>{
@@ -42,7 +44,7 @@ export default {
       this.draw(this.singleAttn, this.tokens);
     }),
     bus.$on('init_tokens',valued_nodes_group=>{
-        this.token_selected=valued_nodes_group;
+      this.token_selected=valued_nodes_group;
       this.draw(this.singleAttn, this.tokens);
 
     })
@@ -121,14 +123,7 @@ export default {
     
     draw(req_data, tokens) {
       var tokenId=this.token_selected;
-
-
-      const min = d3.min(req_data,ele=>ele.val)
       const max = d3.max(req_data,ele=>ele.val)
-
-      console.log(min)
-      console.log(max)
-
       const attrScale=d3
         .scaleLinear()
   .domain([0,max]) 
@@ -299,7 +294,6 @@ export default {
         .get(path)
         .then((res) => {
           this.all_attn = res.data.detail;
-          console.log(this.all_attn);
           this.singleAttn = this.all_attn.filter(
             (ele) => ele.layer === this.layer && ele.head === this.head
           )[0].attn;
