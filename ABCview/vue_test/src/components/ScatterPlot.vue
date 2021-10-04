@@ -28,25 +28,28 @@ export default {
     }),
     bus.$on("dispatchsentencetoshow",val =>{
       this.sentence_selected = val[1];
-      // this.token_selected=[];
+      // this.selected_token=[];
       // this.getAll();
     })
     bus.$on("dispatchtokentoshow",val =>{
-      if(this.token_selected.indexOf(val)>=0){
-        this.token_selected.splice(this.token_selected.indexOf(val),1)
-        console.log
+      // console.log("scatter token dispatch")
+      if(this.selected_token.indexOf(val)>=0){
+        this.selected_token.splice(this.selected_token.indexOf(val),1)
       }
-      else this.token_selected.push(val)
+      else this.selected_token.push(val)
       this.getAll();
     }),
     bus.$on('reset_tokens',()=>{
-      this.token_selected=[];
-      this.getAll();
-    }),
-    bus.$on('init_tokens',valued_nodes_group=>{
-      this.token_selected=valued_nodes_group
+      this.selected_token=[];
       this.getAll();
     })
+    // ,
+    // bus.$on('init_tokens',valued_nodes_group=>{
+    //   // console.log("scatter init")
+    //   // this.selected_token=valued_nodes_group
+    //   // this.getAll();
+      
+    // })
   },
   data(){
     return {
@@ -55,7 +58,7 @@ export default {
       tsnedata: [], //所有的data
       sentence_selected:5, //初始时自动选择第6句
       layer_selected: [0,1,2,3,4,5,6,7,8,9,10,11], //被选中的layer，用于过滤
-      token_selected: [], //被选中的token的index，用于过滤（注意是index（int)而不是token(str)，以防多个词反复出现时选取错误）
+      selected_token: [], //被选中的token的index，用于过滤（注意是index（int)而不是token(str)，以防多个词反复出现时选取错误）
       data_to_show: [],
       widthChart: 350, // width of #scatter-plot svg
       heightChart: 350, // height of #scatter-plot svg
@@ -149,19 +152,19 @@ export default {
     datainit(){
       if(this.showtype=="token"){
         this.data_to_show = this.tsnedata.filter(datum =>{
-          return (this.token_selected.indexOf(datum.index)>=0
+          return (this.selected_token.indexOf(datum.index)>=0
                 &&this.layer_selected.indexOf(datum.layer)>=0)
         })
-        for (var i = 0; i < this.token_selected.length; i++) {
+        for (var i = 0; i < this.selected_token.length; i++) {
           this.tokenlegendData.push(this.data_to_show.find((item) => {
-            if(item.index === this.token_selected[i]){
+            if(item.index === this.selected_token[i]){
               return item
             }
           }))
           this.tokenlegendData[i].color=this.color[i]
         }
         this.data_to_show.forEach(element => {
-          var index = this.token_selected.indexOf(element.index)
+          var index = this.selected_token.indexOf(element.index)
           element.color = this.color[index]
         });
       }else {
@@ -399,8 +402,8 @@ export default {
         }
       var data = [];
       if(this.showtype=="token"){
-        for(var i=0;i<this.token_selected.length;i++){
-          data = this.data_to_show.filter(datum => {return datum['index']==this.token_selected[i]});
+        for(var i=0;i<this.selected_token.length;i++){
+          data = this.data_to_show.filter(datum => {return datum['index']==this.selected_token[i]});
           var currentid = "Path"+i;
           svg.append('path').attr('id', currentid);
           line_generator(data,i,this.color[i]);

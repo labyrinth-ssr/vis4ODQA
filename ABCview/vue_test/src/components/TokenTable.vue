@@ -49,11 +49,15 @@ export default {
 
         }),
         bus.$on('init_tokens',valued_nodes_group=>{
-            d3.selectAll('.node').attr("stroke",undefined)
-        valued_nodes_group.forEach(node_id => {
-          d3.select('#node-'+node_id).attr("stroke","#ff6131")
+        //     d3.selectAll('.node').attr("stroke",undefined)
+        // valued_nodes_group.forEach(node_id => {
+        //   d3.select('#node-'+node_id).attr("stroke","#ff6131")
+
+          valued_nodes_group.forEach(function(node){
+        bus.$emit('dispatchtokentoshow',node)
+      })
           
-      });
+    //   });
     })
     },
     data(){

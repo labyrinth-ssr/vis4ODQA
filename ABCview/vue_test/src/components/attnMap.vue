@@ -1,10 +1,6 @@
 <template>
-
-    
   <div id="attnMap"></div>
 </template>
-
-
 <script>
 //实现一键取消
 import * as d3 from "d3";
@@ -31,23 +27,29 @@ export default {
       this.draw(this.singleAttn, this.tokens);
     });
     bus.$on("dispatchtokentoshow", (val) => {//监听到选择时,,,
-      // if (this.token_selected.indexOf(val) >= 0) {//
-      //   this.token_selected.splice(this.token_selected.indexOf(val), 1);
-      // }
-      // else {this.token_selected.push(val);}
-      console.log("dispatch token to show in attnpmap")
-      console.log(this.token_selected)
+    // var a=this.token_selected;
+    // console.log(a);
+    // console.log("attnmap token dispatch")
+    // this.token_selected=[];
+      if (this.token_selected.indexOf(val) >= 0) {//
+        this.token_selected.splice(this.token_selected.indexOf(val), 1);
+      }
+      else {this.token_selected.push(val);}
       this.draw(this.singleAttn, this.tokens);
     });
     bus.$on('reset_tokens',()=>{
       this.token_selected=[];
       this.draw(this.singleAttn, this.tokens);
-    }),
-    bus.$on('init_tokens',valued_nodes_group=>{
-      this.token_selected=valued_nodes_group;
-      this.draw(this.singleAttn, this.tokens);
-
     })
+    // ,
+    // bus.$on('init_tokens',valued_nodes_group=>{
+    //   // valued_nodes_group.forEach(function(node){
+    //   //   bus.$emit('dispatchtokentoshow',node)
+    //   // })
+    //   // console.log("attnmap init");
+    //   // this.token_selected=valued_nodes_group;
+    //   // this.draw(this.singleAttn, this.tokens);
+    // })
     
   },
   data() {
