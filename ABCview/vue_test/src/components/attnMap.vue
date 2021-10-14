@@ -10,6 +10,17 @@ import bus from "./bus";
 export default {
   name: "attnMap",
   created() {
+    bus.$on("dispatchtokentoshow", (val) => {//监听到选择时,,,
+    var a=this.token_selected;
+    console.log('before dispatch token' ,a);
+      if (this.token_selected.indexOf(val) >= 0) {//
+        this.token_selected.splice(this.token_selected.indexOf(val), 1);
+      }
+      else {this.token_selected.push(val);}
+      var b=this.token_selected;
+    console.log('after diapatch token' ,b);
+      this.draw(this.singleAttn, this.tokens);
+    });
     
     bus.$on("dispatchsentencetoshow", (val) => {
       this.tokens = val[0];
@@ -26,30 +37,24 @@ export default {
       this.singleAttn = temp[0].attn;
       this.draw(this.singleAttn, this.tokens);
     });
-    bus.$on("dispatchtokentoshow", (val) => {//监听到选择时,,,
-    // var a=this.token_selected;
-    // console.log(a);
-    // console.log("attnmap token dispatch")
-    // this.token_selected=[];
-      if (this.token_selected.indexOf(val) >= 0) {//
-        this.token_selected.splice(this.token_selected.indexOf(val), 1);
-      }
-      else {this.token_selected.push(val);}
-      this.draw(this.singleAttn, this.tokens);
-    });
+    
     bus.$on('reset_tokens',()=>{
       this.token_selected=[];
       this.draw(this.singleAttn, this.tokens);
     })
     // ,
-    // bus.$on('init_tokens',valued_nodes_group=>{
-    //   // valued_nodes_group.forEach(function(node){
-    //   //   bus.$emit('dispatchtokentoshow',node)
-    //   // })
-    //   // console.log("attnmap init");
-    //   // this.token_selected=valued_nodes_group;
-    //   // this.draw(this.singleAttn, this.tokens);
-    // })
+    bus.$on('init_tokens',valued_nodes_group=>{
+      console.log("attnmap init");
+      valued_nodes_group.forEach((node)=>{
+        if (this.token_selected.indexOf(node) >= 0) {//
+        this.token_selected.splice(this.token_selected.indexOf(node), 1);
+      }
+      else {this.token_selected.push(node);}
+      })
+      console.log(this.token_selected)
+      // this.draw(this.singleAttn, this.tokens);
+      // console.log('after draw',this.token_selected)
+    })
     
   },
   data() {
@@ -287,6 +292,8 @@ export default {
         d3.selectAll(".attn").style("opacity", 1);
           }
       }
+      var x=this.token_selected
+      console.log('draw:',x)
     },
 
     getAll() {
@@ -299,7 +306,9 @@ export default {
           this.singleAttn = this.all_attn.filter(
             (ele) => ele.layer === this.layer && ele.head === this.head
           )[0].attn;
+          console.log('get all draw')
           this.draw(this.singleAttn, this.tokens);
+          console.log('after getall draw',this.token_selected)
         })
         .catch((error) => {
           console.error(error);
@@ -308,8 +317,16 @@ export default {
   },
 
   mounted() {
+    console.log('mounted',this.token_selected)
     this.getAll();
   },
+  beforeUpdate(){
+    console.log('before updated',this.token_selected)
+          this.draw(this.singleAttn, this.tokens);
+  },
+  updated(){
+    console.log('updated',this.token_selected)
+  }
 };
 </script>
 

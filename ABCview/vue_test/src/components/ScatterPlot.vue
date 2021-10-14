@@ -25,31 +25,41 @@ export default {
       }
       this.layer_selected = layer_selected;
       this.getAll();
-    }),
+    })
     bus.$on("dispatchsentencetoshow",val =>{
       this.sentence_selected = val[1];
-      // this.selected_token=[];
+      this.selected_token=[];
       // this.getAll();
     })
     bus.$on("dispatchtokentoshow",val =>{
       // console.log("scatter token dispatch")
-      if(this.selected_token.indexOf(val)>=0){
-        this.selected_token.splice(this.selected_token.indexOf(val),1)
+      var a=this.selected_token;
+    // console.log(a);
+      if(a.indexOf(val)>=0){
+        a.splice(a.indexOf(val),1)
       }
-      else this.selected_token.push(val)
+      else a.push(val)
+      this.selected_token=a;
+    //   var b=this.selected_token;
+    // console.log(b);
       this.getAll();
-    }),
+    })
     bus.$on('reset_tokens',()=>{
       this.selected_token=[];
       this.getAll();
     })
     // ,
-    // bus.$on('init_tokens',valued_nodes_group=>{
-    //   // console.log("scatter init")
-    //   // this.selected_token=valued_nodes_group
-    //   // this.getAll();
+    bus.$on('init_tokens',valued_nodes_group=>{
+      // console.log("scatter init")
+      valued_nodes_group.forEach((node)=>{
+        if (this.selected_token.indexOf(node) >= 0) {//
+        this.selected_token.splice(this.selected_token.indexOf(node), 1);
+      }
+      else {this.selected_token.push(node);}
+      })
+      this.getAll();
       
-    // })
+    })
   },
   data(){
     return {

@@ -21,43 +21,32 @@ export default {
 
         })
         bus.$on('tsne_to_table',val=>{
-            
-
             if( d3.select('#node-'+val).style('stroke')=='blue'){
-
-           
                         d3.select('#node-'+val).style("stroke",undefined)
                     }
                     else d3.select('#node-'+val).selectChild('rect').style('stroke','blue')
-
-
         })
         bus.$on('unhighlight',val=>{
             d3.select('#node-'+val).selectChild('rect').style('fill','white')
         })
         bus.$on('dispatchtokentoshow',val=>{
-
             if( d3.select('#node-'+val).attr('stroke')=='#ff6131'){
-
-           
                         d3.select('#node-'+val).attr("stroke",undefined)
                     }
                     else d3.select('#node-'+val).attr("stroke","#ff6131")
-        }),
+        })
         bus.$on('reset_tokens',()=>{
             d3.selectAll('.node').attr("stroke",undefined)
-
-        }),
+        })
         bus.$on('init_tokens',valued_nodes_group=>{
-        //     d3.selectAll('.node').attr("stroke",undefined)
-        // valued_nodes_group.forEach(node_id => {
-        //   d3.select('#node-'+node_id).attr("stroke","#ff6131")
-
-          valued_nodes_group.forEach(function(node){
-        bus.$emit('dispatchtokentoshow',node)
-      })
+            d3.selectAll('.node').attr("stroke",undefined)
+        valued_nodes_group.forEach(node_id => {
+          d3.select('#node-'+node_id).attr("stroke","#ff6131")
+    //       valued_nodes_group.forEach(function(node){
+    //     bus.$emit('dispatchtokentoshow',node)
+    //   })
           
-    //   });
+      });
     })
     },
     data(){
@@ -296,8 +285,11 @@ export default {
                     //     d3.select(this).attr("stroke",undefined)
                     // }
                     // else d3.select(this).attr("stroke","#ff6131")
+                    console.log('token table emit',i)
+
                     bus.$emit("dispatchtokentoshow",i)
                     //单击事件：传递需要在tsne视图中显示或删除的token的index
+                    
                     console.log("emit")
                 })
             })

@@ -16,6 +16,7 @@ import bus from "./bus";
 export default {
   name: "AttrTree",
   created() {
+    this.init();
     //为什么是在created中监听？
     bus.$on("dispatchsentencetoshow", (val) => {
       this.tokens = val[0];
@@ -30,7 +31,6 @@ export default {
     }),
       bus.$on("dispatchthreshold", (val) => {
         this.threshold = val;
-        console.log("on val:" + val);
 
         this.set_para(this.threshold, this.layer);
       }),
@@ -56,7 +56,6 @@ export default {
     },
     draw(sankeydata, textData, nodesData) {
       //sankeydata:node,link
-      console.log(nodesData);
       d3.select("#AttrTreeSvg").remove();
       d3.select("#AttrTreeSvg").selectAll("*").remove();
       var margin = { top: 10, right: 10, bottom: 30, left: 1 },
@@ -119,7 +118,6 @@ export default {
         node.y0 = newY;
         node.y1 = newY + yGAp;
       });
-      // console.log(graph.nodes);
 
       graph.links.forEach((link) => {
         link.width = x.bandwidth();
@@ -240,12 +238,7 @@ export default {
           (node) => node.targetLinks.length + node.sourceLinks.length !== 0
         )
         .map((node) => node.index);
-      // if (this.threshold === 0.4) {
-      // console.log(valued_nodes)
       this.valued_nodes = valued_nodes;
-      console.log("in draw:");
-      console.log(this.valued_nodes);
-      // }
     },
     getAll() {
       const path =
@@ -294,11 +287,9 @@ export default {
           layer: this.layer - 1,
         })
         .then(() => {
-          console.log("attr-tree post")
           axios
         .get(path)
         .then((res) => {
-          console.log("init attr-tree get")
           var nodeLinkData = res.data.node_link;
           var tokens = res.data.tokens;
           if (this.tokens.length != 0) {
@@ -312,10 +303,10 @@ export default {
           this.draw(nodeLinkData, tokens, nodesData);
         })
         .then(() => {
-          console.log("valued nodes:");
-          console.log(this.valued_nodes);
           bus.$emit("init_tokens", this.valued_nodes);
           console.log("init tokens");
+          console.log(this.valued_nodes);
+
         })
         .catch((error) => {
           // eslint-disable-next-line
@@ -326,9 +317,9 @@ export default {
   }
   ,
   mounted() {
-    console.log("tree init");
+    // console.log("tree init");
     // this.set_para(this.threshold,this.layer)
-    this.init();
+    
     // this.getAll()
   }
   }
