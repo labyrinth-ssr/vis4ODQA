@@ -66,7 +66,7 @@ export default {
       // api provided by freeCodeCamp
       showtype: "sentence",
       tsnedata: [], //所有的data
-      sentence_selected:5, //初始时自动选择第6句
+      sentence_selected:4, //初始时自动选择第5句
       layer_selected: [0,1,2,3,4,5,6,7,8,9,10,11], //被选中的layer，用于过滤
       selected_token: [], //被选中的token的index，用于过滤（注意是index（int)而不是token(str)，以防多个词反复出现时选取错误）
       data_to_show: [],
@@ -161,10 +161,11 @@ export default {
     },
     datainit(){
       if(this.showtype=="token"){
-        this.data_to_show = this.tsnedata.filter(datum =>{
-          return (this.selected_token.indexOf(datum.index)>=0
-                &&this.layer_selected.indexOf(datum.layer)>=0)
-        })
+        // this.data_to_show = this.tsnedata.filter(datum =>{
+        //   return (this.selected_token.indexOf(datum.index)>=0
+        //         &&this.layer_selected.indexOf(datum.layer)>=0)
+        // })
+        this.data_to_show=this.tsnedata
         for (var i = 0; i < this.selected_token.length; i++) {
           this.tokenlegendData.push(this.data_to_show.find((item) => {
             if(item.index === this.selected_token[i]){
@@ -175,7 +176,8 @@ export default {
         }
         this.data_to_show.forEach(element => {
           var index = this.selected_token.indexOf(element.index)
-          element.color = this.color[index]
+          if (index==-1){element.color = "#6B7377"}
+          else element.color = this.color[index]
         });
       }else {
         this.data_to_show = this.tsnedata.filter(datum =>{
@@ -247,6 +249,7 @@ export default {
         .attr('id', 'y-axis') // project requirement
         .call(yAxis);
       // draw data points as dots with tooltip pop-up on mouseover
+      
       svg.selectAll('circle')
         .data(this.data_to_show)
         .enter()
@@ -320,6 +323,7 @@ export default {
             return d.layer
           })
           .attr('fill',function(d){
+            console.log("scatterplot fill:",d.color)
             return d.color
           })
           legendG.selectAll('rect')

@@ -31,7 +31,7 @@ export default {
       impo_data:[],
       attn_data:[],
       data: [],
-      sentence_selected:5, //初始时自动选择第一句
+      sentence_selected:4, //初始时自动选择第5句
       tokens:[]
     };
   },

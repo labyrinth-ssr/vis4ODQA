@@ -42,7 +42,7 @@ export default {
   data() {
     return {
       data: [],
-      sentence_selected: 5, //初始时自动选择第6句
+      sentence_selected: 4, //初始时自动选择第5句
       tokens: [],
       nodes: [],
       threshold: 0.4,
@@ -290,6 +290,7 @@ export default {
           axios
         .get(path)
         .then((res) => {
+          console.log(res.data);
           var nodeLinkData = res.data.node_link;
           var tokens = res.data.tokens;
           if (this.tokens.length != 0) {
