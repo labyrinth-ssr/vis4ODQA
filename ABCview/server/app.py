@@ -12,8 +12,10 @@ from attribution_tree_multilayer import attribution_tree
 
 FILENAME1 = './sentence_token_pred_100.json'
 FILENAME2 = './tsne_100.json'
+FILENAME3 = './tsne_sentence_100.json'
 node_link_data={}
 py_data2=[]
+valued_nodes=[]
 
 app = Flask(__name__)
 CORS(app, resources={r'/*': {'origins': '*'}})
@@ -32,20 +34,25 @@ def query_tsne():
         jsonStr = json.load(f)
         return jsonify(jsonStr)
 
+@app.route('/query_sentence_tsne')
+def query_sentence_tsne():
+    with open(FILENAME3) as f:
+        jsonStr = json.load(f)
+        return jsonify(jsonStr)
 
 @app.route("/query_attn_head/<int:sentence_id>")
 def query_attn_head(sentence_id):
     with open('../output/att_attr_all/att_score_zero_base_exp'+str(sentence_id)+'.json') as load_f:
         py_data = ndjson.load(load_f)
-    with open('../output/head_importance/head_importance_attr'+str(sentence_id)+'.json', 'r') as load_f2:
+    with open('../output/head_importance_attr.json', 'r') as load_f2:
         py_data2 = json.load(load_f2)
     with open('./tokens.json', 'r') as load_f3:
         py_data3 = json.load(load_f3)
         return jsonify({
             'importance': process_impo(py_data2),
+        'detail': attnProcess(py_data),
         'tokens': py_data3
         })
-
 @app.route("/query_attn_map/<int:sentence_id>")
 def query_attn_map(sentence_id):
     with open('../output/att_attr_all/attr_zero_base_exp'+str(sentence_id)+'.json') as load_f:
@@ -56,8 +63,9 @@ def query_attn_map(sentence_id):
 
 @app.route('/query_attr_tree/<int:sentence_id>',methods=['GET', 'POST'])
 def query_attr_tree(sentence_id):
-    global node_link_data,py_data2
+    global node_link_data,py_data2,valued_nodes
     if request.method=='POST':
+        valued_nodes=[]
         post_data=request.get_json()
         threshold=post_data['threshold']
         layer=post_data['layer']
@@ -80,6 +88,11 @@ def query_attr_tree(sentence_id):
             nodes_list.append({'node': str(inx), 'name': val})
 
         data = reduce(run_function, [[], ] + nodes_list)
+        for ele in links_list:
+            valued_nodes.append(int(ele['source']))
+            valued_nodes.append(int(ele['target']))
+
+        valued_nodes=list(set(valued_nodes))
         node_link_data = {'nodes': data, 'links': links_list}
 
     else:
@@ -87,7 +100,8 @@ def query_attr_tree(sentence_id):
 
     return jsonify({
         'node_link': node_link_data,
-        'tokens': py_data2
+        'tokens': py_data2,
+        'valued_nodes':valued_nodes
     })
 
 

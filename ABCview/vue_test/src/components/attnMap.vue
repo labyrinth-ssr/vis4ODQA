@@ -11,22 +11,19 @@ export default {
   name: "attnMap",
   created() {
     bus.$on("dispatchtokentoshow", (val) => {//监听到选择时,,,
-    var a=this.token_selected;
-    console.log('before dispatch token' ,a);
+    // console.log(this.token_selected)
       if (this.token_selected.indexOf(val) >= 0) {//
         this.token_selected.splice(this.token_selected.indexOf(val), 1);
       }
       else {this.token_selected.push(val);}
-      var b=this.token_selected;
-    console.log('after diapatch token' ,b);
-      this.draw(this.singleAttn, this.tokens);
+      this.draw(this,this.singleAttn, this.tokens);
     });
     
     bus.$on("dispatchsentencetoshow", (val) => {
-      this.tokens = val[0];
+      // this.tokens = val[0];
       this.sentence_selected = val[1];
       this.token_selected=[];
-      this.getAll();//后台读取
+      this.getAll(this);//后台读取
     });
     bus.$on("dispatchheadtoshow", (val) => {
       this.layer = val[0];
@@ -35,23 +32,26 @@ export default {
         (ele) => ele.layer === this.layer && ele.head === this.head
       );
       this.singleAttn = temp[0].attn;
-      this.draw(this.singleAttn, this.tokens);
+      this.draw(this,this.singleAttn, this.tokens);
     });
     
     bus.$on('reset_tokens',()=>{
       this.token_selected=[];
-      this.draw(this.singleAttn, this.tokens);
+      this.draw(this,this.singleAttn, this.tokens);
     })
     // ,
     bus.$on('init_tokens',valued_nodes_group=>{
-      console.log("attnmap init");
+      console.log('attn map get tkens init',valued_nodes_group)
       valued_nodes_group.forEach((node)=>{
         if (this.token_selected.indexOf(node) >= 0) {//
         this.token_selected.splice(this.token_selected.indexOf(node), 1);
       }
       else {this.token_selected.push(node);}
       })
-      console.log(this.token_selected)
+      this.getAll(this)
+      // console.log(this.token_selected)
+      
+      // console.log('init tokens in attnmap',this.token_selected,this.singleAttn,this.tokens)
       // this.draw(this.singleAttn, this.tokens);
       // console.log('after draw',this.token_selected)
     })
@@ -64,40 +64,25 @@ export default {
       layer: 0,
       head: 0,
       token_selected: [], //被选中的token的index，用于过滤（注意是index（int)而不是token(str)，以防多个词反复出现时选取错误）
-      tokens: [
-      "[CLS]",
-      "i",
-      "don",
-      "'",
-      "t",
-      "know",
-      "um",
-      "do",
-      "you",
-      "do",
-      "a",
-      "lot",
-      "of",
-      "camping",
-      "[SEP]",
-      "I",
-      "know",
-      "exactly",
-      ".",
-      "[SEP]"
-    ],
+      tokens: [],
       singleAttn: [],
     };
   },
+  // watch:{
+  //   token_selected(val){
+  //     this.getAll(this);
+
+  //   }
+
+  // },
   methods: {
-    
-    draw(req_data, tokens) {
-      var tokenId=this.token_selected;
+    draw(obj,req_data, tokens) {
+      var tokenId=obj.token_selected;
       const max = d3.max(req_data,ele=>ele.val)
       const attrScale=d3
-        .scaleLinear()
-  .domain([0,max]) 
-  .range([0, 1]) 
+      .scaleLinear()
+      .domain([0,max]) 
+      .range([0, 1]) 
       
       const background_color = "steelblue";
       const lineColor = "red";
@@ -232,9 +217,9 @@ export default {
 
       }
 
-      if(this.token_selected.length!==0){
+      if(obj.token_selected.length!==0){
       d3.selectAll('.attn').style('opacity',0)
-      this.token_selected.forEach(function (token) {
+      obj.token_selected.forEach(function (token) {
           stephighlight(token);
         });
 
@@ -244,7 +229,6 @@ export default {
       function unhighlightSelection() {
              d3.selectAll(".tokenContainer").style("opacity", 0.0);
         if(tokenId.length!==0){
-          console.log("tokens length:"+tokens.length)
       d3.selectAll('.attn').style('opacity',0)
       tokenId.forEach(function (token) {
           stephighlight(token);
@@ -255,41 +239,32 @@ export default {
         d3.selectAll(".attn").style("opacity", 1);
           }
       }
-      var x=this.token_selected
-      console.log('draw:',x)
     },
 
-    getAll() {
-      const path =
-        "http://10.192.9.11:5000/query_attn_map/" + this.sentence_selected;
-      axios
-        .get(path)
-        .then((res) => {
-          this.all_attn = res.data.detail;
-          this.singleAttn = this.all_attn.filter(
-            (ele) => ele.layer === this.layer && ele.head === this.head
-          )[0].attn;
-          console.log('get all draw')
-          this.draw(this.singleAttn, this.tokens);
-          console.log('after getall draw',this.token_selected)
-        })
-        .catch((error) => {
+    getAll(obj) {
+      let urls = [
+         'http://10.192.9.11:5000/query_all',
+        //  'http://10.192.9.11:5000/query_attr_tree/'+obj.sentence_selected,
+         'http://10.192.9.11:5000/query_attn_map/'+ obj.sentence_selected
+       ]
+       let axiosList = []
+       urls.forEach(url => {
+         axiosList.push(axios.get(url))
+       })
+       axios.all(axiosList).then((res)=> {
+            obj.tokens = res[0].data[obj.sentence_selected].tokens;
+            // obj.token_selected= res[1].data.valued_nodes;
+            obj.all_attn = res[1].data.detail;
+            obj.singleAttn = obj.all_attn[obj.layer*12+obj.head].attn;
+            console.log('before map draw,valued',obj.token_selected)
+          obj.draw(obj,obj.singleAttn, obj.tokens);
+       })
+       .catch((error) => {
           console.error(error);
         });
-    },
+    }
   },
-
-  mounted() {
-    console.log('mounted',this.token_selected)
-    this.getAll();
-  },
-  beforeUpdate(){
-    console.log('before updated',this.token_selected)
-          this.draw(this.singleAttn, this.tokens);
-  },
-  updated(){
-    console.log('updated',this.token_selected)
-  }
+  
 };
 </script>
 

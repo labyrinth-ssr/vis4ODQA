@@ -16,7 +16,6 @@ import bus from "./bus";
 export default {
   name: "AttrTree",
   created() {
-    this.init();
     //为什么是在created中监听？
     bus.$on("dispatchsentencetoshow", (val) => {
       this.tokens = val[0];
@@ -317,7 +316,8 @@ export default {
   }
   }
   ,
-  mounted() {
+  beforeMounted() {
+    this.init();
     // console.log("tree init");
     // this.set_para(this.threshold,this.layer)
     

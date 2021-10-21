@@ -62,31 +62,32 @@ export default {
             width:800,
             height:400,
             tokens: [
-      "[CLS]",
-      "i",
-      "don",
-      "'",
-      "t",
-      "know",
-      "um",
-      "do",
-      "you",
-      "do",
-      "a",
-      "lot",
-      "of",
-      "camping",
-      "[SEP]",
-      "I",
-      "know",
-      "exactly",
-      ".",
-      "[SEP]"
+    //   "[CLS]",
+    //   "i",
+    //   "don",
+    //   "'",
+    //   "t",
+    //   "know",
+    //   "um",
+    //   "do",
+    //   "you",
+    //   "do",
+    //   "a",
+    //   "lot",
+    //   "of",
+    //   "camping",
+    //   "[SEP]",
+    //   "I",
+    //   "know",
+    //   "exactly",
+    //   ".",
+    //   "[SEP]"
     ],
         }
     },
     mounted(){
-        this.drawParagraph(this.tokens,this.SVGPadding,this.textTokenPadding);
+        console.log('do nothing')
+        // this.drawParagraph(this.tokens,this.SVGPadding,this.textTokenPadding);
     },
     methods: {
         getTokenWidth(tokens, svg, fontSize='1em'){

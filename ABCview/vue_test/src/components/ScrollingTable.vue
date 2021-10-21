@@ -20,6 +20,8 @@ export default {
             columns:['index','prob'],
             allData:[],
             dimensions:{'width':810, 'height':142},
+            init_index:4
+            // first_init:true
             // delete tokens && change the sequence
         }
     },
@@ -31,6 +33,7 @@ export default {
             this.allData = res.data
             })
             .then(() => this.drawTable(this.allData,this.dimensions,this.column_name))
+            .then(()=>bus.$emit('dispatchsentencetoshow',[this.allData[this.init_index].tokens, this.init_index]))
             .catch((error)=>{
             console.log(error)
             })
@@ -100,6 +103,11 @@ export default {
             .on("dblclick",function(){
                 bus.$emit("dispatchsentencetoshow",[this.__data__.tokens, this.__data__.index])//传双参数，sentence的tokens和index
             })
+
+
+            // if(this.first_init==true){
+            //     bus.$emit('dispatchsentencetoshow',)
+            // }
         },
     }
 }
