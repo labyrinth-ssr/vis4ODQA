@@ -1,5 +1,5 @@
 <template>
-  <div id="attr-tree"></div>
+  <div id="old-attr-tree"></div>
 </template>
 
 <script>
@@ -41,11 +41,11 @@ export default {
   data() {
     return {
       data: [],
-      sentence_selected: 1, //初始时自动选择第5句
+      sentence_selected: 4, //初始时自动选择第5句
       tokens: [],
       nodes: [],
       threshold: 0.4,
-      layer: 10,
+      layer: 12,
       valued_nodes: [],
     };
   },
@@ -55,9 +55,6 @@ export default {
     },
     draw(sankeydata, textData, nodesData) {
       //sankeydata:node,link
-      console.log(sankeydata)
-      console.log(nodesData)
-      console.log(textData)
       d3.select("#AttrTreeSvg").remove();
       d3.select("#AttrTreeSvg").selectAll("*").remove();
       var margin = { top: 10, right: 10, bottom: 30, left: 1 },
@@ -74,8 +71,7 @@ export default {
 
       var color = d3.scaleOrdinal(d3.schemePaired);
 
-      const textData_index = nodesData.map(a=>a.node)
-      // Object.keys(textData);
+      const textData_index = Object.keys(textData);
 
       const x = d3
         .scaleBand()
@@ -101,7 +97,7 @@ export default {
 
       // Set the sankey diagram properties
       var sankey = d3Sankey()
-        .nodeWidth(5)
+        .nodeWidth(36)
         .nodePadding(0) //最好换成一个函数
         .size([sankeyWidth, snakeyHeight])
         .nodeId(function id(d) {
@@ -122,17 +118,11 @@ export default {
         node.y1 = newY + yGAp;
       });
 
-      sankey.update(graph);
       graph.links.forEach((link) => {
         link.width = x.bandwidth();
-        link.y0=link.source.y0 +
-              (1 / 2) * Math.max(1, link.source.targetLinks.length) * x.bandwidth() +
-              5
-        link.y1=link.target.y0 +
-              (1 / 2) * Math.max(1, link.target.targetLinks.length) * x.bandwidth() +
-              5
-        console.log("link width"+link.width)
       });
+
+      sankey.update(graph);
 
       // add in the links
       var link = svg
@@ -149,7 +139,7 @@ export default {
         })
         .style("opacity", 0.3)
         .style("stroke-width", function (d) {
-          return d.value*20;
+          return d.width;
         })
         .on("mouseover", function () {
           d3.select(this).style("opacity", 0.6);
@@ -172,26 +162,23 @@ export default {
         .append("g")
         .attr("class", "node");
       // .attr('id','nodeBox')
-      console.log(graph)
+
       // add the rectangles for the graph
       node
-        .append("circle")
+        .append("rect")
         .attr("class", "nodeRect")
-        .attr("cx", function (d) {
-          return d.x0+sankey.nodeWidth()/2;
+        .attr("x", function (d) {
+          return d.x0;
         })
-        .attr("cy", function (d) {
-          console.log((d.y0+d.y1)/2)
-          console.log(d.y0 +
-              (1 / 2) * Math.max(1, d.targetLinks.length) * x.bandwidth() +
-              5)
-          return (d.y0 +
-              (1 / 2) * Math.max(1, d.targetLinks.length) * x.bandwidth() +
-              5) ;
+        .attr("y", function (d) {
+          return d.y0;
         })
-        .attr('r',function(d){
-          return Math.max(0,d.saliency)*300+10
+        .attr("height", function (d) {
+          // return d.y1-d.y0;
+
+          return Math.max(1, d.targetLinks.length) * x.bandwidth();
         })
+        .attr("width", sankey.nodeWidth())
         .on("click", function (event, data) {
           bus.$emit("dispatchtokentoshow", data.index);
         })
@@ -208,7 +195,7 @@ export default {
           return (d.color = color(d.name.replace(/ .*/, "")));
         })
         .style("stroke", "none")
-        .style("opacity", 1)
+        .style("opacity", 0.5)
         .append("title")
         .text(function (d) {
           return d.name;
@@ -252,29 +239,29 @@ export default {
         .map((node) => node.index);
       this.valued_nodes = valued_nodes;
     },
-    // getAll() {
-    //   const path =
-    //     "http://10.192.9.11:5000/query_attr_tree/" + this.sentence_selected
-    //   axios
-    //     .get(path)
-    //     .then((res) => {
-    //       var nodeLinkData = res.data.node_link;
-    //       var tokens = res.data.tokens;
-    //       // if (this.tokens.length != 0) {
-    //       //   tokens = this.tokens;
-    //       // }
-    //       var nodesData = nodeLinkData.nodes; //未选过sentence，直接获得？？？
-    //       // if (this.nodes.length != 0) {
-    //       //   //普通情况：nodes在选sentence时被存了
-    //       //   nodesData = this.nodes;
-    //       // }
-    //       this.draw(nodeLinkData, tokens, nodesData);
-    //     })
-    //     .catch((error) => {
-    //       // eslint-disable-next-line
-    //       console.error(error);
-    //     });
-    // },
+    getAll() {
+      const path =
+        "http://10.192.9.11:5000/query_attr_tree/" + this.sentence_selected;
+      axios
+        .get(path)
+        .then((res) => {
+          var nodeLinkData = res.data.node_link;
+          var tokens = res.data.tokens;
+          if (this.tokens.length != 0) {
+            tokens = this.tokens;
+          }
+          var nodesData = nodeLinkData.nodes; //未选过sentence，直接获得？？？
+          if (this.nodes.length != 0) {
+            //普通情况：nodes在选sentence时被存了
+            nodesData = this.nodes;
+          }
+          this.draw(nodeLinkData, tokens, nodesData);
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.error(error);
+        });
+    },
     set_para(threshold, layer) {
       const path =
         "http://10.192.9.11:5000/query_attr_tree/" + this.sentence_selected;
@@ -305,20 +292,14 @@ export default {
           console.log(res.data);
           var nodeLinkData = res.data.node_link;
           var tokens = res.data.tokens;
-          // if (this.tokens.length != 0) {
-          //   tokens = this.tokens;
-          // }
+          if (this.tokens.length != 0) {
+            tokens = this.tokens;
+          }
           var nodesData = nodeLinkData.nodes; //未选过sentence，直接获得？？？
-          // if (this.nodes.length != 0) {
-          //   //普通情况：nodes在选sentence时被存了
-          //   nodesData = this.nodes;
-          // }
-          tokens=[],nodesData=[]
-          res.data.valued_nodes.forEach((ele)=>{
-            tokens.push(res.data.tokens[ele])
-            nodesData.push(nodeLinkData.nodes[ele])
-          })
-          nodeLinkData.nodes=nodesData
+          if (this.nodes.length != 0) {
+            //普通情况：nodes在选sentence时被存了
+            nodesData = this.nodes;
+          }
           this.draw(nodeLinkData, tokens, nodesData);
         })
         .then(() => {
@@ -351,7 +332,7 @@ export default {
   margin-left: 0px;
   height: 100%;
   text-align: center;
-  width: 100%;
+  width: 66.67%;
   overflow: auto;
 }
 /* #AttrTreeSvg{

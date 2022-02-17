@@ -78,13 +78,13 @@ body {
   flex-direction: row;
 }
 #leftCol {
-  width: 55%;
+  width: 0%;
   flex-direction: column;
   overflow: hidden;
 
 }
 #rightCol {
-  width: 45%;
+  width: 100%;
 }
 
 #row1 {
