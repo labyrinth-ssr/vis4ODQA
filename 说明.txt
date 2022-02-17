@@ -4,3 +4,4 @@ attr-map的token box大小固定
 todo：
 拼接
 把map里面的text换成scale
+123
