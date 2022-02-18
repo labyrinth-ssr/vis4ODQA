@@ -42,7 +42,7 @@ export default {
 <style>
 #layer-selected{
   width:300px;
-  height:20px;
+  height:5px;
   margin: auto;
 }
 </style>

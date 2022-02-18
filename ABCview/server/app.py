@@ -69,8 +69,7 @@ def query_attr_tree(sentence_id):
         post_data=request.get_json()
         threshold=post_data['threshold']
         layer=post_data['layer']
-        py_data= attribution_tree('../output/att_attr_all/attr_zero_base_exp'+str(sentence_id)+'.json',
-        '../output/tokens_and_pred_100.json',sentence_id,threshold,layer)
+        py_data= attribution_tree('../output/att_attr_all/attr_zero_base_exp'+str(sentence_id)+'.json','../output/tokens_and_pred_100.json',sentence_id,threshold,layer)
         with open("./tokens.json", 'r') as load_f2:
             py_data2 = json.load(load_f2)
         nodes_list = []

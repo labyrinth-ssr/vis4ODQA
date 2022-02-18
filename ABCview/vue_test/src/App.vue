@@ -23,8 +23,8 @@
     </div>
 
     <div id="rightCol">
-      <div id="attrTree_container" class="container">
-        <ThresholdSelected />
+      <div id="attrTree_container" >
+        <!-- <ThresholdSelected /> -->
         <div id="bottomRow">
           <attnMap></attnMap>
           <AttrTree></AttrTree>
@@ -43,7 +43,7 @@ import ScrollingTable from "./components/ScrollingTable.vue";
 import TokenTable from "./components/TokenTable.vue";
 import AttnHead from "./components/headView.vue";
 import AttrTree from "./components/AttrTree.vue";
-import ThresholdSelected from "./components/ThresholdSelected.vue";
+// import ThresholdSelected from "./components/ThresholdSelected.vue";
 import attnMap from './components/attnMap.vue';
 
 export default {
@@ -55,7 +55,7 @@ export default {
     TokenTable,
     AttnHead,
     AttrTree,
-    ThresholdSelected,
+    // ThresholdSelected,
     attnMap
   },
 };

@@ -41,7 +41,7 @@ export default {
     })
     // ,
     bus.$on('init_tokens',valued_nodes_group=>{
-      console.log('attn map get tkens init',valued_nodes_group)
+      // console.log('attn map get tkens init',valued_nodes_group)
       valued_nodes_group.forEach((node)=>{
         if (this.token_selected.indexOf(node) >= 0) {//
         this.token_selected.splice(this.token_selected.indexOf(node), 1);
@@ -256,7 +256,7 @@ export default {
             // obj.token_selected= res[1].data.valued_nodes;
             obj.all_attn = res[1].data.detail;
             obj.singleAttn = obj.all_attn[obj.layer*12+obj.head].attn;
-            console.log('before map draw,valued',obj.token_selected)
+            // console.log('before map draw,valued',obj.token_selected)
           obj.draw(obj,obj.singleAttn, obj.tokens);
        })
        .catch((error) => {
@@ -273,7 +273,7 @@ export default {
   margin: 10px;
   margin-right: 5px;
   position: relative;
-  width: 33.33%;
+  width: 0%;
   height: 100%;
 }
 
