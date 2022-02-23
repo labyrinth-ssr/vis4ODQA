@@ -3,7 +3,6 @@
 </template>
 
 <script>
-//增加控件的话，其实最好是搞个默认..
 import * as d3 from "d3";
 import axios from "axios";
 import {
@@ -16,15 +15,14 @@ import bus from "./bus";
 export default {
   name: "AttrTree",
   created() {
-    //为什么是在created中监听？
     bus.$on("dispatchsentencetoshow", (val) => {
-      this.tokens = val[0];
-      var temp = [];
-      val[0].forEach(function (token, index) {
-        temp.push({ node: `${index}`, name: token });
-      });
-      this.nodes = temp;
-      this.sentence_selected = val[1];
+      // this.tokens = val[0];
+      // var temp = [];
+      // val[0].forEach(function (token, index) {
+      //   temp.push({ node: `${index}`, name: token });
+      // });
+      // this.nodes = temp;
+      this.sentence_selected = val;
 
       this.init();
     }),
@@ -44,7 +42,7 @@ export default {
       sentence_selected: 1, //初始时自动选择第5句
       tokens: [],
       nodes: [],
-      threshold: 0.4,
+      threshold: 0.5,
       layer: 10,
       valued_nodes: [],
       sentence_span: [],
@@ -85,7 +83,7 @@ export default {
         .select("#attr-tree")
         .append("svg")
         .attr("id", "AttrTreeSvg")
-        .attr("width", "1200")
+        .attr("width", "2000")
         .attr("height", height + margin.top + margin.bottom)
         .style("background-color", "white")
         .style("border-radius", "10px");
@@ -97,7 +95,6 @@ export default {
           "translate(" + margin.left + "," + (height + margin.top) + ")"
         );
       g2.append("text").attr("y", 10).text("layer").attr("fill", "black");
-      // const layerid_to_color=
       for (let i = 0; i < 12; i++) {
         g2.append("rect")
           .attr("width", "10")
@@ -105,10 +102,7 @@ export default {
           .attr("height", "10")
           .attr("fill", d3.interpolateOrRd((i / 11) * 0.7 + 0.1))
           .attr("opacity", "1");
-        //         .on('click',function(d){
-        //     console.log('over');
-        //     console.log(this.opacity);filter
-        // })
+
         g2.append("text")
           .text(`${i}`)
           .attr("x", i * 10 + 60)
@@ -131,10 +125,7 @@ export default {
           .attr("height", "10")
           .attr("fill", d3.schemeTableau10[sentence_color(i)])
           .attr("opacity", "1");
-        //         .on('click',function(d){
-        //     console.log('over');
-        //     console.log(this.opacity);filter
-        // })
+      
         g3.append("text")
           .text(`${i}`)
           .attr("x", i * 10 + 60)
@@ -142,12 +133,12 @@ export default {
           .attr("font-size", "12px")
           .attr("fill", "black");
       }
-      // this.draw(sankeyDataList[0],x,color,0,height,svg,margin)
-      // this.draw(sankeyDataList[5],x,color,5,height,svg,margin)
-      // this.draw(sankeyDataList[11],x,color,11,height,svg,margin)
       var pos = 0;
       for (let index = 0; index < 12; index++) {
         width = tree_height[index] * layer_width;
+        if(sankeyDataList[index].links.length==0){
+          continue;
+        }
         this.draw(
           sankeyDataList[index],
           x,
@@ -183,21 +174,6 @@ export default {
       };
       const sankeyWidth = width,
         snakeyHeight = height;
-      // console.log(sankeyWidth)
-      // console.log(width)
-      // Object.keys(textData);
-
-      // append the svg object to the body of the page
-      // var svg = d3
-      //   .select("#attr-tree")
-      //   .append("svg")
-      //   .attr("id", "AttrTreeSvg")
-      //   .attr("width", width + margin.left + margin.right)
-      //   .attr("height", height + margin.top + margin.bottom)
-      //   .style("background-color", "white")
-      //   .style("border-radius", "10px")
-      // const fixgWidth=50
-
       var mySvg = svg
         .append("g")
         .attr("id", "g-sankey-scale")
@@ -205,7 +181,6 @@ export default {
           "transform",
           " translate(" + (margin.left + pos) + "," + margin.top + ") "
         );
-      // console.log(mySvg)
 
       // Set the sankey diagram properties
       var sankey = d3Sankey()
@@ -258,8 +233,6 @@ export default {
         .attr("d", d3SsankeyLinkHorizontal())
         .attr("fill", "none")
         .attr("stroke", function (d) {
-          console.log(d.layer + "");
-          console.log(color(d.layer + ""));
           return d3.interpolateOrRd((d.layer / 11) * 0.7 + 0.1);
         })
         .style("opacity", 1)
@@ -287,7 +260,6 @@ export default {
         .append("g")
         .attr("class", "node");
       // .attr('id','nodeBox')
-      console.log(graph);
       // add the rectangles for the graph
       node
         .append("circle")
@@ -296,10 +268,6 @@ export default {
           return d.x0 + sankey.nodeWidth() / 2;
         })
         .attr("cy", function (d) {
-          // console.log((d.y0+d.y1)/2)
-          // console.log(d.y0 +
-          //     (1 / 2) * Math.max(1, d.targetLinks.length) * x.bandwidth() +
-          //     5)
           return (
             d.y0 +
             (1 / 2) * Math.max(1, d.targetLinks.length) * x.bandwidth() +
@@ -371,29 +339,28 @@ export default {
         .map((node) => node.index);
       this.valued_nodes = valued_nodes;
     },
-    // getAll() {
-    //   const path =
-    //     "http://10.192.9.11:5000/query_attr_tree/" + this.sentence_selected
-    //   axios
-    //     .get(path)
-    //     .then((res) => {
-    //       var nodeLinkData = res.data.node_link;
-    //       var tokens = res.data.tokens;
-    //       // if (this.tokens.length != 0) {
-    //       //   tokens = this.tokens;
-    //       // }
-    //       var nodesData = nodeLinkData.nodes; //未选过sentence，直接获得？？？
-    //       // if (this.nodes.length != 0) {
-    //       //   //普通情况：nodes在选sentence时被存了
-    //       //   nodesData = this.nodes;
-    //       // }
-    //       this.draw(nodeLinkData, tokens, nodesData);
-    //     })
-    //     .catch((error) => {
-    //       // eslint-disable-next-line
-    //       console.error(error);
-    //     });
-    // },
+    getAll() {
+      const path =
+        "http://10.192.9.11:5000/query_attr_tree/" + this.sentence_selected
+      axios
+        .get(path)
+        .then((res) => {
+          var all_node_link = res.data.all_layer_node_link.map(
+                (a) => a.node_link
+              );
+              this.sentence_span = res.data.sentence_span;
+              this.drawAll(
+                all_node_link,
+                res.data.tokenPool,
+                res.data.tree_height
+              );
+
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.error(error);
+        });
+    },
     set_para(threshold, layer) {
       const path =
         "http://10.192.9.11:5000/query_attr_tree/" + this.sentence_selected;
@@ -410,7 +377,7 @@ export default {
     init() {
       console.log("tree init");
       const path =
-        "http://10.222.144.246:5000/query_attr_tree/" + this.sentence_selected;
+        "http://10.192.9.11:5000/query_attr_tree/" + this.sentence_selected;
       axios
         .post(path, {
           sts_id: this.sentence_selected,
@@ -422,23 +389,6 @@ export default {
             .get(path)
             .then((res) => {
               console.log(res.data);
-              // var nodeLinkData = res.data.node_link;
-              // var tokens = res.data.tokens;
-              // // if (this.tokens.length != 0) {
-              // //   tokens = this.tokens;
-              // // }
-              // var nodesData = nodeLinkData.nodes; //未选过sentence，直接获得？？？
-              // // if (this.nodes.length != 0) {
-              // //   //普通情况：nodes在选sentence时被存了
-              // //   nodesData = this.nodes;
-              // // }
-              // tokens=[],nodesData=[]
-              // res.data.valued_nodes.forEach((ele)=>{
-              //   tokens.push(res.data.tokens[ele])
-              //   nodesData.push(nodeLinkData.nodes[ele])
-              // })
-              // // nodeLinkData.nodes=nodesData
-              // // nodesData=res.data.node_link.nodes
               var all_node_link = res.data.all_layer_node_link.map(
                 (a) => a.node_link
               );
@@ -448,26 +398,18 @@ export default {
                 res.data.tokenPool,
                 res.data.tree_height
               );
-              // this.draw({'links':res.data.node_link.links,'nodes':nodesData}, tokens, nodeLinkData.nodes);
             })
             .then(() => {
               bus.$emit("init_tokens", this.valued_nodes);
-              console.log("init tokens");
-              console.log(this.valued_nodes);
             })
             .catch((error) => {
-              // eslint-disable-next-line
               console.error(error);
             });
         });
     },
   },
-  beforeMounted() {
+  beforeMount() {
     this.init();
-    // console.log("tree init");
-    // this.set_para(this.threshold,this.layer)
-
-    // this.getAll()
   },
 };
 </script>

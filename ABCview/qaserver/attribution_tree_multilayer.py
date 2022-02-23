@@ -1,24 +1,17 @@
 import numpy as np
-import json
 import networkx as nx
-# import matplotlib.pyplot as plt
-# import matplotlib as mpl
 import copy
 
-def attribution_tree(attr_file: str, tokens_file: str, example_index: int, threshold: int, layer: int,top_kth:int):
+def attribution_tree(att_allk:list, tokens:list, threshold: int, layer: int,top_kth:int):
     att_all=[]
-    with open(attr_file,'r') as load_f:
-        att_allk=json.load(load_f)
     for layId in att_allk:
         att_all.append(layId[top_kth])
     att_all=np.array(att_all)
     
-    proportion_all = copy.deepcopy(att_all)
+    proportion_all = copy.deepcopy(att_all) 
     for i in range(len(proportion_all)):
         proportion_all[i] /= abs(proportion_all[i][1:, :].max())
 
-    # adjust the threshold
-    # threshold = threshold*(layer+1)/12
     proportion_all *= (proportion_all > threshold).astype(int)
 
     seq_length = len(proportion_all[0])
@@ -74,46 +67,24 @@ def attribution_tree(attr_file: str, tokens_file: str, example_index: int, thres
                 weight[i_token][j_token]=proportion_all[layer_index][i_token][j_token]
                 layerId[i_token][j_token]=layer_index
 
-    # token examples
-    # tokens = ["[CLS]", "i", "don", "'", "t", "know", "um", "do", "you", "do", "a", "lot", "of", "camping", "[SEP]", "I", "know", "exactly", ".", "[SEP]"]
-    # tokens = ["[CLS]", "The", "new", "rights", "are", "nice", "enough", "[SEP]", "Everyone", "really", "likes", "the", "newest", "benefits", "[SEP]"]
-    # tokens = ["[CLS]", "so", "i", "have", "to", "find", "a", "way", "to", "supplement", "that", "[SEP]", "I", "need", "a", "way", "to", "add", "something", "extra", ".", "[SEP]"]
-    with open(tokens_file) as fin:
-        tokens_all_k = json.load(fin)
-        tokens_all=tokens_all_k[top_kth]
-    tokens = tokens_all
-
+    tagged_tokens=[]
     for i in range(len(tokens)):
-        tokens[i] = tokens[i]+'+'+ str(i)
-
-    # fig1 = plt.figure(1,figsize=(30,22)) 
-    # fig1.patch.set_facecolor('xkcd:white')
+        tagged_tokens.append(tokens[i]+'+'+ str(i)) 
 
     G = nx.DiGraph()
 
-    for token in tokens:
+    for token in tagged_tokens:
         G.add_node(token)
 
     for (i_token, j_token) in edges:
-        G.add_edges_from([(tokens[i_token], tokens[j_token], {'weight': weight[i_token][j_token],'layer':layerId[i_token][j_token]})])
+        G.add_edges_from([(tagged_tokens[i_token], tagged_tokens[j_token], {'weight': weight[i_token][j_token],'layer':layerId[i_token][j_token]})])
 
-    fix_position = {tokens[i]: [i / len(tokens), height_list[i]] for i in range(len(tokens))}
     M = G.number_of_edges()
-    pos = nx.spring_layout(G, pos=fix_position)
-    edge_colors = range(2, M + 2)
 
     unused_node = list(nx.isolates(G))
     for node in unused_node:
         G.remove_node(node)
 
-    # edge_alphas = []
     edges_list = list(G.edges.data())
 
-    b = json.dumps(edges_list)
-    f2 = open('edges_list.json', 'w')
-    f2.write(b)
-    f2.close()
     return edges_list
-
-attribution_tree('./generated_data/attr_mat/mat_start_1.json','./generated_data/tokens/input_tokens for_question1.json',1,0.6,6,0)
-

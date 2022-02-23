@@ -1,6 +1,3 @@
-from itsdangerous import json
-
-
 import json
 def getSentenceSpan(tokens:list)-> list:
     ret=[]
@@ -10,9 +7,10 @@ def getSentenceSpan(tokens:list)-> list:
         ret.append(cnt)
         if (token=='.' or token=='[SEP]' or token==';' or token=='?'):
             cnt+=1
-    print (ret)
     return ret
 
 with open ('./generated_data/tokens/input_tokens for_question1.json') as fin:
     jsonStr=json.load(fin)
     getSentenceSpan(jsonStr[0])
+
+# 还有选k,,,qnq

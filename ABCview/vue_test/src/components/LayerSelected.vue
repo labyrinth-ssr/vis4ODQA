@@ -1,5 +1,6 @@
 <template>
   <div id="layer-selected">
+
     <a-slider range :marks="marks" :max=12 :min=1 :step=1 :default-value="[1, 12]" 
               @afterChange = "afterChange"
               />

@@ -16,7 +16,7 @@
           :max="0.5"
           :min="0.1"
           :step="0.1"
-          :default-value="0.4"
+          :default-value="0.5"
           @afterChange="onAfterChange"
         />
       </div>
@@ -31,6 +31,12 @@
         />
       </div>
     </div>
+    <div id="input-container">
+      <div id="input-box">
+        <a-input v-model="input_value" @pressEnter="input_sentenceId" />
+      </div>
+    </div>
+      
   </div>
 </template>
 
@@ -51,10 +57,15 @@ export default {
     reset_tokens(){
       bus.$emit('reset_tokens');
 
+    },
+    input_sentenceId(){
+      console.log("input"+this.input_value)
+      bus.$emit('dispatchsentencetoshow',this.input_value)
     }
   },
   data() {
     return {
+      input_value:1,
       marks_threshold: {
         0.1: "0.1",
         0.2: "0.2",
