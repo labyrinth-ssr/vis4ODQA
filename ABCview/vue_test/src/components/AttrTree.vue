@@ -209,17 +209,19 @@ export default {
       graph.links.forEach((link) => {
         link.width = x.bandwidth();
         link.y0 =
-          link.source.y0 +
-          (1 / 2) *
-            Math.max(1, link.source.targetLinks.length) *
-            x.bandwidth() +
-          5;
+          link.source.y0 
+          // +
+          // (1 / 2) *
+          //   Math.max(1, link.source.targetLinks.length) *
+          //   x.bandwidth() +
+          // 5;
         link.y1 =
-          link.target.y0 +
-          (1 / 2) *
-            Math.max(1, link.target.targetLinks.length) *
-            x.bandwidth() +
-          5;
+          link.target.y0 
+          // +
+          // (1 / 2) *
+          //   Math.max(1, link.target.targetLinks.length) *
+          //   x.bandwidth() +
+          // 5;
       });
 
       // add in the links
@@ -269,9 +271,10 @@ export default {
         })
         .attr("cy", function (d) {
           return (
-            d.y0 +
-            (1 / 2) * Math.max(1, d.targetLinks.length) * x.bandwidth() +
-            5
+            d.y0 
+            // +
+            // (1 / 2) * Math.max(1, d.targetLinks.length) * x.bandwidth() +
+            // 5
           );
         })
         .attr("r", function (d) {
@@ -313,9 +316,11 @@ export default {
             "translate(" +
             d.x0 +
             "," +
-            (d.y0 +
-              (1 / 2) * Math.max(1, d.targetLinks.length) * x.bandwidth() +
-              5 -
+            (d.y0 
+            // +
+            //   (1 / 2) * Math.max(1, d.targetLinks.length) * x.bandwidth() +
+            //   5 
+              -
               (Math.max(0, d.saliency) * 30 + 5)) +
             ") "
           );
