@@ -156,7 +156,6 @@ export default {
     draw(sankeydata, x, color, index, height, svg, margin, width, pos) {
       // const la
       //sankeydata:node,link
-      console.log(sankeydata);
       //calculate the tree height
       var links_data = sankeydata.links;
       links_data.sort(function (a, b) {
@@ -346,7 +345,7 @@ export default {
     },
     getAll() {
       const path =
-        "http://10.192.9.11:5000/query_attr_tree/" + this.sentence_selected
+        "http:///10.222.165.124:5000/query_attr_tree/" + this.sentence_selected
       axios
         .get(path)
         .then((res) => {
@@ -368,7 +367,7 @@ export default {
     },
     set_para(threshold, layer) {
       const path =
-        "http://10.192.9.11:5000/query_attr_tree/" + this.sentence_selected;
+        "http:///10.222.165.124:5000/query_attr_tree/" + this.sentence_selected;
       axios
         .post(path, {
           sts_id: this.sentence_selected,
@@ -382,7 +381,7 @@ export default {
     init() {
       console.log("tree init");
       const path =
-        "http://10.192.9.11:5000/query_attr_tree/" + this.sentence_selected;
+        "http:///10.222.165.124:5000/query_attr_tree/" + this.sentence_selected;
       axios
         .post(path, {
           sts_id: this.sentence_selected,
@@ -393,7 +392,6 @@ export default {
           axios
             .get(path)
             .then((res) => {
-              console.log(res.data);
               var all_node_link = res.data.all_layer_node_link.map(
                 (a) => a.node_link
               );

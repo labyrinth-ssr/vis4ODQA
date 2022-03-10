@@ -113,4 +113,7 @@ export default {
 #title {
   margin: 0px 40px;
 }
+#sliders-container{
+  width:300px
+}
 </style>
