@@ -2,12 +2,14 @@ import numpy as np
 import networkx as nx
 import copy
 
-def attribution_tree(att_allk:list, tokens:list, threshold: int, layer: int,top_kth:int):
+def attribution_tree(att_allk:list, tokens:list, threshold: int, layer: int,top_kth:int,is_cxt:bool,noneed_cls:bool):
     att_all=[]
-    for layId in att_allk:
-        att_all.append(layId[top_kth])
-    att_all=np.array(att_all)
-    
+    if (not is_cxt):
+        for layId in att_allk:
+            att_all.append(layId[top_kth])
+        att_all=np.array(att_all)
+    else: 
+        att_all=np.array(att_allk)
     proportion_all = copy.deepcopy(att_all) 
     for i in range(len(proportion_all)):
         proportion_all[i] /= abs(proportion_all[i][1:, :].max())
@@ -30,8 +32,9 @@ def attribution_tree(att_allk:list, tokens:list, threshold: int, layer: int,top_
     top_token_index = arg_res[0] if arg_res[0] != 0 else arg_res[1]
     height_list[top_token_index] = 11 / 12
     fixed_list[top_token_index] = 0
-    # if layer == 11:
-    #     layer -= 1
+    if(noneed_cls):
+        if layer == 11:
+            layer -= 1
     weight = np.zeros(shape=(seq_length,seq_length))
     layerId = np.zeros(shape=(seq_length,seq_length))
 
@@ -77,8 +80,9 @@ def attribution_tree(att_allk:list, tokens:list, threshold: int, layer: int,top_
         G.add_node(token)
 
     for (i_token, j_token) in edges:
-        G.add_edges_from([(tagged_tokens[i_token], tagged_tokens[j_token], {'weight': weight[i_token][j_token],'layer':layerId[i_token][j_token]})])
+        print(tagged_tokens[i_token],tagged_tokens[j_token])
 
+        G.add_edges_from([(tagged_tokens[i_token], tagged_tokens[j_token], {'weight': weight[i_token][j_token],'layer':layerId[i_token][j_token]})])
     M = G.number_of_edges()
 
     unused_node = list(nx.isolates(G))

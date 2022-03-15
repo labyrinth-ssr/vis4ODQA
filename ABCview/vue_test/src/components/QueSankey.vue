@@ -1,5 +1,6 @@
 <template>
-  <div id="que_sankey"></div>
+  <div id="que_sankey">
+  </div>
 </template>
 
 <script>
@@ -25,6 +26,7 @@ export default {
       head: 0,
       layer: 0,
       attn: {},
+      accu_em:{}
     };
   },
   methods: {
@@ -32,6 +34,10 @@ export default {
     draw() {
       var sankeydata = this.node_link;
       var attndata = this.attn;
+      var accu_em_data=this.accu_em.accu_em;
+      const em_avg=this.accu_em.em_avg;
+      const accu_avg=this.accu_em.k_accu_avg;
+      console.log(accu_em_data)
       const margin = { top: 10, right: 10, bottom: 10, left: 10 };
       const svg_size = { width: 400, height: 800 };
       const sankey_size = {
@@ -43,6 +49,7 @@ export default {
       var svg = d3
         .select("#que_sankey")
         .append("svg")
+        .attr('id','mySvg')
         .attr("width", svg_size.width)
         .attr("height", svg_size.height)
         .append("g")
@@ -58,7 +65,7 @@ export default {
         })
         .nodeAlign(d3SankeyLeft);
       var graph = sankey(sankeydata);
-      console.log(graph);
+      // console.log(graph);
       var link = svg
         .append("g")
         .selectAll(".link")
@@ -125,13 +132,14 @@ export default {
       svg.attr("transform", "translate(400,10)rotate(90)");
 
       const bias=8
+      const sankey_matrix_gap=30
 
       const attn_color = d3
         .scaleSequential()
         .interpolator(d3.interpolateGnBu)
         .domain([0, 2.54]);
-        var links_data=sankeydata.links
-      links_data.sort((a,b)=>{
+        var links_data=sankeydata.links; 
+      sankeydata.links.sort((a,b)=>{
         return a.y1-b.y1
       })
       const rect_padding=5
@@ -140,11 +148,12 @@ export default {
       links_data.forEach((ele,index)=>{
         ele.index=index
       })
+        const barchart_padding=5
 
       var attn_g = d3.select("svg").append("g").attr("id", "attn_g")
-      .attr('transform','translate('+(margin.left-bias)+','+(margin.top+sankey_size.width+rect_padding)+')');
+      .attr('transform','translate('+(margin.left-bias)+','+(margin.top+sankey_size.width+rect_padding+sankey_matrix_gap+barchart_padding)+')');
 
-      
+      // 确定col的横坐标：绑定所有attndata数据后，将根据每条attn，选出匹配link的index
       //取出所有的y1排序后将index存入links
       var attn = attn_g
         .append("g")
@@ -154,11 +163,6 @@ export default {
         .append("g")
         .attr('transform',(d)=>{
           const link_data=sankeydata.links
-          
-          console.log(d.source,d.target)
-          console.log(link_data.filter(link=>
-            link.source.name==d.source&&link.target.name==d.target
-          )[0])
           const link_index=link_data.filter(link=>
             link.source.name==d.source&&link.target.name==d.target
           )[0].index
@@ -194,6 +198,114 @@ export default {
         .attr("height", rect_height)
         .attr('fill',d=>attn_color(d.val)
         )
+// var mySvg=
+
+d3.select('#mySvg')
+  .append('defs')
+  .append('pattern')
+    .attr('id', 'diagonalHatch')
+    .attr('patternUnits', 'userSpaceOnUse')
+    .attr('width', 4)
+    .attr('height', 4)
+  .append('path')
+    .attr('d', 'M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2')
+    .attr('stroke', 'hotpink')
+    .attr('stroke-width', 1);
+
+d3.select('#mySvg')
+  .append('defs')
+  .append('pattern')
+    .attr('id', 'diagonalHatch2')
+    .attr('patternUnits', 'userSpaceOnUse')
+    .attr('width', 4)
+    .attr('height', 4)
+  .append('path')
+    .attr('d', 'M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2')
+    .attr('stroke', 'gold')
+    .attr('stroke-width', 1);
+
+// 首先将每个g移动到对应的横坐标，然后根据值开始画
+// 横坐标的值来自link的y1，具体
+// [0,1]=>[0,30]
+//使用最大值作为
+//使用同一个轴
+const max_em=d3.max(accu_em_data.map(ele=>ele.em))
+
+const max_accu=d3.max(accu_em_data.map(ele=>ele.accu))
+// const scale_max=d3.max([max_em,max_accu])
+        const a_scale=d3.scaleLinear().domain([0,max_accu]).range([0,sankey_matrix_gap])
+        const e_scale=d3.scaleLinear().domain([0,max_em]).range([0,sankey_matrix_gap])
+        const bar_width=8
+        var accu_em_g = d3.select("svg").append("g").attr("id", "ae_g")
+      .attr('transform','translate('+(margin.left-bias)+','+(margin.top+sankey_size.width+barchart_padding)+')');
+        console.log(sankeydata)
+        var accu_em=accu_em_g
+        .append("g")
+        .selectAll(".que_ae")
+        .data(accu_em_data
+        )
+        .enter()
+        .append("g")
+        .attr('transform',(d)=>{
+          const link_data=sankeydata.links
+          const link_index=link_data.filter(link=>
+            link.source.node==d.source&&link.target.node==d.target
+          )[0].index
+            return 'translate('+(sankey_size.height-(link_index*(rect_width+rect_padding)))+',0)'
+        })
+        .attr('class','que_ae')
+        .classed('over_avg',d=>d.accu>accu_avg?true:false)
+        .classed('over_e_avg',d=>d.em>em_avg?true:false)
+
+
+        console.log(accu_em)
+
+        d3.selectAll('.que_ae')
+        .append('rect')
+        .attr('width',bar_width)
+        .attr('height',a_scale(accu_avg))
+        .attr('fill',(d)=>{
+          return d.accu<accu_avg?'none':'hotpink'
+        })
+        .attr('stroke','hotpink')
+        .append('g')
+
+        d3.selectAll('.que_ae')
+        .append('rect')
+        .attr('width',bar_width)
+        .attr('height',d=>a_scale(d.accu))
+        .attr('fill',(d)=>{
+          return d.accu<accu_avg?'hotpink':'url(#diagonalHatch)'
+        })
+        .attr('stroke',(d)=>{
+          return d.accu<accu_avg?'hotpink':'none'
+        })
+        console.log(accu_avg)
+
+// const scale_max=d3.max([max_em,max_accu])
+
+        d3.selectAll('.que_ae')
+        .append('rect')
+        .attr('x',bar_width)
+        .attr('width',bar_width)
+        .attr('height',e_scale(em_avg))
+        .attr('fill',(d)=>{
+          return d.em<em_avg?'none':'gold'
+        })
+        .attr('stroke','gold')
+        .append('g')
+
+        d3.selectAll('.que_ae')
+        .append('rect')
+        .attr('x',bar_width)
+        .attr('width',bar_width)
+        .attr('height',d=>e_scale(d.em))
+        .attr('fill',(d)=>{
+          return d.em<em_avg?'gold':'url(#diagonalHatch2)'
+        })
+        .attr('stroke',(d)=>{
+          return d.em<em_avg?'gold':'none'
+        })
     },
     //有两种方法：是否使用两个url？
     
@@ -202,8 +314,10 @@ export default {
     init() {
       const path = "http://localhost:5000/query_que_sunburst";
       const path2 = "http://localhost:5000/query_attn_head";
+      const path3="http://localhost:5000/query_em_accu"
       const requestOne = axios.get(path);
       const requestTwo = axios.get(path2);
+      const requestThree=axios.get(path3);
       axios
         .post(path, {
           threshold: this.threshold,
@@ -212,13 +326,14 @@ export default {
         })
         .then(() => {
           axios
-            .all([requestOne, requestTwo])
+            .all([requestOne, requestTwo,requestThree])
             .then(
               axios.spread((...responses) => {
                 const responseOne = responses[0];
                 const responseTwo = responses[1];
                 this.node_link = responseOne.data;
                 this.attn = responseTwo.data;
+                this.accu_em=responses[2].data
                 this.draw();
               })
             )
@@ -238,5 +353,13 @@ export default {
 </script>
 
 <style scoped>
+
+.over_avg{
+  /* height: 10px; */
+  background:
+          linear-gradient(45deg, rgba(0, 153, 68, .5) 0, rgba(0, 153, 68, .5) 25%, transparent 25%, transparent 50%, rgba(0, 153, 68, .5) 50%, rgba(0, 153, 68, .5) 75%, transparent 75%,transparent);
+  background-size : 5px 5px
+
+}
 </style>
 

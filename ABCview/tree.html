@@ -1,0 +1,222 @@
+<head>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/sankey.js"></script> -->
+    <script type="module">
+import {
+        sankey as d3Sankey,
+        sankeyLinkHorizontal as d3SankeyLinkHorizontal,
+        sankeyLeft as d3SankeyLeft,
+      } from "d3-sankey";
+    </script>
+    
+</head>
+
+<body>
+    <div id="attr-tree" width="1080" height="960"></div>
+
+    <script>
+        
+        d3.json("./tree_data.json").then(function (res) {
+            var nodeLinkData = res.node_link;
+            var tokens = res.tokens;
+            // if (tokens.length != 0) {
+            //     tokens = tokens;
+            // }
+            var nodesData = nodeLinkData.nodes; //未选过sentence，直接获得？？？
+            // if (nodes.length != 0) {
+                //普通情况：nodes在选sentence时被存了
+                // nodesData = nodes;
+            // }
+            draw(nodeLinkData, tokens, nodesData);
+        })
+
+        function draw(sankeydata, textData, nodesData) {
+
+        
+            //sankeydata:node,link
+
+            var margin = { top: 10, right: 10, bottom: 30, left: 1 },
+                width =
+                    document.getElementById("attr-tree").clientWidth -
+                    margin.left -
+                    margin.right,
+                height =
+                    document.getElementById("attr-tree").clientHeight -
+                    margin.top -
+                    margin.bottom;
+            const sankeyWidth = width,
+                snakeyHeight = height;
+
+            var color = d3.scaleOrdinal(d3.schemePaired);
+
+            const textData_index = Object.keys(textData);
+
+            const x = d3
+                .scaleBand()
+                .domain(textData_index)
+                .range([0, height])
+                .padding(0);
+
+            // append the svg object to the body of the page
+            var svg = d3
+                .select("#attr-tree")
+                .append("svg")
+                .attr("id", "AttrTreeSvg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .style("background-color", "white")
+                .style("border-radius", "10px")
+                .append("g")
+                .attr("id", "g-sankey-scale")
+                .attr(
+                    "transform",
+                    " translate(" + margin.left + "," + margin.top + ") "
+                );
+
+            // Set the sankey diagram properties
+            var sankey = d3Sankey()
+                .nodeWidth(36)
+                .nodePadding(0) //最好换成一个函数
+                .size([sankeyWidth, snakeyHeight])
+                // .nodeId(function id(d) {
+                //     return d.node;
+                // })
+                // .nodeSort(function (a, b) {
+                //     return a.node - b.node;
+                // })
+                // .nodeAlign(d3SankeyLeft)
+                .nodes(nodesData);
+            console.log(sankey)
+
+            var graph = sankey(sankeydata);
+
+            graph.nodes.forEach((node) => {
+                var newY = x(node.node);
+                var yGAp = x.bandwidth();
+                node.y0 = newY;
+                node.y1 = newY + yGAp;
+            });
+
+            graph.links.forEach((link) => {
+                link.width = x.bandwidth();
+            });
+
+            sankey.update(graph);
+
+            // add in the links
+            var link = svg
+                .append("g")
+                .selectAll(".link")
+                .data(graph.links)
+                .enter()
+                .append("path")
+                .attr("class", "link")
+                .attr("d", d3SankeyLinkHorizontal())
+                .attr("fill", "none")
+                .attr("stroke", function (d) {
+                    return color(d.source.name.replace(/ .*/, ""));
+                })
+                .style("opacity", 0.3)
+                .style("stroke-width", function (d) {
+                    return d.width;
+                })
+                .on("mouseover", function () {
+                    d3.select(this).style("opacity", 0.6);
+                })
+                .on("mouseleave", function () {
+                    d3.select(this).style("opacity", 0.3);
+                });
+
+            // add the link titles
+            link.append("title").text(function (d) {
+                return d.source.name + " → " + d.target.name;
+            });
+
+            // add in the graph
+            var node = svg
+                .append("g")
+                .selectAll(".node")
+                .data(graph.nodes)
+                .enter()
+                .append("g")
+                .attr("class", "node");
+            // .attr('id','nodeBox')
+
+            // add the rectangles for the graph
+            node
+                .append("rect")
+                .attr("class", "nodeRect")
+                .attr("x", function (d) {
+                    return d.x0;
+                })
+                .attr("y", function (d) {
+                    return d.y0;
+                })
+                .attr("height", function (d) {
+                    // return d.y1-d.y0;
+
+                    return Math.max(1, d.targetLinks.length) * x.bandwidth();
+                })
+                .attr("width", sankey.nodeWidth())
+                // .on("click", function (event, data) {
+                //     bus.$emit("dispatchtokentoshow", data.index);
+                // })
+                // .on("mouseover", function (event, data) {
+                //     bus.$emit("highlightToken", data.index);
+                // })
+                // .on("mouseleave", function (e, data) {
+                //     bus.$emit("unhighlight", data.index);
+                // })
+                .style("fill", function (d) {
+                    if (d.targetLinks.length + d.sourceLinks.length === 0) {
+                        return "none";
+                    }
+                    return (d.color = color(d.name.replace(/ .*/, "")));
+                })
+                .style("stroke", "none")
+                .style("opacity", 0.5)
+                .append("title")
+                .text(function (d) {
+                    return d.name;
+                });
+            //   d3.selectAll('.nodeRect').append('g')
+            // .data(d3.select(this.parentNode).datum())
+            node
+                .attr("class", "textG")
+                .append("text")
+                .attr("font-size", 10)
+                .text(function (d) {
+                    return d.name;
+                })
+                .attr("transform", function (d) {
+                    return (
+                        "translate(" +
+                        d.x0 +
+                        "," +
+                        (d.y0 +
+                            (1 / 2) * Math.max(1, d.targetLinks.length) * x.bandwidth() +
+                            5) +
+                        ") "
+                    );
+                })
+                .attr("text-anchor", "start");
+
+            d3.select("#AttrTreeSvg").attr(
+                "height",
+                document.getElementById("g-sankey-scale").getBBox().height + margin.top
+            );
+            d3.select("#AttrTreeSvg")
+                .style("background-color", "white")
+                .style("border-radius", "10px")
+                .style("margin", "10px")
+                .style("margin-left", "0px");
+
+            var valued_nodes = graph.nodes
+                .filter(
+                    (node) => node.targetLinks.length + node.sourceLinks.length !== 0
+                )
+                .map((node) => node.index);
+            this.valued_nodes = valued_nodes;
+        }
+    </script>
+</body>

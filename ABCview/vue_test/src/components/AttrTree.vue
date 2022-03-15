@@ -23,7 +23,6 @@ export default {
       // });
       // this.nodes = temp;
       this.sentence_selected = val;
-
       this.init();
     }),
       bus.$on("dispatchthreshold", (val) => {
@@ -79,6 +78,7 @@ export default {
         .domain(textData_index)
         .range([0, height])
         .padding(0);
+
       var svg = d3
         .select("#attr-tree")
         .append("svg")
@@ -87,6 +87,7 @@ export default {
         .attr("height", height + margin.top + margin.bottom)
         .style("background-color", "white")
         .style("border-radius", "10px");
+
       const g2 = svg
         .append("g")
         .attr("id", "colourScale")
@@ -94,6 +95,7 @@ export default {
           "transform",
           "translate(" + margin.left + "," + (height + margin.top) + ")"
         );
+        
       g2.append("text").attr("y", 10).text("layer").attr("fill", "black");
       for (let i = 0; i < 12; i++) {
         g2.append("rect")
@@ -133,6 +135,7 @@ export default {
           .attr("font-size", "12px")
           .attr("fill", "black");
       }
+      
       var pos = 0;
       for (let index = 0; index < 12; index++) {
         width = tree_height[index] * layer_width;
@@ -157,6 +160,7 @@ export default {
       // const la
       //sankeydata:node,link
       //calculate the tree height
+      console.log(sankeydata)
       var links_data = sankeydata.links;
       links_data.sort(function (a, b) {
         return a.layer - b.layer;
@@ -345,7 +349,7 @@ export default {
     },
     getAll() {
       const path =
-        "http:///10.222.165.124:5000/query_attr_tree/" + this.sentence_selected
+        "http://localhost:5000/query_attr_tree/" + this.sentence_selected
       axios
         .get(path)
         .then((res) => {
@@ -367,7 +371,7 @@ export default {
     },
     set_para(threshold, layer) {
       const path =
-        "http:///10.222.165.124:5000/query_attr_tree/" + this.sentence_selected;
+        "http://localhost:5000/query_attr_tree/" + this.sentence_selected;
       axios
         .post(path, {
           sts_id: this.sentence_selected,
@@ -381,7 +385,7 @@ export default {
     init() {
       console.log("tree init");
       const path =
-        "http:///10.222.165.124:5000/query_attr_tree/" + this.sentence_selected;
+        "http://localhost:5000/query_attr_tree/" + this.sentence_selected;
       axios
         .post(path, {
           sts_id: this.sentence_selected,

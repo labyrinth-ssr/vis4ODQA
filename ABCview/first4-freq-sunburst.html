@@ -1,0 +1,76 @@
+<head>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+    <svg></svg>
+
+    <script>
+        var threshold=50
+        var width = 500;  // <-- 1
+        var height = 500;
+        var radius = Math.min(width, height) / 2;  // < -- 2
+        var color = d3.scaleOrdinal(d3.schemePaired);   // <-- 3
+
+        var g = d3.select('svg')  // <-- 1
+            .attr('width', width)  // <-- 2
+            .attr('height', height)
+            .append('g')  // <-- 3
+            .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');  // <-- 4
+
+        var partition = d3.partition()  // <-- 1
+            .size([2 * Math.PI, radius]);  // <-- 2
+
+        d3.json("qaserver/visqa/first_four_freq.json").then(function (data) {
+            var nodeData = { 'name': 'root', 'children': data }
+
+            var root = d3.hierarchy(nodeData)
+                .sum(function (d) {
+                    return d.size
+                });
+
+            partition(root);
+            var arc = d3.arc()
+                .startAngle(function (d) { return d.x0 })
+                .endAngle(function (d) { return d.x1 })
+                .innerRadius(function (d) { return d.y0 })
+                .outerRadius(function (d) { return d.y1 });
+
+            g.selectAll('g')  // <-- 1
+                .data(root.descendants())
+                .enter().append('g').attr("class", "node")  // <-- 2
+                .append('path')  // <-- 2
+                .attr("display", function (d) { return d.depth ? null : "none"; })
+                .attr("d", arc)
+                .style('stroke', '#fff')
+                .style("fill", function (d) { return color((d.children ? d : d.parent).data.name); });
+
+            g.selectAll(".node")  // <-- 1
+                .filter(function (d){
+                    return d.data.size> threshold
+                })
+                .append("text")  // <-- 2
+                .attr("transform", function (d) {
+                    console.log(d)
+                    return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")";
+                }) // <-- 3
+                .attr("dx", "-20")  // <-- 4
+                // " + computeTextRotation(d) + "
+                .attr("dy", ".2em")  // <-- 5
+                .attr('font-size',10 )
+                .text(function (d) { return d.parent ? d.data.name : "" });  // <-- 6
+
+            function computeTextRotation(d) {
+                var angle = (d.x0 + d.x1) / Math.PI * 90;  // <-- 1
+
+                // Avoid upside-down labels
+                return (angle < 180) ? angle-90 : angle + 90;  // <--2 "labels aligned with slices"
+
+                // Alternate label formatting
+                //return (angle < 180) ? angle - 90 : angle + 90;  // <-- 3 "labels as spokes"
+            }
+
+        });
+
+    </script>
+</body>

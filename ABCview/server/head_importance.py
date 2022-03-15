@@ -1,4 +1,3 @@
-import json
 def process_impo(py_data):
     
     headImportance=[]

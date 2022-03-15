@@ -1,5 +1,189 @@
 sankey需要什么样的数据，函数对数据做了什么样的处理？
 20:44：
-救命，，，什么都没干...该还债了，，，so sad唉。
-不要难过！偶尔少睡一晚上不要紧的！！而且工作也不算很多很难啊。把这个系统写得差不多了就可以去学sicp了，好耶好耶好耶。还有csapp...一定会去学的！！冲！！
-缺乏热情的时候应该怎么办...我不知道，感觉就是，，只想摸鱼，，什么都不想干....唉，到底为什么会这样呢》。。为什么会不想写系统呢...其实不会不想写的啦，，，不是说要做个靠谱的人吗？简单的事情更应该更快更好地完成啊..
+barchart：数据
+两个list，encode，height，avg？
+top-20 accuracy,
+句子list，给出accuracy，
+所有句子，top-20 accuracy求平均。
+em是什么？这类句子em
+
+是否需要多个后端接口？...在global打开
+
+23:26：
+数据处理，修改后端。需要：
+数据的格式:
+{
+  "links": [
+    {
+      "source": "who_p", 
+      "target": "is_c", 
+      "value": 1308
+    }, 
+    {
+      "source": "who_p", 
+      "target": "played_c", 
+      "value": 1308
+    }
+  ], 
+  "nodes": [
+    {
+      "name": "", 
+      "node": "_c"
+    }, 
+    {
+      "name": "where", 
+      "node": "where_p"
+    }
+  ]
+}
+
+需要给links编号吗？
+找到link后，
+获得不要用index吧...就是source，target，建议文件统一，传入字符后根据tree找到每个child的sen_id,
+
+[
+  {
+    "children": [
+      {
+        "name": "is", 
+        "senId": [
+          6, 
+          18, 
+          22], 
+        "size": 169, 
+        "val": 0.4764688251447061
+      }, 
+      {
+        "name": "played", 
+        "senId": [
+          35, 
+          131],
+           
+        "size": 125, 
+        "val": 0.49229586651942636
+      }],
+    "name": "who", 
+    "senId": [
+      0, 
+      5],
+        "size": 169, 
+        "val": 0.4764688251447061
+      },
+      {}
+]
+
+需要
+
+关于树对齐...
+就是比较retriver和reader的树
+可选：top-k，threshold，layer
+reader已有
+retriver，同样的方法放进q和cxt即可。
+问题在于这个answer，来自于投入50个相关文档的结果。然后
+(layer,psg_num,seq_len)
+reader和reranker同时进行，那么这是未经reranker的数据。
+
+重新建一个.vue,文件把树对齐...
+冷静下来了...下次愤怒的时候一定要管住嘴，然后多表达。不能再伤害自己的身体了,,,,需要提高效率。
+
+{
+  "all_layer_node_link": [
+    {
+      "maxLayer": 0, 
+      "node_link": {
+        "links": [
+          {
+            "layer": 0.0, 
+            "source": "65", 
+            "target": "66", 
+            "value": 0.6993105449532755
+          }, 
+          {
+            "layer": 0.0, 
+            "source": "69", 
+            "target": "66", 
+            "value": 0.700450004048245
+          }
+        ], 
+        "nodes": [
+          {
+            "name": "on", 
+            "node": "65", 
+            "saliency": 0.004550366662442684
+          }, 
+          {
+            "name": "may", 
+            "node": "66", 
+            "saliency": 0.0003601400530897081
+          }, 
+          {
+            "name": "2018", 
+            "node": "69", 
+            "saliency": 0.08578912168741226
+          }
+        ]
+      }, 
+      "threshold": 0.5
+    }
+    {
+      "maxLayer": 11, 
+      "node_link": {
+        "links": [
+          {
+            "layer": 7.0, 
+            "source": "4", 
+            "target": "2", 
+            "value": 0.7651232084733518
+          }, 
+          {
+            "layer": 5.0, 
+            "source": "1", 
+            "target": "2", 
+            "value": 0.5766955751576578
+          }
+        ], 
+        "nodes": [
+          {
+            "name": "[CLS]", 
+            "node": "0", 
+            "saliency": 0.0031466817017644644
+          }, 
+          {
+            "name": "when", 
+            "node": "1", 
+            "saliency": -0.09067223221063614
+          }
+        ]
+      }, 
+      "threshold": 0.5
+    }
+  ], 
+  "sentence_span": [
+    0, 
+    0, 
+    0, 
+    0, 
+  ], 
+  "tokenPool": [
+    0, 
+    1, 
+    2, 
+    3, 
+  ], 
+  "tree_height": [
+    1, 
+    2,
+  ]
+}
+实现：4棵树的对齐：
+要少熬夜啊喂
+整理出四棵树的统一数据，根据
+获得tokenpool,后端处理整个tokenpool
+tree_height:{
+  q:
+  cxt:
+  reranker:
+  reader
+}
+
+

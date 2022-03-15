@@ -15,7 +15,7 @@
         <div id="attrTree_container">
           <ThresholdSelected />
           <div id="bottomRow">
-            <AttrTree></AttrTree>
+            <single-attr-tree></single-attr-tree>
           </div>
         </div>
       </div>
@@ -35,7 +35,8 @@
 
 <script>
 import AttnHead from "./components/headView.vue";
-import AttrTree from "./components/AttrTree.vue";
+// import AttrTree from "./components/AttrTree.vue";
+import SingleAttrTree from './components/SingleAttrTree.vue'
 import ThresholdSelected from "./components/ThresholdSelected.vue";
 import queThreBox from "./components/queThreBox.vue";
 // import queSunburst from './components/queSunburst.vue'
@@ -46,12 +47,13 @@ export default {
   name: "App",
   components: {
     AttnHead,
-    AttrTree,
+    // AttrTree,
     ThresholdSelected,
     queThreBox,
     // queSunburst,
     QueSankey,
     QueCard,
+    SingleAttrTree,
   },
 };
 </script>
@@ -77,7 +79,7 @@ body {
   width: 450px;
 }
 #rightCol{
-  margin-left: 460px;
+  margin-left: 10px;
 }
 #leftUp{
   height: 50%;
