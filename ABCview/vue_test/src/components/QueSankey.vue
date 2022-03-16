@@ -33,6 +33,7 @@ export default {
     update() {},
     draw() {
       var sankeydata = this.node_link;
+      console.log(sankeydata)
       var attndata = this.attn;
       var accu_em_data=this.accu_em.accu_em;
       const em_avg=this.accu_em.em_avg;
@@ -54,10 +55,10 @@ export default {
         .attr("height", svg_size.height)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
+      const sankey_nodewidth=15
       const color = d3.scaleOrdinal(d3.schemePaired);
       var sankey = d3Sankey()
-        .nodeWidth(15)
+        .nodeWidth(sankey_nodewidth)
         .nodePadding(0)
         .size([sankey_size.width, sankey_size.height])
         .nodeId(function id(d) {
@@ -166,11 +167,15 @@ export default {
           const link_index=link_data.filter(link=>
             link.source.name==d.source&&link.target.name==d.target
           )[0].index
+          d.link_index=link_index
             return 'translate('+(sankey_size.height-(link_index*(rect_width+rect_padding)))+',0)'
         }
           )
         .attr("class", "attn_col");
-
+      console.log(attndata)
+      attndata.sort((a,b)=>{
+        return a.link_index-b.link_index
+      })
       // 对应的数据，已经列出，需要匹配，按照senid匹配？，按照source和target匹配。
       
       attn
@@ -306,11 +311,45 @@ const max_accu=d3.max(accu_em_data.map(ele=>ele.accu))
         .attr('stroke',(d)=>{
           return d.em<em_avg?'gold':'none'
         })
-    },
-    //有两种方法：是否使用两个url？
+//Link generator used for both examples
+    var linkGen = d3.linkVertical()
+    .source(d=>saneky_revert_scale(sankey_size.width+sankey_nodewidth*0.5,d.y1/* +0.5*d.width */))
+    .target(d=>matrix_revert_scale(sankey_size.height-(d.index*(rect_width+rect_padding)),0))
     
+    //The single object containing a link
+    // var singleLinkData = { source: [0,0], target: [15,75] }; 
+
+        
+    //Since the single link is not an array of links, we do not add the data of it, we only pass it into the generator    
+	// d3.select('#mySvg')
+        
+  //       .append("path")
+  //       .attr("d", linkGen(singleLinkData))
+  //       .classed("link", true);
+    //有两种方法：是否使用两个url？
+    // 在transform margin。left的情况下，
+    // link 数据，需要两个转换轴：对于sankey部分的x，y转化为x，sankeywidth-y
+    // 对于rect部分 x y转为 x y+rect的transform
+    // 数据绑定在哪？
+    const saneky_revert_scale=(x,y)=>{
+      return [sankey_size.height-y,x]
+    }
+    const matrix_revert_scale=(x,y)=>{
+      return [x-0.5*rect_width,(margin.top+sankey_size.width+rect_padding+sankey_matrix_gap+barchart_padding)+y]
+    }
+     d3.select('#mySvg')
+     .append('g')
+     .attr('transform','translate('+(margin.left+12)+',0)')
+        .selectAll(".sim_link")
+        .data(sankeydata.links)
+        .join("path")
+        .attr("d", linkGen)
+        .attr('stroke','steelblue')
+        .attr('stroke-width',1)
+        .attr('fill','none')
+        .classed("sim_link", true);
     // draw_attn(){
-    // },
+    },
     init() {
       const path = "http://localhost:5000/query_que_sunburst";
       const path2 = "http://localhost:5000/query_attn_head";
@@ -346,7 +385,7 @@ const max_accu=d3.max(accu_em_data.map(ele=>ele.accu))
         });
     },
   },
-  beforeMount() {
+  mounted() {
     this.init();
   },
 };

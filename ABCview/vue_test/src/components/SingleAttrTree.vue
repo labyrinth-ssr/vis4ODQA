@@ -161,8 +161,6 @@ export default {
 
       graph.nodes.forEach((node) => {
         var newY = x(node.node);
-        console.log(x(node.node))
-        console.log(x("0"))
         var yGAp = x.bandwidth();
         node.y0 = newY;
         node.y1 = newY + yGAp;
