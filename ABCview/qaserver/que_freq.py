@@ -65,7 +65,7 @@ def queTreeToLink(tree_data:list)->dict:
     for parent in tree_data:
         if (not parent['name']==''):
             for child in parent['children']:
-                ret['links'].append({'source':parent['name']+'_p','target':child['name']+'_c','value':len(child['senId'])})
+                ret['links'].append({'source':parent['name']+'_p','target':child['name']+'_c','value':len(child['senId']),'senIds':child['senId']})
                 nodes.add(parent['name']+'_p')
                 nodes.add(child['name']+'_c')
     for node in nodes:

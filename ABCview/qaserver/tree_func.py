@@ -62,7 +62,6 @@ def one_tree(node_begin_index:int, mat_dir:str,vec_dir:str, layer:int,threshold:
         saliency=json.load(f1)
     with open ('./generated_data/'+mat_dir+'.json','r') as f3:
         all_attr=json.load(f3)
-    print('layer:',layer)
     if(ctx_flag):
         for i in range (12):
             print ('length',len(all_attr),len(tokens))
@@ -99,9 +98,7 @@ def one_tree(node_begin_index:int, mat_dir:str,vec_dir:str, layer:int,threshold:
     nodeData=[]
     valued_nodes=list(set(valued_nodes))
     # tokenPool.add()
-    print(data)
     for vn in valued_nodes:
-        print(vn)
         nodeData.append(data[vn-node_begin_index])
     node_link_data = {'nodes': nodeData, 'links': links_list}
     treeHeight+=singleTreeHeight(node_link_data)

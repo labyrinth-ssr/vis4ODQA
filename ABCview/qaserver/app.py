@@ -17,6 +17,7 @@ que_tree_list=[]
 ctxs=[]
 ret={}
 k=20
+ques=[]
 # top_k_accu=[]
 
 
@@ -49,14 +50,7 @@ def query_em_accu():
                 link_accu=sum([top_k_accu[id] for id in sens])/len(sens)
                 ret['accu_em'].append({'source':parent['name']+'_p','target':child['name']+'_c','em':link_em,'accu':link_accu})
     return jsonify(ret)
-# @app.route('/query_ctx',methods=['POST','GET'])
-# def query_ctx():
-#     global reader_str,ctxs
-#     if request.method=='POST':
-#         # que_id=int(request.get_json()['que_id'])
-#         que_id=0
-#         ctx_all=reader_str[que_id]
-#         ctxs=[ele]
+
 @app.route('/query_attn_head',methods=['GET'])
 def query_attn_head():
     global impo_list,que_tree_list,str4d
@@ -74,6 +68,7 @@ def query_attn_head():
                 'layer_impo':process_layer(suml.tolist())}
                 impo_list.append(impo_dict)
     return jsonify(impo_list)
+
 @app.route('/query_que_sunburst',methods=['GET', 'POST'])
 def query_que_sunburst():
     global que_sankey_data,que_tree_list
@@ -88,18 +83,27 @@ def query_que_sunburst():
         pass
     return jsonify(que_sankey_data)
 
-@app.route('/query_que',methods=['GET'])
+@app.route('/query_que',methods=['GET','POST'])
 def query_que():
-    global reader_str
-    ques=[]
-    top_k_accu=[]
-    for ele in retriver_str:
-        top_k_accu.append(ele['has_answer_num_in_top_20']/20)
-    # with open ('./generated_data/reader_results.json','r') as f:
-    quelist=reader_str
-    for i in range (0,len(quelist)):
-        que_dict={'id':i,'que':quelist[i]['question'],'em':quelist[i]['em'],'k_accu':top_k_accu[i]}
-        ques.append(que_dict)
+    global reader_str,ques
+    if request.method=='POST':
+        ques=[]
+        senIds=request.get_json()
+        print('senid',senIds)
+        top_k_accu=[]
+        quelist=reader_str
+        for index in senIds:
+            top_k_accu.append(retriver_str[index]['has_answer_num_in_top_20']/20)
+            que_dict={'id':index,'que':quelist[index]['question'],'em':quelist[index]['em'],'k_accu':retriver_str[index]['has_answer_num_in_top_20']/20}
+            ques.append(que_dict)
+        # for ele in retriver_str:
+        #     top_k_accu.append(ele['has_answer_num_in_top_20']/20)
+        # with open ('./generated_data/reader_results.json','r') as f:
+        # quelist=reader_str
+        # for i in range (0,len(quelist)):
+        #     que_dict={'id':i,'que':quelist[i]['question'],'em':quelist[i]['em'],'k_accu':top_k_accu[i]}
+        #     ques.append(que_dict)
+    else: pass
     return jsonify({'results':ques})
 
 # @app.route('/query_attr_tree/<int:sentence_id>',methods=['GET', 'POST'])
