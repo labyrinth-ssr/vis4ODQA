@@ -17,6 +17,7 @@
 <script>
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 import axios from 'axios';
+import bus from './bus';
 // import emBarchart from './emBarchart.vue';
 const DataUrl = 'http://localhost:5000/query_que';
 export default {
@@ -39,11 +40,24 @@ export default {
           key: 'k_accu',
         sorter: true,
         }
-      ]
+      ],
+      senIds:[]
     };
   },
+  created(){
+    bus.$on('dispatchSenIds',(val)=>{
+      this.senIds=val
+      this.update()
+    })
+  },
   mounted() {
-    axios.get(DataUrl)
+    this.post_then_get([...(new Array(3610)).keys()])
+  },
+  methods: {
+    post_then_get(post_data){
+axios.post(DataUrl,post_data)
+    .then(()=>{
+      axios.get(DataUrl)
     .then((res)=>{
       this.data=res.data.results
       console.log(this.data)
@@ -52,13 +66,16 @@ export default {
         element.key=element.id
       });
     })
-  },
-  methods: {
+    })
+    },
     handleTableChange(sorter) {
       console.log(sorter)
       this.data=this.data.sort((x,y)=>{
         return y.k_accu-x.k_accu
       })
+    },
+    update(){
+      this.post_then_get(this.senIds)
     }
   },
 };

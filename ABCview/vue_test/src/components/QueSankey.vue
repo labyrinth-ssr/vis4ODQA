@@ -11,7 +11,7 @@ import {
   sankeyLinkHorizontal as d3SankeyLinkHorizontal,
   sankeyLeft as d3SankeyLeft,
 } from "d3-sankey";
-// import bus from "./bus";
+import bus from "./bus";
 
 export default {
   name: "QueSankey",
@@ -57,7 +57,7 @@ export default {
       const color = d3.scaleOrdinal(d3.schemePaired);
       var sankey = d3Sankey()
         .nodeWidth(sankey_nodewidth)
-        .nodePadding(0)
+        .nodePadding(5)
         .size([sankey_size.width, sankey_size.height])
         .nodeId(function id(d) {
           return d.node;
@@ -79,12 +79,16 @@ export default {
         })
         .style("opacity", 0.5)
         .style("stroke-width", d=>d.width)
-        .on("mouseover", function () {
+        .on("mouseover", function (d) {
           d3.select(this).style("opacity", 0.8);
         })
         .on("mouseleave", function () {
           d3.select(this).style("opacity", 0.5);
-        });
+        })
+        .on('click',(e,d)=>{
+          bus.$emit('dispatchSenIds',d.senIds)
+          console.log(d)
+        })
       console.log(link);
 
       var node = svg
@@ -334,9 +338,9 @@ const max_accu=d3.max(accu_em_data.map(ele=>ele.accu))
     // draw_attn(){
     },
     init() {
-      const path = "http://10.192.9.11:5000/query_que_sunburst";
-      const path2 = "http://10.192.9.11:5000/query_attn_head";
-      const path3="http://10.192.9.11:5000/query_em_accu"
+      const path = "http://localhost:5000/query_que_sunburst";
+      const path2 = "http://localhost:5000/query_attn_head";
+      const path3="http://localhost:5000/query_em_accu"
       const requestOne = axios.get(path);
       const requestTwo = axios.get(path2);
       const requestThree=axios.get(path3);

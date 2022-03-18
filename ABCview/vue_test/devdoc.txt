@@ -198,3 +198,5 @@ que提速明显0:17
 15:29
 que table
 
+20:22:
+选link，filter sentence id，post，get que

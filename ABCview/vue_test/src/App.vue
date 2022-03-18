@@ -26,14 +26,7 @@
         </div>
       </div>
       <div id="downRow">
-        <div id="sunburstCon">
-          <div id="queThreCon">
-            <que-thre-box></que-thre-box>
-          </div>
-        </div>
-        <div id="att_container" class="container">
-          <AttnHead></AttnHead>
-        </div>
+        
       </div>
     </div>
 
@@ -42,12 +35,8 @@
 </template>
 
 <script>
-  import AttnHead from "./components/headView.vue";
-  // import AttrTree from "./components/AttrTree.vue";
   import SingleAttrTree from './components/SingleAttrTree.vue'
-  // import ThresholdSelected from "./components/ThresholdSelected.vue";
-  import queThreBox from "./components/queThreBox.vue";
-  // import queSunburst from './components/queSunburst.vue'
+  // import queThreBox from "./components/queThreBox.vue";
   import QueSankey from "./components/QueSankey.vue";
   import QueCard from './components/queCard.vue';
 import ThresholdSelected from './components/ThresholdSelected.vue';
@@ -55,11 +44,7 @@ import ThresholdSelected from './components/ThresholdSelected.vue';
   export default {
     name: "App",
     components: {
-      AttnHead,
-      // AttrTree,
-      // ThresholdSelected,
-      queThreBox,
-      // queSunburst,
+      // queThreBox,
       QueSankey,
       QueCard,
       SingleAttrTree,
