@@ -17,7 +17,7 @@ que_tree_list=[]
 ctxs=[]
 ret={}
 k=20
-top_k_accu=[]
+# top_k_accu=[]
 
 
 with open ('./generated_data/reader_results.json','r') as f_reader:
@@ -32,7 +32,8 @@ CORS(app, resources={r'/*': {'origins': '*'}})
 
 @app.route('/query_em_accu',methods=['GET'])
 def query_em_accu():
-    global top_k_accu
+    # global top_k_accu
+    top_k_accu=[]
     ret={'accu_em':[],'em_avg':int,'k_accu_avg':int}
     ems=[]
     for ele in retriver_str:
@@ -91,9 +92,13 @@ def query_que_sunburst():
 def query_que():
     global reader_str
     ques=[]
+    top_k_accu=[]
+    for ele in retriver_str:
+        top_k_accu.append(ele['has_answer_num_in_top_20']/20)
     # with open ('./generated_data/reader_results.json','r') as f:
     quelist=reader_str
     for i in range (0,len(quelist)):
+        print(i,quelist[i]['question'],quelist[i]['em'])
         que_dict={'id':i,'que':quelist[i]['question'],'em':quelist[i]['em'],'k_accu':top_k_accu[i]}
         ques.append(que_dict)
     return jsonify({'results':ques})
@@ -184,7 +189,7 @@ def query_attr_tree(sentence_id):
 
         ret['q_node_link']=one_tree('relevant_q/attr_mat/mat_relevant_'+str(sentence_id), 'relevant_q/attr_vec/vec_relevant_'+str(sentence_id),layer,threshold['que'],top_kth,tokenPool,ret['tree_height']['q'],False,True,q_tokens)
         ret['tree_height']['q']=singleTreeHeight(ret['q_node_link'])
-        ret['ctx_node_link']= one_tree('relevant_ctx/attr_mat/mat_relevant_'+str(sentence_id),'relevant_ctx/attr_vec/vec_relevant_'+str(sentence_id),layer,threshold['ctx'],top_kth,tokenPool,ret['tree_height']['ctx'],True,True,ctx_tokens)
+        ret['ctx_node_link']= one_tree('relevant_ctx/attr_mat/mat_relevant_'+str(sentence_id*20),'relevant_ctx/attr_vec/vec_relevant_'+str(sentence_id*20),layer,threshold['ctx'],top_kth,tokenPool,ret['tree_height']['ctx'],True,True,ctx_tokens)
         ret['tree_height']['ctx']=singleTreeHeight(ret['ctx_node_link'])
         ret['reranker_node_link']= one_tree('rank/attr_mat/mat_rank_'+str(sentence_id), 'rank/attr_vec/vec_rank_'+str(sentence_id),layer,threshold['reranker'],top_kth,tokenPool,ret['tree_height']['reranker'],False,False,tokens)
         ret['tree_height']['reranker']=singleTreeHeight(ret['reranker_node_link'])
