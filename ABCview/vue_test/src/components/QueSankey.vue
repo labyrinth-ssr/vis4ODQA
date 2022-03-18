@@ -79,8 +79,9 @@ export default {
         })
         .style("opacity", 0.5)
         .style("stroke-width", d=>d.width)
-        .on("mouseover", function (d) {
+        .on("mouseover", function (e,d) {
           d3.select(this).style("opacity", 0.8);
+          bus.$emit('dispatchque',d.index)
         })
         .on("mouseleave", function () {
           d3.select(this).style("opacity", 0.5);
