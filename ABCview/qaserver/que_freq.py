@@ -1,15 +1,13 @@
 import json
-def getQueSunburst(threshold,layer,head)->list:
+def getQueSunburst(threshold,layer,head,reader_list)->list:
     res=[]
     head_impo=[]
     with open('./random_head.json','r') as f:
         all_attn=json.load(f)
     for sen in all_attn:
         head_impo.append(sen[layer][head])
-    with open("./reader_results.json",'r') as load_f:
-        load_list = json.load(load_f)
-        #  print(load_list)
-    for x in load_list:
+        #  print(reader_list)
+    for x in reader_list:
         res.append(x["question"]) 
     # ret={'name':'root','children':[]}
     # threshold=50
@@ -60,3 +58,16 @@ def getQueSunburst(threshold,layer,head)->list:
     save1.append(assem_res(res1))
     temp1=save1
     return temp1
+
+def queTreeToLink(tree_data:list)->dict:
+    ret={'nodes':[],'links':[]}
+    nodes=set()
+    for parent in tree_data:
+        if (not parent['name']==''):
+            for child in parent['children']:
+                ret['links'].append({'source':parent['name']+'_p','target':child['name']+'_c','value':len(child['senId'])})
+                nodes.add(parent['name']+'_p')
+                nodes.add(child['name']+'_c')
+    for node in nodes:
+        ret['nodes'].append({'node':node,'name':node.split('_',1)[0]})
+    return ret

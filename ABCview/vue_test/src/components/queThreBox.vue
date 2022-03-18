@@ -1,8 +1,8 @@
 <template>
     <div id="input-container">
-      <div id="input-box">
+      <!-- <div id="input-box">
         <a-input v-model="input_value" @pressEnter="input_sentenceId" />
-      </div>
+      </div> -->
     </div>
       
 </template>

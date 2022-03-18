@@ -16,8 +16,6 @@ import {
 export default {
   name: "QueSankey",
   created() {
-    // bus.$on("", (val) => {
-    // })
   },
   data() {
     return {
@@ -42,7 +40,7 @@ export default {
       const margin = { top: 10, right: 10, bottom: 10, left: 10 };
       const svg_size = { width: 400, height: 800 };
       const sankey_size = {
-        width: 150,
+        width: 80,
         height: 380,
       };
       // const attn_size = { width: 15, height: 15 };
@@ -144,14 +142,14 @@ export default {
         return a.y1-b.y1
       })
       const rect_padding=5
-      const rect_height=10
+      const rect_height=6
       const rect_width=(sankey_size.height/ links_data.length)-rect_padding
       links_data.forEach((ele,index)=>{
         ele.index=index
       })
-        const barchart_padding=5
+      const barchart_padding=15
 
-      var attn_g = d3.select("svg").append("g").attr("id", "attn_g")
+      var attn_g = d3.select("#mySvg").append("g").attr("id", "attn_g")
       .attr('transform','translate('+(margin.left-bias)+','+(margin.top+sankey_size.width+rect_padding+sankey_matrix_gap+barchart_padding)+')');
 
       // 确定col的横坐标：绑定所有attndata数据后，将根据每条attn，选出匹配link的index
@@ -316,26 +314,11 @@ const max_accu=d3.max(accu_em_data.map(ele=>ele.accu))
     .source(d=>saneky_revert_scale(sankey_size.width+sankey_nodewidth*0.5,d.y1/* +0.5*d.width */))
     .target(d=>matrix_revert_scale(sankey_size.height-(d.index*(rect_width+rect_padding)),0))
     
-    //The single object containing a link
-    // var singleLinkData = { source: [0,0], target: [15,75] }; 
-
-        
-    //Since the single link is not an array of links, we do not add the data of it, we only pass it into the generator    
-	// d3.select('#mySvg')
-        
-  //       .append("path")
-  //       .attr("d", linkGen(singleLinkData))
-  //       .classed("link", true);
-    //有两种方法：是否使用两个url？
-    // 在transform margin。left的情况下，
-    // link 数据，需要两个转换轴：对于sankey部分的x，y转化为x，sankeywidth-y
-    // 对于rect部分 x y转为 x y+rect的transform
-    // 数据绑定在哪？
     const saneky_revert_scale=(x,y)=>{
       return [sankey_size.height-y,x]
     }
     const matrix_revert_scale=(x,y)=>{
-      return [x-0.5*rect_width,(margin.top+sankey_size.width+rect_padding+sankey_matrix_gap+barchart_padding)+y]
+      return [x-0.5*rect_width,((margin.top+sankey_size.width+barchart_padding))+y]
     }
      d3.select('#mySvg')
      .append('g')
@@ -351,9 +334,9 @@ const max_accu=d3.max(accu_em_data.map(ele=>ele.accu))
     // draw_attn(){
     },
     init() {
-      const path = "http://localhost:5000/query_que_sunburst";
-      const path2 = "http://localhost:5000/query_attn_head";
-      const path3="http://localhost:5000/query_em_accu"
+      const path = "http://10.192.9.11:5000/query_que_sunburst";
+      const path2 = "http://10.192.9.11:5000/query_attn_head";
+      const path3="http://10.192.9.11:5000/query_em_accu"
       const requestOne = axios.get(path);
       const requestTwo = axios.get(path2);
       const requestThree=axios.get(path3);

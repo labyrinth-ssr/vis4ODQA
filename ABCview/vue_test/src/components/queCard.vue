@@ -1,81 +1,89 @@
 <template>
-  <a-list>
-    <RecycleScroller
-      v-infinite-scroll="handleInfiniteOnLoad"
-      style="height: 200px"
-      :items="data"
-      :item-size="35"
-      :infinite-scroll-disabled="busy"
-      :infinite-scroll-distance="10"
-    >
-      <a-list-item slot-scope="{ item }">
-        <a-list-item-meta >
-          <a slot="title" >{{ item.que }}</a>
-        </a-list-item-meta>
-      </a-list-item>
-    </RecycleScroller>
-    <a-spin v-if="loading" class="demo-loading" />
-  </a-list>
+
+  <a-table :data-source="data" :scroll="{y: 100 }" :pagination='false'>
+    <a-table-column key="que" title="question" data-index="que" :width="300" :height="50"/>
+    <!-- <a-table-column key="k_accu" title="k" data-index="k_accu" :width="50">
+      <template slot-scope="k_accu">
+        <em-barchart :rect_data="k_accu"/>
+      </template>
+    </a-table-column> -->
+    <!-- <a-table-column key="em" title="em" data-index="em" :width="30" :disabled="false">
+      <template slot-scope="em">
+      <a-radio :default-checked="em" />
+      </template>
+    </a-table-column> -->
+  </a-table>
 </template>
 <script>
-import reqwest from 'reqwest';
-import infiniteScroll from 'vue-infinite-scroll';
-import { RecycleScroller } from 'vue-virtual-scroller';
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
-const fakeDataUrl = 'http://localhost:5000/query_que';
+import axios from 'axios';
+// import emBarchart from './emBarchart.vue';
+const DataUrl = 'http://localhost:5000/query_que';
 export default {
+  // components: { emBarchart },
     name:'QueCArd',
-  directives: { infiniteScroll },
-  components: {
-    RecycleScroller,
-  },
   data() {
     return {
       data: [],
       loading: false,
       busy: false,
+      columns:[
+        {title:'question',
+        dataIndex:'que',
+        key:'que',
+        width:300
+        },
+        {
+          title: 'k',
+          dataIndex: 'k_accu',
+          key: 'k_accu',
+        sorter: true,
+        }
+      ]
     };
   },
-  beforeMount() {
-    this.fetchData(res => {
-      this.data = res.results.map((item, index) => ({ ...item, index }));
-    });
+  mounted() {
+    axios.get(DataUrl)
+    .then((res)=>{
+      this.data=res.data.results
+      console.log(this.data)
+
+      this.data.forEach(element => {
+        element.key=element.id
+      });
+    })
   },
   methods: {
-    fetchData(callback) {
-      reqwest({
-        url: fakeDataUrl,
-        type: 'json',
-        method: 'get',
-        contentType: 'application/json',
-        success: res => {
-          callback(res);
-        },
-      });
-    },
-    handleInfiniteOnLoad() {
-      const data = this.data;
-      this.loading = true;
-      if (data.length > 100) {
-        this.$message.warning('Infinite List loaded all');
-        this.busy = true;
-        this.loading = false;
-        return;
-      }
-      this.fetchData(res => {
-        this.data = data.concat(res.results).map((item, index) => ({ ...item, index }));
-        this.loading = false;
-      });
-    },
+    handleTableChange(sorter) {
+      console.log(sorter)
+      this.data=this.data.sort((x,y)=>{
+        return y.k_accu-x.k_accu
+      })
+    }
   },
 };
 </script>
 <style scope>
-.demo-loading {
-  position: absolute;
-  bottom: 40px;
-  width: 100%;
-  text-align: center;
+.ant-table-thead > tr > th, .ant-table-tbody > tr > td {
+    padding: 5px 5px;
+    overflow-wrap: break-word;
+}
+.ant-table {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    color: rgba(0, 0, 0, 0.65);
+    font-size: .8em;
+    font-variant: tabular-nums;
+    line-height: 1.5;
+    list-style: none;
+    font-feature-settings: 'tnum';
+    position: relative;
+    clear: both;
+}
+svg {
+    display: block;
+    max-width: 100%; 
 }
 </style>
 

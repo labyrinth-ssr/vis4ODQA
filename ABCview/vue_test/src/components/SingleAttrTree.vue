@@ -15,13 +15,29 @@ import bus from "./bus";
 export default {
   name: "SingleAttrTree",
   created() {
-      bus.$on("dispatchthreshold", (val) => {
-        this.threshold = val;
-        this.set_para_update(this.threshold, this.layer);
+      bus.$on("que_thre", (val) => {
+        this.threshold.que=val
+        this.set_para_update();
+      }),
+      bus.$on("ctx_thre", (val) => {
+        this.threshold.ctx=val
+        this.set_para_update();
+      }),
+      bus.$on("reranker_thre", (val) => {
+        this.threshold.reranker=val
+        this.set_para_update();
+      }),
+      bus.$on("reader_thre", (val) => {
+        this.threshold.reader=val
+        this.set_para_update();
       }),
       bus.$on("set_layer", (val) => {
         this.layer = val;
-        this.set_para_update(this.threshold, this.layer);
+        this.set_para_update();
+      });
+      bus.$on("dispatchsentencetoshow", (val) => {
+        this.sentence_selected = val;
+        this.set_para_update();
       });
   },
   data() {
@@ -30,7 +46,12 @@ export default {
       sentence_selected: 1, //初始时自动选择第5句
     //   tokens: [],
     //   nodes: [],
-      threshold: 0.5,
+      threshold:{
+        que:0.5,
+        ctx:0.5,
+        reranker:0.5,
+        reader:0.5
+      },
       layer: 10,
       q_node_link:{},
       ctx_node_link:{},
@@ -59,7 +80,7 @@ export default {
       };
     //   d3.select("#AttrTreeSvg").remove();
     //   d3.select("#AttrTreeSvg").selectAll("*").remove();
-      const margin = { top: 50, right: 10, bottom: 50, left: 200 },
+      const margin = { top: 50, right: 10, bottom: 50, left: 50 },
         // width = 1000,
         height = 400;
       // var color = d3.scaleOrdinal(d3.schemePaired);
@@ -78,7 +99,7 @@ export default {
         .select("#single-attr-tree")
         .append("svg")
         .attr("id", "AttrTreeSvg")
-        .attr("width", "2000")
+        .attr("width", "700")
         .attr("height", height + margin.top + margin.bottom)
         .style("background-color", "white")
         .style("border-radius", "10px");
@@ -277,7 +298,7 @@ export default {
 
     getAll() {
       const path =
-        "http://localhost:5000/query_single_attr_tree/" + this.sentence_selected
+        "http://10.192.9.11:5000/query_single_attr_tree/" + this.sentence_selected
       axios
         .get(path)
         .then((res) => {
@@ -290,14 +311,14 @@ export default {
           console.error(error);
         });
     },
-    set_para_update(threshold, layer) {
+    set_para_update() {
       const path =
-        "http://localhost:5000/query_single_attr_tree/" + this.sentence_selected;
+        "http://10.192.9.11:5000/query_single_attr_tree/" + this.sentence_selected;
       axios
         .post(path, {
           sts_id: this.sentence_selected,
-          threshold: threshold,
-          layer: layer - 1,
+          threshold: this.threshold,
+          layer: this.layer - 1,
         })
         .then(() => {
           this.getAll();
@@ -315,7 +336,7 @@ export default {
     init() {
       console.log("tree init");
       const path =
-        "http://localhost:5000/query_single_attr_tree/" + this.sentence_selected;
+        "http://10.192.9.11:5000/query_single_attr_tree/" + this.sentence_selected;
       axios
         .post(path, {
           sts_id: this.sentence_selected,

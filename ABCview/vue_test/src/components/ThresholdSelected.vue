@@ -1,14 +1,5 @@
 <template>
   <div id="sliders-button-container">
-    <div id="title" class="chart-title">
-      <a-button
-        id="resetButton"
-        type="primary"
-        size="small"
-        v-on:click="reset_tokens"
-        >Clear tokens></a-button
-      >
-    </div>
     <div id="sliders-container">
       <div id="threshold-selected">
         <a-slider
@@ -17,7 +8,31 @@
           :min="0.1"
           :step="0.1"
           :default-value="0.5"
-          @afterChange="onAfterChange"
+          @afterChange="que_thre"
+        />
+        <a-slider
+          :marks="marks_threshold"
+          :max="0.5"
+          :min="0.1"
+          :step="0.1"
+          :default-value="0.5"
+          @afterChange="ctx_thre"
+        />
+        <a-slider
+          :marks="marks_threshold"
+          :max="0.5"
+          :min="0.1"
+          :step="0.1"
+          :default-value="0.5"
+          @afterChange="reranker_thre"
+        />
+        <a-slider
+          :marks="marks_threshold"
+          :max="0.5"
+          :min="0.1"
+          :step="0.1"
+          :default-value="0.5"
+          @afterChange="reader_thre"
         />
       </div>
       <div id="layer-selected">
@@ -46,17 +61,22 @@ import bus from "./bus";
 export default {
   name: "ThresholdSelected",
   methods: {
-    onAfterChange(value) {
+    que_thre(value) {
       this.threshold = value;
-      bus.$emit("dispatchthreshold", this.threshold);
+      bus.$emit("que_thre", value);
+    },
+    ctx_thre(value) {
+      bus.$emit("ctx_thre", value);
+    },
+    reranker_thre(value) {
+      bus.$emit("reranker_thre", value);
+    },
+    reader_thre(value) {
+      bus.$emit("reader_thre", value);
     },
     change_layer(val){
       this.layer=val;
       bus.$emit('set_layer',this.layer);
-    },
-    reset_tokens(){
-      bus.$emit('reset_tokens');
-
     },
     input_sentenceId(){
       console.log("input"+this.input_value)
@@ -96,9 +116,9 @@ export default {
 
 <style>
 #sliders-button-container {
-  display: flex;
-  width: 100;
-  height: 8%;
+  /* display: flex; */
+  width: 40;
+  height: 100%;
   overflow: visible;
 }
 #slider2-container{

@@ -1,7 +1,0 @@
-layer tree
-sentence attention
-chiDict2=parDict[parDictKey][1]
-        for chiDictKey2 in chiDict2:
-            chiDictVal2=chiDict2[chiDictKey2]
-            tempa.append({'name':chiDictKey2,'size':chiDictVal2[0]})
-        parDict[parDictKey][1]=tempa
