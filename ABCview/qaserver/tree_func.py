@@ -2,6 +2,8 @@ import json
 from attribution_tree_multilayer import attribution_tree
 from functools import reduce
 
+import numpy as np
+
 def createTreeFromEdges(edges):
     tree = {}
     for i in edges:
@@ -54,12 +56,18 @@ def singleTreeHeight (node_link:dict)->int:
         tree_height=max(tree_height,height)
     return tree_height
 
-def one_tree(mat_dir:str,vec_dir:str, layer:int,threshold:int,top_kth:int,tokenPool:set,treeHeight:int,ctx_flag:bool,noneed_cls:bool,tokens)->dict:
+#ctx cls与q sep重叠，不跳过
+def one_tree(node_begin_index:int, mat_dir:str,vec_dir:str, layer:int,threshold:int,top_kth:int,tokenPool:set,treeHeight:int,ctx_flag:bool,noneed_cls:bool,tokens)->dict:
     with open ('./generated_data/'+vec_dir+'.json','r') as f1:
         saliency=json.load(f1)
     with open ('./generated_data/'+mat_dir+'.json','r') as f3:
         all_attr=json.load(f3)
     print('layer:',layer)
+    if(ctx_flag):
+        for i in range (12):
+            print ('length',len(all_attr),len(tokens))
+            temp=(np.array(all_attr[i]))[:len(tokens),:len(tokens)]
+            all_attr[i]=temp.tolist()
     py_data=attribution_tree(all_attr,tokens,threshold,layer,top_kth,ctx_flag,noneed_cls)
     valued_nodes=[]
     if (not ctx_flag):
@@ -70,16 +78,17 @@ def one_tree(mat_dir:str,vec_dir:str, layer:int,threshold:int,top_kth:int,tokenP
     links_list = []
     def run_function(x, y): return x if y in x else x + [y]
     for ele in py_data:
-        tar_index = ele[0].split('+')[1]
-        soc_index = ele[1].split('+')[1]
-        if(noneed_cls and (tar_index =='0' or soc_index=='0')):
+        tar_index = str(int(ele[0].split('+')[1])+node_begin_index)
+        soc_index = str(int(ele[1].split('+')[1])+node_begin_index)
+        cls_index=str(node_begin_index)
+        if(noneed_cls and (tar_index ==cls_index or soc_index==cls_index)):
             continue
         link_dict = {'source':
                     soc_index, 'target': tar_index, 'value': ele[2]['weight'],'layer':ele[2]['layer']}
         links_list.append(link_dict)
     nodecnt=0
     for inx, val in enumerate(tokens):# remember to delete static data
-        nodes_list.append({'node': str(inx), 'name': val, 'saliency': layerSaliency[nodecnt]})
+        nodes_list.append({'node': str(inx+node_begin_index), 'name': val, 'saliency': layerSaliency[nodecnt]})
         nodecnt+=1
     data = reduce(run_function, [[], ] + nodes_list)
     for ele in links_list:
@@ -90,8 +99,10 @@ def one_tree(mat_dir:str,vec_dir:str, layer:int,threshold:int,top_kth:int,tokenP
     nodeData=[]
     valued_nodes=list(set(valued_nodes))
     # tokenPool.add()
+    print(data)
     for vn in valued_nodes:
-        nodeData.append(data[vn])
+        print(vn)
+        nodeData.append(data[vn-node_begin_index])
     node_link_data = {'nodes': nodeData, 'links': links_list}
     treeHeight+=singleTreeHeight(node_link_data)
     print(treeHeight)

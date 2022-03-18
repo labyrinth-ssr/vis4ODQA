@@ -9,14 +9,20 @@ def attribution_tree(att_allk:list, tokens:list, threshold: int, layer: int,top_
             att_all.append(layId[top_kth])
         att_all=np.array(att_all)
     else: 
+        # if(len(tokens)<256):
+        #     for layer in att_allk:
+        #         layer[255]=[0]*256
+        #         for row in layer:
+        #             row[255]=0
         att_all=np.array(att_allk)
     proportion_all = copy.deepcopy(att_all) 
     for i in range(len(proportion_all)):
         proportion_all[i] /= abs(proportion_all[i][1:, :].max())
 
     proportion_all *= (proportion_all > threshold).astype(int)
-
     seq_length = len(proportion_all[0])
+    print("seq_len",seq_length)
+
     height_list = [0 for i in range(seq_length)]
     # -1: not appear  0: appear but not fixed  1: fixed   
     fixed_list = [-1 for i in range(seq_length)]
@@ -80,6 +86,8 @@ def attribution_tree(att_allk:list, tokens:list, threshold: int, layer: int,top_
         G.add_node(token)
 
     for (i_token, j_token) in edges:
+        print(i_token,j_token)
+        # print(tagged_tokens)
         print(tagged_tokens[i_token],tagged_tokens[j_token])
 
         G.add_edges_from([(tagged_tokens[i_token], tagged_tokens[j_token], {'weight': weight[i_token][j_token],'layer':layerId[i_token][j_token]})])

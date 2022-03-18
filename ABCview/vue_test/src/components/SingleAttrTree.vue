@@ -298,7 +298,7 @@ export default {
 
     getAll() {
       const path =
-        "http://10.192.9.11:5000/query_single_attr_tree/" + this.sentence_selected
+        "http://localhost:5000/query_single_attr_tree/" + this.sentence_selected
       axios
         .get(path)
         .then((res) => {
@@ -313,7 +313,7 @@ export default {
     },
     set_para_update() {
       const path =
-        "http://10.192.9.11:5000/query_single_attr_tree/" + this.sentence_selected;
+        "http://localhost:5000/query_single_attr_tree/" + this.sentence_selected;
       axios
         .post(path, {
           sts_id: this.sentence_selected,
@@ -336,7 +336,7 @@ export default {
     init() {
       console.log("tree init");
       const path =
-        "http://10.192.9.11:5000/query_single_attr_tree/" + this.sentence_selected;
+        "http://localhost:5000/query_single_attr_tree/" + this.sentence_selected;
       axios
         .post(path, {
           sts_id: this.sentence_selected,
