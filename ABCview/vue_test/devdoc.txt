@@ -84,7 +84,6 @@ retriver，同样的方法放进q和cxt即可。
 reader和reranker同时进行，那么这是未经reranker的数据。
 
 重新建一个.vue,文件把树对齐...
-冷静下来了...下次愤怒的时候一定要管住嘴，然后多表达。不能再伤害自己的身体了,,,,需要提高效率。
 
 {
   "all_layer_node_link": [
@@ -200,3 +199,6 @@ que table
 
 20:22:
 选link，filter sentence id，post，get que
+
+解决显示的问题：
+父级组件：

@@ -2,38 +2,14 @@
   <div id="sliders-button-container">
     <div id="sliders-container">
       <div id="threshold-selected">
-        <a-slider
-          :marks="marks_threshold"
-          :max="0.5"
-          :min="0.1"
-          :step="0.1"
-          :default-value="0.5"
-          @afterChange="que_thre"
-        />
-        <a-slider
-          :marks="marks_threshold"
-          :max="0.5"
-          :min="0.1"
-          :step="0.1"
-          :default-value="0.5"
-          @afterChange="ctx_thre"
-        />
-        <a-slider
-          :marks="marks_reranker_threshold"
-          :max="0.8"
-          :min="0.4"
-          :step="0.1"
-          :default-value="0.7"
-          @afterChange="reranker_thre"
-        />
-        <a-slider
-          :marks="marks_threshold"
-          :max="0.5"
-          :min="0.1"
-          :step="0.1"
-          :default-value="0.5"
-          @afterChange="reader_thre"
-        />
+        <a-slider :marks="marks_threshold" :max="0.5" :min="0.1" :step="0.1" :default-value="0.5"
+          @afterChange="que_thre" />
+        <a-slider :marks="marks_threshold" :max="0.5" :min="0.1" :step="0.1" :default-value="0.5"
+          @afterChange="ctx_thre" />
+        <a-slider :marks="marks_reranker_threshold" :max="0.8" :min="0.4" :step="0.1" :default-value="0.7"
+          @afterChange="reranker_thre" />
+        <a-slider :marks="marks_threshold" :max="0.5" :min="0.1" :step="0.1" :default-value="0.5"
+          @afterChange="reader_thre" />
       </div>
       <!-- <div id="layer-selected">
         <a-slider

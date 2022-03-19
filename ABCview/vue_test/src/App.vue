@@ -16,26 +16,25 @@
     <div id="rightCol">
       <div id="upRow">
         <div id="attrTree_container">
-                <!-- <ThresholdSelected /> -->
-                <div id="left-tree">
-                  <single-attr-tree></single-attr-tree>
-
-                </div>
-                <div id="right-selector">
-                  <threshold-selected/>
-                </div>
+          <!-- <ThresholdSelected /> -->
+          <div id="left-tree">
+            <single-attr-tree></single-attr-tree>
+          </div>
+          <div id="right-selector">
+            <threshold-selected />
+          </div>
         </div>
       </div>
       <div id="downRow">
-                <div id="left-instance">
-                  <instance-view></instance-view>
+        <div id="left-instance">
+          <instance-view></instance-view>
 
-                </div>
-                <div id="right-selector">
-                  <threshold-instance-view/>
-                </div>
+        </div>
+        <div id="right-selector">
+          <threshold-instance-view />
         </div>
       </div>
+    </div>
 
   </div>
 
