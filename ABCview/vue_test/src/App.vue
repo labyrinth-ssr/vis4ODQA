@@ -10,6 +10,7 @@
         <que-card></que-card>
       </div>
       <div id="leftBottom">
+        <context-table></context-table>>
       </div>
     </div>
     <div id="rightCol">
@@ -26,9 +27,15 @@
         </div>
       </div>
       <div id="downRow">
-        
+                <div id="left-instance">
+                  <instance-view></instance-view>
+
+                </div>
+                <div id="right-selector">
+                  <threshold-instance-view/>
+                </div>
+        </div>
       </div>
-    </div>
 
   </div>
 
@@ -40,6 +47,9 @@
   import QueSankey from "./components/QueSankey.vue";
   import QueCard from './components/queCard.vue';
 import ThresholdSelected from './components/ThresholdSelected.vue';
+import ContextTable from './components/contextTable.vue';
+import InstanceView from './components/InstanceView.vue';
+import ThresholdInstanceView from './components/ThresholdInstanceView.vue';
 
   export default {
     name: "App",
@@ -48,7 +58,10 @@ import ThresholdSelected from './components/ThresholdSelected.vue';
       QueSankey,
       QueCard,
       SingleAttrTree,
-        ThresholdSelected,
+      ThresholdSelected,
+      ContextTable,
+      InstanceView,
+      ThresholdInstanceView
     },
     data(){
       return{
@@ -78,7 +91,7 @@ import ThresholdSelected from './components/ThresholdSelected.vue';
 
   #leftCol {
     flex: left;
-    width: 450px;
+    width: 400px;
   }
 
   #rightCol {
@@ -95,6 +108,11 @@ import ThresholdSelected from './components/ThresholdSelected.vue';
     padding-left: 25px;
   }
 
+    #leftBottom {
+    /* top: 40%; */
+    /* height: 55%; */
+    padding-left: 25px;
+  }
   #attrTree_container {
     box-sizing: border-box;
     position: relative;
@@ -105,14 +123,17 @@ import ThresholdSelected from './components/ThresholdSelected.vue';
 
   #upRow {
     top: 0%;
-    height: 60%;
+    height: 50%;
   }
 
   #downRow {
     display: flex;
   }
   #left-tree{
-    width: 710px;
+    width: 800px;
+  }
+  #left-instance{
+    width: 900px;
   }
 
 </style>

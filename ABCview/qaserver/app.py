@@ -3,6 +3,11 @@ from flask import (
 )
 from flask_cors import CORS  
 import numpy as np
+from collections import Counter
+import string
+import regex as re
+import copy
+
 from tree_func import singleTreeHeight,one_tree
 from sentence_span import getSentenceSpan 
 from que_freq import getQueSunburst,queTreeToLink
@@ -18,6 +23,7 @@ ctxs=[]
 ret={}
 k=20
 ques=[]
+# sentence_id = 9
 # top_k_accu=[]
 
 
@@ -89,7 +95,6 @@ def query_que():
     if request.method=='POST':
         ques=[]
         senIds=request.get_json()
-        print('senid',senIds)
         top_k_accu=[]
         quelist=reader_str
         for index in senIds:
@@ -169,17 +174,17 @@ def query_que():
 # cutted_attr_mat/cutted_mat_start_'+str(sentence_id)
 
 
-@app.route('/query_single_attr_tree/<int:sentence_id>',methods=['GET', 'POST'])
-def query_attr_tree(sentence_id):
+@app.route('/query_single_attr_tree/<int:top_kth>',methods=['GET', 'POST'])
+def query_attr_tree(top_kth):
     global ret,k
     if request.method=='POST':
         ret={'q_node_link':{},'ctx_node_link':{},'reranker_node_link':{},'reader_node_link':{}, 'tree_height':{'q':0,'ctx':0,'reranker':0,'reader':0},'sentence_span':[],'token_pool':[]}
-        top_kth=0
         tokenPool=set()
         post_data=request.get_json()
         threshold=post_data['threshold']
         layer=post_data['layer']
-        with open('./generated_data/tokens/input_tokens for_question'+str(sentence_id)+'.json', 'r') as f2:
+        que_id=post_data['queId']
+        with open('./generated_data/tokens/input_tokens for_question'+str(que_id)+'.json', 'r') as f2:
             tokens = json.load(f2)[top_kth]
         sep_save=0
         for i in range(0,len(tokens)):
@@ -191,13 +196,13 @@ def query_attr_tree(sentence_id):
         ctx_tokens.extend(tokens[sep_save+1:])
         ctx_tokens.append('[SEP]')
 
-        ret['q_node_link']=one_tree(0,'relevant_q/attr_mat/mat_relevant_'+str(sentence_id), 'relevant_q/attr_vec/vec_relevant_'+str(sentence_id),layer,threshold['que'],top_kth,tokenPool,ret['tree_height']['q'],False,True,q_tokens)
+        ret['q_node_link']=one_tree(0,'relevant_q/attr_mat/mat_relevant_'+str(que_id), 'relevant_q/attr_vec/vec_relevant_'+str(que_id),layer,threshold['que'],top_kth,tokenPool,ret['tree_height']['q'],False,True,q_tokens)
         ret['tree_height']['q']=singleTreeHeight(ret['q_node_link'])
-        ret['ctx_node_link']= one_tree(len(q_tokens)-1,'relevant_ctx/attr_mat/mat_relevant_'+str(sentence_id*20),'relevant_ctx/attr_vec/vec_relevant_'+str(sentence_id*20),layer,threshold['ctx'],top_kth,tokenPool,ret['tree_height']['ctx'],True,True,ctx_tokens)
+        ret['ctx_node_link']= one_tree(len(q_tokens)-1,'relevant_ctx/attr_mat/mat_relevant_'+str(que_id*20+top_kth),'relevant_ctx/attr_vec/vec_relevant_'+str(que_id*20+top_kth),layer,threshold['ctx'],top_kth,tokenPool,ret['tree_height']['ctx'],True,True,ctx_tokens)
         ret['tree_height']['ctx']=singleTreeHeight(ret['ctx_node_link'])
-        ret['reranker_node_link']= one_tree(0,'rank/attr_mat/mat_rank_'+str(sentence_id), 'rank/attr_vec/vec_rank_'+str(sentence_id),layer,threshold['reranker'],top_kth,tokenPool,ret['tree_height']['reranker'],False,False,tokens)
+        ret['reranker_node_link']= one_tree(0,'rank/attr_mat/mat_rank_'+str(que_id), 'rank/attr_vec/vec_rank_'+str(que_id),layer,threshold['reranker'],top_kth,tokenPool,ret['tree_height']['reranker'],False,False,tokens)
         ret['tree_height']['reranker']=singleTreeHeight(ret['reranker_node_link'])
-        ret['reader_node_link']= one_tree(0,'cutted_attr_mat/cutted_mat_start_'+str(sentence_id),'attr_vec/vec_end_'+str(sentence_id),layer,threshold['reader'],top_kth,tokenPool,ret['tree_height']['reader'],False,False,tokens)
+        ret['reader_node_link']= one_tree(0,'cutted_attr_mat/cutted_mat_start_'+str(que_id),'attr_vec/vec_end_'+str(que_id),layer,threshold['reader'],top_kth,tokenPool,ret['tree_height']['reader'],False,False,tokens)
         ret['tree_height']['reader']=singleTreeHeight(ret['reader_node_link'])
         list_tokenPool=list(tokenPool)
         list_tokenPool.sort()
@@ -210,6 +215,246 @@ def query_attr_tree(sentence_id):
         pass
 
     return jsonify(ret)
+
+
+def exact_match_score(prediction, ground_truth):
+    return _normalize_answer(prediction) == _normalize_answer(ground_truth)
+
+
+def _normalize_answer(s):
+    def remove_articles(text):
+        return re.sub(r"\b(a|an|the)\b", " ", text)
+
+    def white_space_fix(text):
+        return " ".join(text.split())
+
+    def remove_punc(text):
+        exclude = set(string.punctuation)
+        return "".join(ch for ch in text if ch not in exclude)
+
+    def lower(text):
+        return text.lower()
+
+    return white_space_fix(remove_articles(remove_punc(lower(s))))
+
+
+def summary_for_barchart(whole_wc, barchart_thre):
+    q_summary = [token[0] for q in whole_wc for token in q if token[2] == 0]
+    ctx_summary = [token[0] for q in whole_wc for token in q if token[2] > 0]
+    # print(q_summary)
+    # print(ctx_summary)
+    q_dict = dict(Counter(q_summary))
+    ctx_dict = dict(Counter(ctx_summary))
+    keys_list = list(set(list(q_dict.keys()) + list(ctx_dict.keys())))
+    summary_list = []
+    only_q_summary = []
+    only_ctx_summary = []
+    both_summary = []
+    for key in keys_list:
+        q_value = 0 if key not in list(q_dict.keys()) else q_dict[key]
+        ctx_value = 0 if key not in list(ctx_dict.keys()) else ctx_dict[key]
+        if q_value > 0 and ctx_value == 0:
+            only_q_summary.append([key, 1, q_value, 0])
+        if ctx_value > 0 and q_value == 0:
+            only_ctx_summary.append([key, 2, 0, ctx_value])
+        if q_value > 0 and ctx_value > 0:
+            both_summary.append([key, 0, q_value, ctx_value])
+    only_q_summary = sorted(only_q_summary, key=lambda item: item[2], reverse=True)
+    only_ctx_summary = sorted(only_ctx_summary, key=lambda item: item[3], reverse=True)
+    both_summary = sorted(both_summary, key=lambda item: item[2] + item[3], reverse=True)
+    # print(only_q_summary)
+    # print(only_ctx_summary)
+    # print(both_summary)
+    only_q_summary = [x for x in only_q_summary if x[2] > barchart_thre]
+    only_ctx_summary = [x for x in only_ctx_summary if x[3] > barchart_thre]
+    both_summary = [x for x in both_summary if x[2] + x[3] > barchart_thre]
+    return both_summary + only_q_summary + only_ctx_summary
+    # print(list(ctx_dict.keys()))
+    # keys_list = list({q_dict, ctx_dict}.keys())
+    # print(keys_list)
+
+    # q_list_unordered = list(dict(Counter(q_summary)).items())
+    # q_list_ordered = sorted(q_list_unordered, key=lambda item: item[1], reverse=True)
+    # ctx_list_unordered = list(dict(Counter(ctx_summary)).items())
+    # ctx_list_ordered = sorted(ctx_list_unordered, key=lambda item: item[1], reverse=True)
+    # return q_list_ordered, ctx_list_ordered
+
+
+@app.route('/query_word_cloud/<int:sentence_id>', methods=['GET', 'POST'])
+def query_word_cloud(sentence_id):
+    if request.method == "POST":
+        postdata = request.get_json()
+        que_sal_thre = postdata['que_sal_thre']
+        barchart_thre = postdata['barchart_thre']
+    global q_whole, ctx_whole, rank_whole, span_whole, retriever_whole, q_select, ctx_select, retriever_select, rank_select, span_select
+    with open('./generated_data/relevant_q/attr_whole/relevant_saliency_per_q_' + str(sentence_id) + '.json',
+              'r') as f1:
+        q_whole_saliency = json.load(f1)
+    with open('./generated_data/relevant_ctx/attr_whole/relevant_saliency_per_q_' + str(sentence_id) + '.json',
+              'r') as f2:
+        ctx_whole_saliency = json.load(f2)
+    with open('./generated_data/rank/attr_whole/rank_saliency_per_q_' + str(sentence_id) + '.json', 'r') as frank:
+        rank_whole_saliency = json.load(frank)
+    with open('./generated_data/span/attr_whole/span_saliency_per_q_' + str(sentence_id) + '.json', 'r') as fread:
+        span_whole_saliency = json.load(fread)
+    with open('./generated_data/tokens/input_tokens for_question' + str(sentence_id) + '.json', 'r') as f3:
+        all_tokens = json.load(f3)
+    with open('./generated_data/reader_results(present_each_psg).json') as f4:
+        reader_results = json.load(f4)[sentence_id]
+    with open('./generated_data/retriever_results.json') as f5:
+        retriever_results = json.load(f5)[sentence_id]
+
+    q_whole_wc = []
+    ctx_whole_wc = []
+    rank_whole_wc = []
+    span_whole_wc = []
+    retriever_whole_wc = []
+    # q_whole_wc[i]: [('[cls]', 0.1), ..., ('[sep]', 0.1)]
+    # ctx_whole_wc[i]: [('[cls]', 0.1), ..., ('[sep]', 0.1)]
+    # TODO:
+    # span_whole_wc[i]: [('[cls]', 0.1), ..., ('[sep]', 0.1)]
+    for tokens_in_each_pair, q_in_each_pair, ctx_in_each_pair, rank_in_each_pair, span_in_each_pair \
+            in zip(all_tokens, q_whole_saliency, ctx_whole_saliency, rank_whole_saliency, span_whole_saliency):
+        # TODO:编码re-ranker/reader
+        token_id_list = list(range(len(tokens_in_each_pair)))
+        rank_whole_wc.append(list(zip(tokens_in_each_pair, rank_in_each_pair, getSentenceSpan(tokens_in_each_pair), token_id_list)))
+        span_whole_wc.append(list(zip(tokens_in_each_pair, span_in_each_pair, getSentenceSpan(tokens_in_each_pair), token_id_list)))
+        # TODO:编码retriever
+        sep_index = tokens_in_each_pair.index("[SEP]")
+        # question就一句话，不需要标记sentence idx，ctx需要；但是为了和树中的sentence idx一致，在前端处理时直接从title对应的颜色开始编码
+        # FIXME: /10??
+        tokens_in_each_pair.append("[SEP]")
+        retriever_token_id = list(range(len(tokens_in_each_pair) + 1))
+        q_id_list = retriever_token_id[:sep_index + 1]
+        ctx_id_list = retriever_token_id[sep_index + 1:]
+        q_in_each_pair_zip = np.array(q_in_each_pair[:sep_index + 1]) / 10
+        q_in_each_pair_zip = q_in_each_pair_zip.tolist()
+        # FIXME：否则用下面的
+        # q_whole_wc.append(list(zip(tokens_in_each_pair[:sep_index + 1], q_in_each_pair[:sep_index + 1])))
+        q_whole_wc.append(list(zip(tokens_in_each_pair[:sep_index + 1], q_in_each_pair_zip,
+                                   getSentenceSpan(tokens_in_each_pair[:sep_index + 1]), q_id_list)))
+        tokens_in_each_pair[sep_index] = "[CLS]"
+        ctx_len = len(tokens_in_each_pair) - sep_index
+        ctx_whole_wc.append(list(zip(tokens_in_each_pair[sep_index:], ctx_in_each_pair[:ctx_len],
+                                     [i + 1 for i in getSentenceSpan(tokens_in_each_pair[sep_index:])], ctx_id_list)))
+        # TODO: retriever整体
+        tokens_in_each_pair[sep_index] = "[SEP]"
+
+        whole_sentence_span = getSentenceSpan(tokens_in_each_pair)
+        retriever_whole_wc.append(list(zip(tokens_in_each_pair[:sep_index+1] + ['[CLS]'] + tokens_in_each_pair[sep_index+1:],
+                                           q_in_each_pair_zip + ctx_in_each_pair[:ctx_len],
+                                           whole_sentence_span[:sep_index] + [1] + whole_sentence_span[sep_index:],
+                                           retriever_token_id)))
+    # print(q_whole_wc[4])
+    # print(ctx_whole_wc[5])
+
+    # TODO: 对re-ranker与reader的结果进行重排序
+    gold_answers = reader_results['gold_answers']
+    span_predictions = reader_results['predictions']
+    em_result = []
+    final_prediction = []
+    for prediction in span_predictions:
+        if prediction['prediction']['passage_idx'] >= 10:
+            continue
+        final_prediction.append(prediction['prediction']['text'])
+        em_hit = max([exact_match_score(prediction['prediction']['text'], ga) for ga in gold_answers])
+        em_result.append(em_hit)
+
+    # print(em_result)
+    order_result = [prediction['prediction']['passage_idx'] for prediction in
+                    reader_results['predictions'] if prediction['prediction']['passage_idx'] < 10]
+    has_answer_list = [ctx['has_answer'] for ctx in retriever_results['ctxs'][:10]]
+    # print(has_answer_list)
+    rank_whole_wc = [x for i, x in sorted(zip(order_result, rank_whole_wc[:10]))]
+    span_whole_wc = [x for i, x in sorted(zip(order_result, span_whole_wc[:10]))]
+    q_whole = copy.copy(q_whole_wc)
+    ctx_whole = copy.copy(ctx_whole_wc)
+    rank_whole = copy.copy(rank_whole_wc)
+    span_whole = copy.copy(span_whole_wc)
+    retriever_whole = copy.copy(retriever_whole_wc)
+    q_select = copy.copy(q_whole_wc)
+    ctx_select = copy.copy(ctx_whole_wc)
+    rank_select = copy.copy(rank_whole_wc)
+    span_select = copy.copy(span_whole_wc)
+    retriever_select = copy.copy(retriever_whole_wc)
+
+    q_saliency_threshold = que_sal_thre
+    ctx_saliency_threshold = que_sal_thre
+    retriever_saliency_threshold = que_sal_thre
+    rank_saliency_threshold = que_sal_thre
+    span_saliency_threshold = que_sal_thre
+    for i, q in enumerate(q_whole_wc):
+        q_whole_wc[i] = list(filter(lambda x: x[1] >= q_saliency_threshold, [token for token in q]))
+        q_select[i] = [token[3] for token in q_whole_wc[i]]
+    for i, ctx in enumerate(ctx_whole_wc):
+        ctx_whole_wc[i] = list(filter(lambda x: x[1] >= ctx_saliency_threshold, [token for token in ctx]))
+        ctx_select[i] = [token[3] for token in ctx_whole_wc[i]]
+    for i, q_ctx in enumerate(rank_whole_wc):
+        rank_whole_wc[i] = list(filter(lambda x: x[1] >= rank_saliency_threshold, [token for token in q_ctx]))
+        rank_select[i] = [token[3] for token in rank_whole_wc[i]]
+    for i, q_ctx in enumerate(span_whole_wc):
+        span_whole_wc[i] = list(filter(lambda x: x[1] >= span_saliency_threshold, [token for token in q_ctx]))
+        span_select[i] = [token[3] for token in span_whole_wc[i]]
+    for i, q_ctx in enumerate(retriever_whole_wc):
+        retriever_whole_wc[i] = list(filter(lambda x: x[1] >= retriever_saliency_threshold, [token for token in q_ctx]))
+        retriever_select[i] = [token[3] for token in retriever_whole_wc[i]]
+    # TODO: sentence_span to encode color
+    # print(ctx_whole_wc[7])
+    # for q in rank_whole_wc:
+    #     b = sorted(q, key=lambda token: token[1], reverse=True)
+    #     print(b)
+    # for q in span_whole_wc:
+    #     b = sorted(q, key=lambda token: token[1], reverse=True)
+    #     print(b)
+
+    # retriever_q_summary, _ = summary_for_barchart(q_whole_wc[:10])
+    # _, retriever_ctx_summary = summary_for_barchart(ctx_whole_wc[:10])
+    retriever_summary = summary_for_barchart(retriever_whole_wc[:10], barchart_thre)
+    rank_summary = summary_for_barchart(rank_whole_wc[:10], barchart_thre)
+    span_summary = summary_for_barchart(span_whole_wc[:10], barchart_thre)
+
+    # print(retriever_summary)
+    # print(rank_summary)
+    # print(span_summary)
+    # print(final_prediction)
+    return jsonify({
+        'q_whole_saliency': q_whole_wc[:10],
+        'ctx_whole_saliency': ctx_whole_wc[:10],
+        'rank_whole_saliency': rank_whole_wc[:10],
+        'span_whole_saliency': span_whole_wc[:10],
+        'order_result': order_result,
+        'em_result': em_result,
+        'has_answer_list': has_answer_list,
+        'final_prediction': final_prediction,
+        'gold_answer': gold_answers,
+        # 'q_summary': q_summary,
+        # 'ctx_summary': ctx_summary,
+        # 'rank_summary': rank_summary,
+        # 'span_summary': span_summary
+        'retriever_summary': retriever_summary,
+        'rank_summary': rank_summary,
+        'span_summary': span_summary
+    })
+
+
+@app.route('/query_context_view/', methods=['GET', 'POST'])
+def query_context_view():
+    if request.method == "POST":
+        postdata = request.get_json()
+        ctx_id = postdata['ctx_id']
+        stage_id = postdata['stage_id']
+        if stage_id == 0:
+            ret = {'tokens': retriever_whole[ctx_id], 'select': retriever_select[ctx_id]}
+        elif stage_id == 1:
+            ret = {'tokens': rank_whole[ctx_id], 'select': rank_select[ctx_id]}
+        elif stage_id == 2:
+            ret = {'tokens': span_whole[ctx_id], 'select': span_select[ctx_id]}
+        else:
+            raise
+    else:
+        pass
+    # print(ret)
+    return ret
 
 if __name__ == "__main__":
     app.run(debug=True,host='0.0.0.0')

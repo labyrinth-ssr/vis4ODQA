@@ -19,11 +19,11 @@
           @afterChange="ctx_thre"
         />
         <a-slider
-          :marks="marks_threshold"
-          :max="0.5"
-          :min="0.1"
+          :marks="marks_reranker_threshold"
+          :max="0.8"
+          :min="0.4"
           :step="0.1"
-          :default-value="0.5"
+          :default-value="0.7"
           @afterChange="reranker_thre"
         />
         <a-slider
@@ -35,7 +35,7 @@
           @afterChange="reader_thre"
         />
       </div>
-      <div id="layer-selected">
+      <!-- <div id="layer-selected">
         <a-slider
           :marks="marks_layer"
           :max="12"
@@ -44,13 +44,13 @@
           :default-value="12"
           @afterChange="change_layer"
         />
-      </div>
+      </div> -->
     </div>
-    <div id="input-container">
+    <!-- <div id="input-container">
       <div id="input-box">
         <a-input v-model="input_value" @pressEnter="input_sentenceId" />
       </div>
-    </div>
+    </div> -->
       
   </div>
 </template>
@@ -92,6 +92,13 @@ export default {
         0.3: "0.3",
         0.4: "0.4",
         0.5: "0.5",
+      },
+      marks_reranker_threshold: {
+        0.4: "0.4",
+        0.5: "0.5",
+        0.6: "0.6",
+        0.7: "0.7",
+        0.8: "0.8"
       },
       marks_layer:{
         1: '1',

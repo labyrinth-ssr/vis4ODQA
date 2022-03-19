@@ -1,8 +1,8 @@
 <template>
 
-  <a-table :data-source="data" :scroll="{y: 100 }" :pagination='false'>
-    <a-table-column key="que" title="question" data-index="que" :width="300" :height="50"/>
-    <!-- <a-table-column key="k_accu" title="k" data-index="k_accu" :width="50">
+  <a-table :data-source="data" :scroll="{y: 100 }" :pagination='false' :customRow="customRow">
+    <a-table-column key="que" title="question" data-index="que" :width="240" :height="50"/>
+    <!-- <a-table-column key="k_accu" title="k" data-index="k_accu" :width="30">
       <template slot-scope="k_accu">
         <em-barchart :rect_data="k_accu"/>
       </template>
@@ -19,7 +19,7 @@ import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 import axios from 'axios';
 import bus from './bus';
 // import emBarchart from './emBarchart.vue';
-const DataUrl = 'http://localhost:5000/query_que';
+const DataUrl = 'http://10.192.9.11:5000/query_que';
 export default {
   // components: { emBarchart },
     name:'QueCArd',
@@ -32,7 +32,7 @@ export default {
         {title:'question',
         dataIndex:'que',
         key:'que',
-        width:300
+        width:200
         },
         {
           title: 'k',
@@ -55,17 +55,16 @@ export default {
   },
   methods: {
     post_then_get(post_data){
-axios.post(DataUrl,post_data)
-    .then(()=>{
-      axios.get(DataUrl)
-    .then((res)=>{
-      this.data=res.data.results
-      console.log(this.data)
-
-      this.data.forEach(element => {
-        element.key=element.id
-      });
-    })
+      axios.post(DataUrl,post_data)
+      .then(()=>{
+        axios.get(DataUrl)
+        .then((res)=>{
+        this.data=res.data.results
+        console.log(this.data)
+        this.data.forEach(element => {
+          element.key=element.id
+        });
+      })
     })
     },
     handleTableChange(sorter) {
@@ -76,6 +75,17 @@ axios.post(DataUrl,post_data)
     },
     update(){
       this.post_then_get(this.senIds)
+    },
+    customRow(record){
+      return{
+        on:{
+          click:()=>{
+            console.log(record)
+            bus.$emit('dispatchqueid',record.id)
+          }
+        }
+      }
+
     }
   },
 };

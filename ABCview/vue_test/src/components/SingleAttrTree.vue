@@ -35,31 +35,37 @@ export default {
         this.layer = val;
         this.set_para_update();
       });
-      bus.$on("dispatchsentencetoshow", (val) => {
-        this.sentence_selected = val;
+      bus.$on("update_ctx", (val) => {
+        this.ctx_selected = val;
+        this.set_para_update();
+      });
+      bus.$on("dispatchqueid", (val) => {
+        this.question_id = val;
+        this.ctx_selected=0
         this.set_para_update();
       });
   },
   data() {
     return {
     //   data: [],
-      sentence_selected: 1, //初始时自动选择第5句
+      ctx_selected: 0,
     //   tokens: [],
     //   nodes: [],
       threshold:{
         que:0.5,
         ctx:0.5,
-        reranker:0.5,
+        reranker:0.7,
         reader:0.5
       },
-      layer: 10,
+      layer: 12,
       q_node_link:{},
       ctx_node_link:{},
       reranker_node_link:{},
       reader_node_link:{},
       tokenPool:[],
       sentence_span: [],
-      tree_height:{}
+      tree_height:{},
+      question_id:1
     };
   },
   methods: {
@@ -82,7 +88,7 @@ export default {
     //   d3.select("#AttrTreeSvg").selectAll("*").remove();
       const margin = { top: 50, right: 10, bottom: 50, left: 50 },
         // width = 1000,
-        height = 400;
+        height = 240;
       // var color = d3.scaleOrdinal(d3.schemePaired);
 
       const textData_index = this.tokenPool.map((a) => a + "");
@@ -298,7 +304,7 @@ export default {
 
     getAll() {
       const path =
-        "http://localhost:5000/query_single_attr_tree/" + this.sentence_selected
+        "http://10.192.9.11:5000/query_single_attr_tree/" + this.ctx_selected
       axios
         .get(path)
         .then((res) => {
@@ -313,12 +319,12 @@ export default {
     },
     set_para_update() {
       const path =
-        "http://localhost:5000/query_single_attr_tree/" + this.sentence_selected;
+        "http://10.192.9.11:5000/query_single_attr_tree/" + this.ctx_selected;
       axios
         .post(path, {
-          sts_id: this.sentence_selected,
           threshold: this.threshold,
           layer: this.layer - 1,
+          queId:this.question_id
         })
         .then(() => {
           this.getAll();
@@ -336,12 +342,12 @@ export default {
     init() {
       console.log("tree init");
       const path =
-        "http://localhost:5000/query_single_attr_tree/" + this.sentence_selected;
+        "http://10.192.9.11:5000/query_single_attr_tree/" + this.ctx_selected;
       axios
         .post(path, {
-          sts_id: this.sentence_selected,
           threshold: this.threshold,
           layer: this.layer - 1,
+          queId:this.question_id
         })
         .then(() => {
           axios

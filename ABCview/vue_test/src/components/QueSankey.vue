@@ -79,9 +79,8 @@ export default {
         })
         .style("opacity", 0.5)
         .style("stroke-width", d=>d.width)
-        .on("mouseover", function (e,d) {
+        .on("mouseover", function () {
           d3.select(this).style("opacity", 0.8);
-          bus.$emit('dispatchque',d.index)
         })
         .on("mouseleave", function () {
           d3.select(this).style("opacity", 0.5);
@@ -339,9 +338,9 @@ const max_accu=d3.max(accu_em_data.map(ele=>ele.accu))
     // draw_attn(){
     },
     init() {
-      const path = "http://localhost:5000/query_que_sunburst";
-      const path2 = "http://localhost:5000/query_attn_head";
-      const path3="http://localhost:5000/query_em_accu"
+      const path = "http://10.192.9.11:5000/query_que_sunburst";
+      const path2 = "http://10.192.9.11:5000/query_attn_head";
+      const path3="http://10.192.9.11:5000/query_em_accu"
       const requestOne = axios.get(path);
       const requestTwo = axios.get(path2);
       const requestThree=axios.get(path3);
