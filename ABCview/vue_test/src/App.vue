@@ -7,7 +7,7 @@
         <que-sankey></que-sankey>
       </div>
       <div id="leftMiddle">
-        <que-card></que-card>
+        <que-card @showsingletree="showSingleTree"></que-card>
       </div>
       <div id="leftBottom">
         <context-table></context-table>>
@@ -18,16 +18,17 @@
         <div id="attrTree_container">
           <!-- <ThresholdSelected /> -->
           <div id="left-tree">
-            <single-attr-tree></single-attr-tree>
+            <single-attr-tree v-if="flag"></single-attr-tree>
+            <attr-tree v-else></attr-tree>
           </div>
           <div id="right-selector">
-            <threshold-selected />
+            <threshold-selected @showsingletree="showSingleTree"></threshold-selected>
           </div>
         </div>
       </div>
       <div id="downRow">
         <div id="left-instance">
-          <instance-view></instance-view>
+          <instance-view @showsingletree="showSingleTree"></instance-view>
 
         </div>
         <div id="right-selector">
@@ -49,6 +50,7 @@ import ThresholdSelected from './components/ThresholdSelected.vue';
 import ContextTable from './components/contextTable.vue';
 import InstanceView from './components/InstanceView.vue';
 import ThresholdInstanceView from './components/ThresholdInstanceView.vue';
+import AttrTree from './components/AttrTree.vue';
 
   export default {
     name: "App",
@@ -60,11 +62,19 @@ import ThresholdInstanceView from './components/ThresholdInstanceView.vue';
       ThresholdSelected,
       ContextTable,
       InstanceView,
-      ThresholdInstanceView
+      ThresholdInstanceView,
+      AttrTree
     },
     data(){
       return{
+        flag: false,
         collapsed:false
+      }
+    },
+    methods:{
+      showSingleTree(visible) {
+        console.log(visible)
+        this.flag = visible;
       }
     }
   };

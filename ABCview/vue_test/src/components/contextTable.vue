@@ -13,12 +13,6 @@ export default {
             d3.select('#node-'+val).selectChild('rect').style('stroke', 'black').style('stroke-width', 2)
 
         })
-        bus.$on('tsne_to_table',val=>{
-            if( d3.select('#node-'+val).style('stroke')=='blue'){
-                        d3.select('#node-'+val).style("stroke",undefined)
-                    }
-                    else d3.select('#node-'+val).selectChild('rect').style('stroke','blue')
-        })
         bus.$on('unhighlighttoken',val=>{
             d3.select('#node-'+val).selectChild('rect').style('stroke', 'hsl(180, 1%, 80%)')
         })
@@ -160,8 +154,6 @@ export default {
                 .domain([0, largestAbs])
                 .range([d3.rgb('#ffffff'), d3.rgb('#E50035')]);
 
-            // Before drawing the texts, pre-render all texts to figure out their widths
-            // let textTokenSize = getTokenWidth(tokens.map(d => d.token), svg);
 
             const svg = d3.select("#contexttable")
             .append('svg')

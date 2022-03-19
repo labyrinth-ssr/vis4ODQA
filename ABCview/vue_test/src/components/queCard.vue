@@ -81,11 +81,14 @@ export default {
         on:{
           click:()=>{
             console.log(record)
+            this.showSingleTree()
             bus.$emit('dispatchqueid',record.id)
           }
         }
       }
-
+    },
+    showSingleTree(){
+      this.$emit('showsingletree',true)
     }
   },
 };

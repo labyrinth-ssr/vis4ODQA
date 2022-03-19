@@ -16,7 +16,7 @@ export default {
   name: "AttrTree",
   created() {
     bus.$on("dispatchsentencetoshow", (val) => {
-      this.sentence_selected = val;
+      this.ctx_selected = val;
       this.init();
     }),
       bus.$on("dispatchthreshold", (val) => {
@@ -32,7 +32,7 @@ export default {
   data() {
     return {
       data: [],
-      sentence_selected: 1,
+      ctx_selected: 1,
       tokens: [],
       nodes: [],
       threshold: 0.5,
@@ -315,7 +315,7 @@ export default {
     },
     getAll() {
       const path =
-        "http://localhost:5000/query_attr_tree/" + this.sentence_selected;
+        "http://localhost:5000/query_attr_tree/" + this.ctx_selected;
       axios
         .get(path)
         .then((res) => {
@@ -332,10 +332,10 @@ export default {
     },
     set_para(threshold, layer) {
       const path =
-        "http://localhost:5000/query_attr_tree/" + this.sentence_selected;
+        "http://localhost:5000/query_attr_tree/" + this.ctx_selected;
       axios
         .post(path, {
-          sts_id: this.sentence_selected,
+          sts_id: this.ctx_selected,
           threshold: threshold,
           layer: layer - 1,
         })
@@ -346,10 +346,10 @@ export default {
     init() {
       console.log("tree init");
       const path =
-        "http://localhost:5000/query_attr_tree/" + this.sentence_selected;
+        "http://10.192.9.11:5000/query_attr_tree/" + this.ctx_selected;
       axios
         .post(path, {
-          sts_id: this.sentence_selected,
+          sts_id: this.ctx_selected,
           threshold: this.threshold,
           layer: this.layer - 1,
         })

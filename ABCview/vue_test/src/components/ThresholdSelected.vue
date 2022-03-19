@@ -10,6 +10,8 @@
           @afterChange="reranker_thre" />
         <a-slider :marks="marks_threshold" :max="0.5" :min="0.1" :step="0.1" :default-value="0.5"
           @afterChange="reader_thre" />
+        <a-button @click="showSingleTree(false)">layer-comparison</a-button>
+        <a-button @click="showSingleTree(true)">model-comparison</a-button>
       </div>
       <!-- <div id="layer-selected">
         <a-slider
@@ -57,6 +59,10 @@ export default {
     input_sentenceId(){
       console.log("input"+this.input_value)
       bus.$emit('dispatchsentencetoshow',this.input_value)
+    },
+    showSingleTree(val){
+      console.log(val)
+      this.$emit('showsingletree',val)
     }
   },
   data() {

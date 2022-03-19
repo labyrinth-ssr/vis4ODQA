@@ -10,6 +10,8 @@ import bus from "./bus";
 export default {
   name: "InstanceView",
   created() {
+    var val = [0, 0]
+    bus.$emit("inputtoshow", val)
     bus.$on("dispatchqueid", (val) => {
       this.question_selected = val;
       this.init();
@@ -55,6 +57,9 @@ export default {
   methods: {
     update() {
       this.getAll();
+    },
+    showSingleTree(){
+      this.$emit('showsingletree',true)
     },
     getTokenWidth(tokens, svg, s, fontSize='1em'){
         //先把tokens转成svg中的text元素，用getBBox()计算出最小矩形的尺寸，再把这个text部分删除
@@ -236,6 +241,7 @@ export default {
           })
           .on("click", ()=>{
             var val = [row_idx, 0]
+            this.showSingleTree()
             bus.$emit("inputtoshow", val)
             bus.$emit("update_ctx", row_idx)
           })
@@ -263,8 +269,9 @@ export default {
           .on("mouseleave",()=>{
             d3.selectAll(".rect"+this.order_result.indexOf(row_idx)).style('fill', "white")
           })
-          .on("click", function(){
+          .on("click", ()=>{
             var val = [row_idx, 1]
+            this.showSingleTree()
             bus.$emit("inputtoshow", val)
             bus.$emit("update_ctx", this.order_result.indexOf(row_idx))
           })
@@ -292,8 +299,9 @@ export default {
           .on("mouseleave",()=>{
             d3.selectAll(".rect"+this.order_result.indexOf(row_idx)).style('fill', "white")
           })
-          .on("click", function(){
+          .on("click", ()=>{
             var val = [row_idx, 2]
+            this.showSingleTree()
             bus.$emit("inputtoshow", val)
             bus.$emit("update_ctx", this.order_result.indexOf(row_idx))
           })
