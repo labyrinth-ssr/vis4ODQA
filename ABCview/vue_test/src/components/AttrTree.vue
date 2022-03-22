@@ -16,24 +16,21 @@ export default {
   name: "AttrTree",
   watch:{
     model_prop:function(newval){
-      console.log('newval'+newval)
       if (newval!='single'){
       this.model = newval;
-        console.log('set model');
         this.set_para();
       }
-
+    },
+    queid_prop:function(newval){
+      this.que_id=newval;
+        this.set_para();
+    },
+    ctx_prop:function(newval){
+      this.ctx_prop=newval;
+      this.set_para();
     }
   },
   created() {
-      this.que_id=this.queid_prop
-      this.model =this.model_prop
-      console.log(('first create',this.first_create))
-      //this.que_id,this.queid_prop)
-      console.log('attr tree creat')
-      // bus.$on('tree_model_change',(model)=>{
-        
-      // })
       bus.$on("dispatchthreshold", (val) => {
         this.threshold = val;
         this.set_para(/* this.threshold, this.layer */);
