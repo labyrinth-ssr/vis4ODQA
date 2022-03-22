@@ -23,8 +23,11 @@
           <a-radio-button value="reader">
             reader
           </a-radio-button>
+          <a-radio-button value="single">
+            model-comparison
+          </a-radio-button>
         </a-radio-group>
-        <a-button @click="showSingleTree(true)">model-comparison</a-button>
+        <!-- <a-button @click="showSingleTree(true)">model-comparison</a-button> -->
       </div>
       <!-- <div id="layer-selected">
         <a-slider
@@ -54,7 +57,12 @@ export default {
   methods: {
     onChange(e) {
       console.log(`checked = ${e.target.value}`);
+      if(e.target.value=='single'){
+      bus.$emit('showsingletree',true)
+      }
+      else{
       bus.$emit('layer_tree_model',e.target.value)
+      }
       // this.$emit('showsingletree',false)
     },
     que_thre(value) {

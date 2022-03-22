@@ -14,7 +14,9 @@ import bus from "./bus";
 
 export default {
   name: "AttrTree",
-  Created() {
+  created() {
+      this.que_id=this.queid_prop
+      console.log(this.que_id,this.queid_prop)
       bus.$on('layer_tree_model',(model)=>{
         console.log('set model');
         this.model = model;
@@ -27,8 +29,13 @@ export default {
       bus.$on("set_layer", (val) => {
         this.layer = val;
         this.set_para(/* this.threshold, this.layer */);
-      });
+      })
+      bus.$on("dispatchqueid", (val)=>{
+        this.que_id = val
+        this.set_para();
+      })
   },
+  props:['ctx_prop','queid_prop'],
   data() {
     return {
       data: [],
@@ -324,7 +331,7 @@ export default {
       this.valued_nodes = valued_nodes;
     },
     getAll() {
-      const path = "http://localhost:8000/query_attr_tree"
+      const path = "http://10.192.9.11:8000/query_attr_tree"
       axios
         .get(path)
         .then((res) => {
@@ -340,13 +347,14 @@ export default {
         });
     },
     set_para() {
-      const path = "http://localhost:8000/query_attr_tree"
+      const path = "http://10.192.9.11:8000/query_attr_tree"
       axios
         .post(path, {
           top_kth:this.top_kth,
           que_id:this.que_id,
           threshold: this.threshold,
           layer: this.layer - 1,
+          model:this.model
         })
         .then(() => {
           this.getAll();

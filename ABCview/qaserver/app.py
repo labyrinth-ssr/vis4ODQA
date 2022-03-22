@@ -159,7 +159,9 @@ def query_attr_tree():
             print('layer:',i)
             py_data=attribution_tree(all_attr,tokens,threshold,i,top_kth,is_ctx,noneed_cls)
             valued_nodes=[]
-            layerSaliency=saliency[i][top_kth]
+            if(is_ctx):
+                layerSaliency=saliency[i]
+            else:layerSaliency=saliency[i][top_kth]
             nodes_list = []
             links_list = []
             def run_function(x, y): return x if y in x else x + [y]
