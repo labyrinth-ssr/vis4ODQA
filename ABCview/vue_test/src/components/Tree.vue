@@ -1,7 +1,8 @@
 <template>
     <div id="tree">
-        <single-attr-tree v-if="show_single_tree" :queid_prop='que_id'></single-attr-tree>
-        <attr-tree v-else :queid_prop='que_id' :model='layer_tree_model'></attr-tree>
+        <!-- <single-attr-tree v-if="show_single_tree" :queid_prop='que_id' :ctx_prop='ctx_selected'></single-attr-tree>
+        <attr-tree v-else :queid_prop='que_id' :model='layer_tree_model'></attr-tree> -->
+        <component :is="current_tree" :queid_prop='que_id' :ctx_prop='ctx_selected' :model_prop='model'/>
     </div>
 </template>
 
@@ -17,16 +18,26 @@ export default {
       AttrTree,
     },
     created() {
-        bus.$on('showsingletree',(val)=>{
-            this.show_single_tree=val;
+        
+      console.log('single attr tree creat')
+      const model_comp={'que':'attr-tree','ctx':'attr-tree','reranker':'attr-tree','reader':'attr-tree','single':'single-attr-tree'}
+
+        bus.$on('change_tree',(val)=>{
+            console.log('change tree:'+val)
+            this.current_tree=model_comp[val]
+            this.model=val
+            // if (this.current_tree==model_comp[val]) {
+            //     bus.$emit('tree_model_change',val)
+            // }
+            // else{
+            //     this.current_tree=model_comp[val]
+            // }
         })
-        bus.$on("layer_tree_model",(model) => {
-            this.model = model;
-        }),
         bus.$on("update_ctx", (val) => {
         this.ctx_selected = val;
-      }),
+      })
       bus.$on("dispatchqueid", (val) => {
+        console.log('single attr tree on que id')
         this.que_id = val;
         this.ctx_selected=0
       })
@@ -36,7 +47,8 @@ export default {
             que_id:1,
             ctx_selected:0,
             show_single_tree:false,
-            layer_tree_model:'reader'
+            model:'reader',
+            current_tree:'attr-tree'
         }
     }
 }

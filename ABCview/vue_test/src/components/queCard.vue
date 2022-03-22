@@ -60,15 +60,15 @@ export default {
         axios.get(DataUrl)
         .then((res)=>{
         this.data=res.data.results
-        console.log(this.data)
+        //this.data)
         this.data.forEach(element => {
           element.key=element.id
         });
       })
     })
     },
-    handleTableChange(sorter) {
-      console.log(sorter)
+    handleTableChange(/* sorter */) {
+      //sorter)
       this.data=this.data.sort((x,y)=>{
         return y.k_accu-x.k_accu
       })
@@ -80,7 +80,7 @@ export default {
       return{
         on:{
           click:()=>{
-            console.log(record)
+            //record)
             this.showSingleTree()
             bus.$emit('dispatchqueid',record.id)
           }

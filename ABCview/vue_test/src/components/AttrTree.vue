@@ -14,14 +14,26 @@ import bus from "./bus";
 
 export default {
   name: "AttrTree",
+  watch:{
+    model_prop:function(newval){
+      console.log('newval'+newval)
+      if (newval!='single'){
+      this.model = newval;
+        console.log('set model');
+        this.set_para();
+      }
+
+    }
+  },
   created() {
       this.que_id=this.queid_prop
-      console.log(this.que_id,this.queid_prop)
-      bus.$on('layer_tree_model',(model)=>{
-        console.log('set model');
-        this.model = model;
-        this.set_para();
-      })
+      this.model =this.model_prop
+      console.log(('first create',this.first_create))
+      //this.que_id,this.queid_prop)
+      console.log('attr tree creat')
+      // bus.$on('tree_model_change',(model)=>{
+        
+      // })
       bus.$on("dispatchthreshold", (val) => {
         this.threshold = val;
         this.set_para(/* this.threshold, this.layer */);
@@ -30,12 +42,14 @@ export default {
         this.layer = val;
         this.set_para(/* this.threshold, this.layer */);
       })
-      bus.$on("dispatchqueid", (val)=>{
-        this.que_id = val
-        this.set_para();
-      })
+      // bus.$on("dispatchqueid", (val)=>{
+      //   //)
+      //   console.log('attr tree on que id')
+      //   this.que_id = val
+      //   this.set_para();
+      // })
   },
-  props:['ctx_prop','queid_prop'],
+  props:['ctx_prop','queid_prop','model_prop'],
   data() {
     return {
       data: [],
@@ -48,7 +62,8 @@ export default {
       sentence_span: [],
       model:'reader',
       top_kth:0,
-      que_id:1
+      que_id:1, 
+      first_create:true
     };
   },
   methods: {
@@ -170,7 +185,6 @@ export default {
       // const la
       //sankeydata:node,link
       //calculate the tree height
-      console.log(sankeydata);
       var links_data = sankeydata.links;
       links_data.sort(function (a, b) {
         return a.layer - b.layer;
@@ -399,6 +413,7 @@ export default {
   beforeMount() {
     console.log('mount',this.model)
     this.init();
+    this.first_create=false;
   },
 };
 </script>

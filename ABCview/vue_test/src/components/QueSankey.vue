@@ -32,12 +32,12 @@ export default {
     update() {},
     draw() {
       var sankeydata = this.node_link;
-      console.log(sankeydata)
+      //sankeydata)
       var attndata = this.attn;
       var accu_em_data=this.accu_em.accu_em;
       const em_avg=this.accu_em.em_avg;
       const accu_avg=this.accu_em.k_accu_avg;
-      console.log(accu_em_data)
+      //accu_em_data)
       const margin = { top: 10, right: 10, bottom: 10, left: 10 };
       const svg_size = { width: 400, height: 800 };
       const sankey_size = {
@@ -65,8 +65,8 @@ export default {
         })
         .nodeAlign(d3SankeyLeft);
       var graph = sankey(sankeydata);
-      // console.log(graph);
-      var link = svg
+      // //graph);
+      /* var link =  */svg
         .append("g")
         .selectAll(".link")
         .data(graph.links)
@@ -89,13 +89,13 @@ export default {
         })
         .on('click',(e,d)=>{
           bus.$emit('dispatchSenIds',d.senIds)
-          console.log(d)
+          //d)
         })
         .append('title')
         .text(function(d){
           return d.source.name+'->'+d.target.name;
         })
-      console.log(link);
+      //link);
 
       var node = svg
         .append("g")
@@ -184,7 +184,7 @@ export default {
         }
           )
         .attr("class", "attn_col");
-      console.log(attndata)
+      //attndata)
       attndata.sort((a,b)=>{
         return a.link_index-b.link_index
       })
@@ -255,8 +255,8 @@ const max_accu=d3.max(accu_em_data.map(ele=>ele.accu))
         const bar_width=8
         var accu_em_g = d3.select("svg").append("g").attr("id", "ae_g")
       .attr('transform','translate('+(margin.left-bias)+','+(margin.top+sankey_size.width+barchart_padding)+')');
-        console.log(sankeydata)
-        var accu_em=accu_em_g
+        //sankeydata)
+        /* var accu_em= */accu_em_g
         .append("g")
         .selectAll(".que_ae")
         .data(accu_em_data
@@ -274,7 +274,7 @@ const max_accu=d3.max(accu_em_data.map(ele=>ele.accu))
         .classed('over_avg',d=>d.accu>accu_avg?true:false)
         .classed('over_e_avg',d=>d.em>em_avg?true:false)
 
-        console.log(accu_em)
+        //accu_em)
 
         //有没有办法合成一块写,我希望，将他们作为一个整体，但是
         //重构：作为同一个rec的情况，第一个长方形高度是avg与自长更小的高度，填充颜色，第二个长方形高度是avg与自长更高的高度，若未前者则无填充，若为后者则
@@ -294,9 +294,9 @@ const max_accu=d3.max(accu_em_data.map(ele=>ele.accu))
 
         accu_avg_rec
         .on('mouseover',function(e,d){
-          console.log(d)
+          //d)
           // bus.$emit('sendque',d.id)
-          console.log(this)
+          //this)
           if (d.accu>=accu_avg) {
           d3.select(this).style("fill-opacity", 0.8);
           }
@@ -304,7 +304,7 @@ const max_accu=d3.max(accu_em_data.map(ele=>ele.accu))
         })
         .on('mouseleave',function(e,d){
           // bus.$emit('sendque',d.id)
-          console.log(this)
+          //this)
           if (d.accu>=accu_avg) {
           d3.select(this).style("fill-opacity",1);}
           d3.select('#link'+d.id).style('opacity',0.5);
@@ -327,7 +327,7 @@ const max_accu=d3.max(accu_em_data.map(ele=>ele.accu))
         accu_rec
         .on('mouseover',function(e,d){
           // bus.$emit('sendque',d.id)
-          console.log(this)
+          //this)
           if (d.accu<accu_avg) {
           d3.select(this).style("fill-opacity", 0.8);
           }
@@ -335,7 +335,7 @@ const max_accu=d3.max(accu_em_data.map(ele=>ele.accu))
         })
         .on('mouseleave',function(e,d){
           // bus.$emit('sendque',d.id)
-          console.log(this)
+          //this)
           if (d.accu<accu_avg) {
 
           d3.select(this).style("fill-opacity",1);}

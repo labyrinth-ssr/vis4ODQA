@@ -14,7 +14,7 @@ export default {
   name: "queThreBox",
   methods: {
     input_sentenceId(){
-      console.log("input"+this.input_value)
+      //"input"+this.input_value)
       bus.$emit('dispatchQueThre',this.input_value)
     }
   },

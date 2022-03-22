@@ -14,7 +14,10 @@ import bus from "./bus";
 
 export default {
   name: "SingleAttrTree",
+  props:['ctx_prop','queid_prop'],
   created() {
+    this.ctx_selected=this.ctx_prop;
+    this.que_id=this.queid_prop;
       bus.$on("que_thre", (val) => {
         this.threshold.que=val
         this.set_para_update();
@@ -40,6 +43,7 @@ export default {
         this.set_para_update();
       });
       bus.$on("dispatchqueid", (val) => {
+        console.log('single,.on,queid')
         this.question_id = val;
         this.ctx_selected=0
         this.set_para_update();
@@ -71,8 +75,8 @@ export default {
   methods: {
     drawAll(/* sankeyDataList, tokenPool, tree_height */) {
       const sentence_span = this.sentence_span;
-            d3.select("#AttrTreeSvg").remove();
-      d3.select("#AttrTreeSvg").selectAll("*").remove();
+            d3.select("#SingleAttrTreeSvg").remove();
+      d3.select("#SingleAttrTreeSvg").selectAll("*").remove();
 
       const sentence_color = function (i) {
         if (i == 1) {
@@ -84,8 +88,8 @@ export default {
         }
         return i;
       };
-    //   d3.select("#AttrTreeSvg").remove();
-    //   d3.select("#AttrTreeSvg").selectAll("*").remove();
+    //   d3.select("#SingleAttrTreeSvg").remove();
+    //   d3.select("#SingleAttrTreeSvg").selectAll("*").remove();
       const margin = { top: 50, right: 10, bottom: 50, left: 50 },
         // width = 1000,
         height = 240;
@@ -103,7 +107,7 @@ export default {
       var svg = d3
         .select("#single-attr-tree")
         .append("svg")
-        .attr("id", "AttrTreeSvg")
+        .attr("id", "SingleAttrTreeSvg")
         .attr("width", "700")
         .attr("height", height + margin.top + margin.bottom)
         .style("background-color", "white")
@@ -155,7 +159,6 @@ export default {
       }
 
         function draw(sankeydata,start_x,width) {
-          console.log(sankeydata)
                   // var links_data = sankeydata.links;
       // links_data.sort(function (a, b) {
       //   return a.layer - b.layer;
@@ -183,7 +186,6 @@ export default {
         // .nodes(sankeydata.nodes);
 
       var graph = sankey(sankeydata);
-      console.log(graph)
 
       graph.nodes.forEach((node) => {
         var newY = x(node.node);
@@ -285,7 +287,7 @@ export default {
         })
         .attr("text-anchor", "middle");
 
-      d3.select("#AttrTreeSvg")
+      d3.select("#SingleAttrTreeSvg")
         .style("background-color", "white")
         .style("border-radius", "10px")
         .style("margin", "10px")
@@ -314,7 +316,6 @@ export default {
         .then((res) => {
               this.set_data(res)
               this.drawAll();
-
         })
         .catch((error) => {
           // eslint-disable-next-line

@@ -56,13 +56,14 @@ export default {
   name: "ThresholdSelected",
   methods: {
     onChange(e) {
-      console.log(`checked = ${e.target.value}`);
-      if(e.target.value=='single'){
-      bus.$emit('showsingletree',true)
-      }
-      else{
-      bus.$emit('layer_tree_model',e.target.value)
-      }
+      //`checked = ${e.target.value}`);
+      bus.$emit('change_tree',e.target.value)
+      // if(e.target.value=='single'){
+      // bus.$emit('showsingletree',true)
+      // }
+      // else{
+      // bus.$emit('layer_tree_model',e.target.value)
+      // }
       // this.$emit('showsingletree',false)
     },
     que_thre(value) {
@@ -83,11 +84,11 @@ export default {
       bus.$emit('set_layer',this.layer);
     },
     // input_sentenceId(){
-    //   console.log("input"+this.input_value)
+    //   //"input"+this.input_value)
     //   bus.$emit('dispatchsentencetoshow',this.input_value)
     // },
     showSingleTree(val){
-      console.log(val)
+      //val)
       bus.$emit('showsingletree',val)
     }
   },

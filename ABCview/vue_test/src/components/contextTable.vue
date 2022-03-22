@@ -54,7 +54,7 @@ export default {
         }
     },
     mounted(){
-        // console.log('do nothing')
+        // //'do nothing')
         bus.$on("inputtoshow",val =>{
         this.getAll(val[0], val[1])
         d3.select('#tokensvg').remove();   //删除整个SVG
@@ -75,7 +75,7 @@ export default {
                 stage_id:stage_idx
             })
             .then((res) => {
-                console.log(res.data.select)
+                //res.data.select)
                 this.tokens = res.data.tokens;
                 this.select = res.data.select;
             })
@@ -129,7 +129,7 @@ export default {
             //     });
             // }
             // 为啥点击一次以后页面没有更新？？（明明显示draw触发了的
-            console.log("draw")
+            //"draw")
             var cls = 0
              for (var i = 0; i < tokens.length-1; i++) {
                 if (tokens[i+1][0]=="[CLS]") {
@@ -285,12 +285,12 @@ export default {
                     //     d3.select(this).attr("stroke",undefined)
                     // }
                     // else d3.select(this).attr("stroke","#ff6131")
-                    console.log('token table emit',i)
+                    //'token table emit',i)
 
                     bus.$emit("dispatchtokentoshow",i)
                     //单击事件：传递需要在tsne视图中显示或删除的token的index
                     
-                    console.log("emit")
+                    //"emit")
                 })
             })
 

@@ -72,7 +72,7 @@ import Tree from './components/Tree.vue';
     },
     methods:{
       showSingleTree(visible) {
-        console.log(visible)
+        //visible)
         this.flag = visible;
       }
     }
