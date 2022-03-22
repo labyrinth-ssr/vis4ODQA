@@ -26,18 +26,11 @@ export default {
             console.log('change tree:'+val)
             this.current_tree=model_comp[val]
             this.model=val
-            // if (this.current_tree==model_comp[val]) {
-            //     bus.$emit('tree_model_change',val)
-            // }
-            // else{
-            //     this.current_tree=model_comp[val]
-            // }
         })
         bus.$on("update_ctx", (val) => {
         this.ctx_selected = val;
       })
       bus.$on("dispatchqueid", (val) => {
-        console.log('single attr tree on que id')
         this.que_id = val;
         this.ctx_selected=0
       })

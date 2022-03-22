@@ -15,6 +15,17 @@ import bus from "./bus";
 export default {
   name: "SingleAttrTree",
   props:['ctx_prop','queid_prop'],
+    watch:{
+    queid_prop:function(newval){
+        this.question_id = newval;
+        this.ctx_selected=0
+        this.set_para_update();
+    },
+    ctx_prop:function(newval){
+      this.ctx_prop=newval;
+        this.set_para_update();
+    }
+  },
   created() {
     this.ctx_selected=this.ctx_prop;
     this.que_id=this.queid_prop;
@@ -38,16 +49,16 @@ export default {
         this.layer = val;
         this.set_para_update();
       });
-      bus.$on("update_ctx", (val) => {
-        this.ctx_selected = val;
-        this.set_para_update();
-      });
-      bus.$on("dispatchqueid", (val) => {
-        console.log('single,.on,queid')
-        this.question_id = val;
-        this.ctx_selected=0
-        this.set_para_update();
-      });
+      // bus.$on("update_ctx", (val) => {
+      //   this.ctx_selected = val;
+      //   this.set_para_update();
+      // });
+      // bus.$on("dispatchqueid", (val) => {
+      //   console.log('single,.on,queid')
+      //   this.question_id = val;
+      //   this.ctx_selected=0
+      //   this.set_para_update();
+      // });
   },
   data() {
     return {
@@ -347,12 +358,12 @@ export default {
     init() {
       console.log("tree init");
       const path =
-        "http://10.192.9.11:8000/query_single_attr_tree/" + this.ctx_selected;
+        "http://10.192.9.11:8000/query_single_attr_tree/" + this.ctx_prop;
       axios
         .post(path, {
           threshold: this.threshold,
           layer: this.layer - 1,
-          queId:this.question_id
+          queId:this.queid_prop
         })
         .then(() => {
           axios

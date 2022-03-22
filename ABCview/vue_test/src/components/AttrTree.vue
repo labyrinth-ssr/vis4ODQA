@@ -23,10 +23,11 @@ export default {
     },
     queid_prop:function(newval){
       this.que_id=newval;
+      this.top_kth=0;
         this.set_para();
     },
     ctx_prop:function(newval){
-      this.ctx_prop=newval;
+      this.top_kth=newval;
       this.set_para();
     }
   },
@@ -378,11 +379,11 @@ export default {
         "http://10.192.9.11:8000/query_attr_tree"
       axios
         .post(path, {
-          top_kth:this.top_kth,
-          que_id:this.que_id,
+          top_kth:this.ctx_prop,
+          que_id:this.queid_prop,
           threshold: this.threshold,
           layer: this.layer - 1,
-          model:this.model
+          model:this.model_prop
         })
         .then(() => {
           axios
@@ -408,9 +409,9 @@ export default {
     },
   },
   beforeMount() {
+    this.model = this.model_prop
     console.log('mount',this.model)
     this.init();
-    this.first_create=false;
   },
 };
 </script>
