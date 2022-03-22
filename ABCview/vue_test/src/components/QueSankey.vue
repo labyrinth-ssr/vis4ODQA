@@ -16,6 +16,7 @@ import bus from "./bus";
 export default {
   name: "QueSankey",
   created() {
+
   },
   data() {
     return {
@@ -71,6 +72,7 @@ export default {
         .data(graph.links)
         .enter()
         .append("path")
+        .attr('id',d=>'link'+d.id)
         .attr("class", "link")
         .attr("d", d3SankeyLinkHorizontal())
         .attr("fill", "none")
@@ -89,6 +91,10 @@ export default {
           bus.$emit('dispatchSenIds',d.senIds)
           console.log(d)
         })
+        .append('title')
+        .text(function(d){
+          return d.source.name+'->'+d.target.name;
+        })
       console.log(link);
 
       var node = svg
@@ -98,7 +104,7 @@ export default {
         .enter()
         .append("g")
         .attr("class", "node");
-
+            
       node
         .append("rect")
         .attr("x", (d) => {
@@ -115,7 +121,11 @@ export default {
           return (d.color = color(d.name.replace(/ .*/, "")));
         })
         .style("stroke", "none")
-        .style("opacity", 1);
+        .style("opacity", 1)
+        .append('title').text((d)=>{
+          return d.name;
+        })
+
       node
         .append("text")
         .attr("font-size", 10)
@@ -203,8 +213,8 @@ export default {
         })
         .attr("width", rect_width)
         .attr("height", rect_height)
-        .attr('fill',d=>attn_color(d.val)
-        )
+        .attr('fill',d=>attn_color(d.val))
+        .append('title').text(d=>d.val)
 // var mySvg=
 
 d3.select('#mySvg')
@@ -264,10 +274,12 @@ const max_accu=d3.max(accu_em_data.map(ele=>ele.accu))
         .classed('over_avg',d=>d.accu>accu_avg?true:false)
         .classed('over_e_avg',d=>d.em>em_avg?true:false)
 
-
         console.log(accu_em)
 
-        d3.selectAll('.que_ae')
+        //有没有办法合成一块写,我希望，将他们作为一个整体，但是
+        //重构：作为同一个rec的情况，第一个长方形高度是avg与自长更小的高度，填充颜色，第二个长方形高度是avg与自长更高的高度，若未前者则无填充，若为后者则
+        //给出index时，需要变化的主要是填充物
+        var accu_avg_rec=d3.selectAll('.que_ae')
         .append('rect')
         .attr('width',bar_width)
         .attr('height',a_scale(accu_avg))
@@ -275,9 +287,30 @@ const max_accu=d3.max(accu_em_data.map(ele=>ele.accu))
           return d.accu<accu_avg?'none':'hotpink'
         })
         .attr('stroke','hotpink')
+        .attr('id',d=>d.accu<accu_avg?'':'rect'+d.id)
+
+        accu_avg_rec.append('title').text(d=>d.accu)
         .append('g')
 
-        d3.selectAll('.que_ae')
+        accu_avg_rec
+        .on('mouseover',function(e,d){
+          console.log(d)
+          // bus.$emit('sendque',d.id)
+          console.log(this)
+          if (d.accu>=accu_avg) {
+          d3.select(this).style("fill-opacity", 0.8);
+          }
+          d3.select('#link'+d.id).style('opacity',0.8);
+        })
+        .on('mouseleave',function(e,d){
+          // bus.$emit('sendque',d.id)
+          console.log(this)
+          if (d.accu>=accu_avg) {
+          d3.select(this).style("fill-opacity",1);}
+          d3.select('#link'+d.id).style('opacity',0.5);
+        })
+
+        var accu_rec=d3.selectAll('.que_ae')
         .append('rect')
         .attr('width',bar_width)
         .attr('height',d=>a_scale(d.accu))
@@ -287,10 +320,30 @@ const max_accu=d3.max(accu_em_data.map(ele=>ele.accu))
         .attr('stroke',(d)=>{
           return d.accu<accu_avg?'hotpink':'none'
         })
-        console.log(accu_avg)
+        
+        accu_rec
+        .append('title').text(d=>d.accu)
+
+        accu_rec
+        .on('mouseover',function(e,d){
+          // bus.$emit('sendque',d.id)
+          console.log(this)
+          if (d.accu<accu_avg) {
+          d3.select(this).style("fill-opacity", 0.8);
+          }
+          d3.select('#link'+d.id).style('opacity',0.8);
+        })
+        .on('mouseleave',function(e,d){
+          // bus.$emit('sendque',d.id)
+          console.log(this)
+          if (d.accu<accu_avg) {
+
+          d3.select(this).style("fill-opacity",1);}
+          d3.select('#link'+d.id).style('opacity',0.5);
+        })
 
 // const scale_max=d3.max([max_em,max_accu])
-
+        
         d3.selectAll('.que_ae')
         .append('rect')
         .attr('x',bar_width)
@@ -300,6 +353,7 @@ const max_accu=d3.max(accu_em_data.map(ele=>ele.accu))
           return d.em<em_avg?'none':'gold'
         })
         .attr('stroke','gold')
+        .append('title').text(d=>d.em)
         .append('g')
 
         d3.selectAll('.que_ae')
@@ -313,6 +367,9 @@ const max_accu=d3.max(accu_em_data.map(ele=>ele.accu))
         .attr('stroke',(d)=>{
           return d.em<em_avg?'gold':'none'
         })
+        .append('title').text(d=>d.em)
+
+
 //Link generator used for both examples
     var linkGen = d3.linkVertical()
     .source(d=>saneky_revert_scale(sankey_size.width+sankey_nodewidth*0.5,d.y1/* +0.5*d.width */))
@@ -338,9 +395,9 @@ const max_accu=d3.max(accu_em_data.map(ele=>ele.accu))
     // draw_attn(){
     },
     init() {
-      const path = "http://10.192.9.11:5000/query_que_sunburst";
-      const path2 = "http://10.192.9.11:5000/query_attn_head";
-      const path3="http://10.192.9.11:5000/query_em_accu"
+      const path = "http://10.192.9.11:8000/query_que_sunburst";
+      const path2 = "http://10.192.9.11:8000/query_attn_head";
+      const path3="http://10.192.9.11:8000/query_em_accu"
       const requestOne = axios.get(path);
       const requestTwo = axios.get(path2);
       const requestThree=axios.get(path3);

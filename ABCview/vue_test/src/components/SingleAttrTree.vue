@@ -93,14 +93,13 @@ export default {
 
       const textData_index = this.tokenPool.map((a) => a + "");
       // Object.keys(textData);
-      const layer_width = 60;
 
       const x = d3
         .scaleBand()
         .domain(textData_index)
         .range([0, height])
         .padding(0);
-
+      const svg_width=700;
       var svg = d3
         .select("#single-attr-tree")
         .append("svg")
@@ -228,7 +227,7 @@ export default {
 
       // add the link titles
       link.append("title").text(function (d) {
-        return d.source.name + " → " + d.target.name;
+        return d.source.name + " → " + d.target.name+'\nlayer:'+d.layer;
       });
       // add in the graph
       var node = mySvg
@@ -264,7 +263,7 @@ export default {
         .style("opacity", 1)
         .append("title")
         .text(function (d) {
-          return d.name;
+          return d.name+'\nsentence:'+sentence_span[d.node];
         });
       node
         .attr("class", "textG")
@@ -294,6 +293,11 @@ export default {
 
         }
     const tree_padding=40;
+      // const layer_width = 60;
+      const tree_height_sum=this.tree_height.q+this.tree_height.ctx+d3.max([this.tree_height.q,this.tree_height.ctx])+d3.max([this.tree_height.q,this.tree_height.ctx]);
+      const layer_width = (( svg_width-margin.right-margin.right)+tree_padding-(2*tree_padding))/tree_height_sum;
+
+
         draw(this.q_node_link,0,this.tree_height.q*layer_width)
         draw(this.ctx_node_link,0,this.tree_height.ctx*layer_width)
         draw(this.reranker_node_link,layer_width*d3.max([this.tree_height.q,this.tree_height.ctx])+tree_padding,
@@ -304,7 +308,7 @@ export default {
 
     getAll() {
       const path =
-        "http://10.192.9.11:5000/query_single_attr_tree/" + this.ctx_selected
+        "http://10.192.9.11:8000/query_single_attr_tree/" + this.ctx_selected
       axios
         .get(path)
         .then((res) => {
@@ -319,7 +323,7 @@ export default {
     },
     set_para_update() {
       const path =
-        "http://10.192.9.11:5000/query_single_attr_tree/" + this.ctx_selected;
+        "http://10.192.9.11:8000/query_single_attr_tree/" + this.ctx_selected;
       axios
         .post(path, {
           threshold: this.threshold,
@@ -342,7 +346,7 @@ export default {
     init() {
       console.log("tree init");
       const path =
-        "http://10.192.9.11:5000/query_single_attr_tree/" + this.ctx_selected;
+        "http://10.192.9.11:8000/query_single_attr_tree/" + this.ctx_selected;
       axios
         .post(path, {
           threshold: this.threshold,

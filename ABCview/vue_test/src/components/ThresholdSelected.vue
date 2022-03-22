@@ -2,15 +2,28 @@
   <div id="sliders-button-container">
     <div id="sliders-container">
       <div id="threshold-selected">
-        <a-slider :marks="marks_threshold" :max="0.5" :min="0.1" :step="0.1" :default-value="0.5"
+        <a-slider :marks="marks_threshold" :max="0.5" :min="0.1" :default-value="0.5" :step="0.01"
           @afterChange="que_thre" />
-        <a-slider :marks="marks_threshold" :max="0.5" :min="0.1" :step="0.1" :default-value="0.5"
+        <a-slider :marks="marks_threshold" :max="0.5" :min="0.1" :default-value="0.5" :step="0.01"
           @afterChange="ctx_thre" />
-        <a-slider :marks="marks_reranker_threshold" :max="0.8" :min="0.4" :step="0.1" :default-value="0.7"
+        <a-slider :marks="marks_reranker_threshold" :max="0.8" :min="0.4" :default-value="0.7" :step="0.01"
           @afterChange="reranker_thre" />
-        <a-slider :marks="marks_threshold" :max="0.5" :min="0.1" :step="0.1" :default-value="0.5"
+        <a-slider :marks="marks_threshold" :max="0.5" :min="0.1" :default-value="0.5" :step="0.01"
           @afterChange="reader_thre" />
-        <a-button @click="showSingleTree(false)">layer-comparison</a-button>
+        <a-radio-group v-model="layer_model" @change="onChange">
+          <a-radio-button value="que">
+            question
+          </a-radio-button>
+          <a-radio-button value="ctx">
+            context
+          </a-radio-button>
+          <a-radio-button value="reranker">
+            reranker
+          </a-radio-button>
+          <a-radio-button value="reader">
+            reader
+          </a-radio-button>
+        </a-radio-group>
         <a-button @click="showSingleTree(true)">model-comparison</a-button>
       </div>
       <!-- <div id="layer-selected">
@@ -39,6 +52,11 @@ import bus from "./bus";
 export default {
   name: "ThresholdSelected",
   methods: {
+    onChange(e) {
+      console.log(`checked = ${e.target.value}`);
+      bus.$emit('layer_tree_model',e.target.value)
+      // this.$emit('showsingletree',false)
+    },
     que_thre(value) {
       this.threshold = value;
       bus.$emit("que_thre", value);
@@ -56,30 +74,31 @@ export default {
       this.layer=val;
       bus.$emit('set_layer',this.layer);
     },
-    input_sentenceId(){
-      console.log("input"+this.input_value)
-      bus.$emit('dispatchsentencetoshow',this.input_value)
-    },
+    // input_sentenceId(){
+    //   console.log("input"+this.input_value)
+    //   bus.$emit('dispatchsentencetoshow',this.input_value)
+    // },
     showSingleTree(val){
       console.log(val)
-      this.$emit('showsingletree',val)
+      bus.$emit('showsingletree',val)
     }
   },
   data() {
     return {
       input_value:1,
+      layer_model:'reader',
       marks_threshold: {
         0.1: "0.1",
-        0.2: "0.2",
-        0.3: "0.3",
-        0.4: "0.4",
+        // 0.2: "0.2",
+        // 0.3: "0.3",
+        // 0.4: "0.4",
         0.5: "0.5",
       },
       marks_reranker_threshold: {
         0.4: "0.4",
-        0.5: "0.5",
-        0.6: "0.6",
-        0.7: "0.7",
+        // 0.5: "0.5",
+        // 0.6: "0.6",
+        // 0.7: "0.7",
         0.8: "0.8"
       },
       marks_layer:{

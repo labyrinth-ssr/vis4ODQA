@@ -616,7 +616,7 @@ export default {
     init() {
       console.log("instanceview init");
       const path =
-        "http://10.192.9.11:5000/query_word_cloud/" + this.question_selected;
+        "http://10.192.9.11:8000/query_word_cloud/" + this.question_selected;
           axios
           .post(path, {
                 que_sal_thre: this.que_sal_thre,

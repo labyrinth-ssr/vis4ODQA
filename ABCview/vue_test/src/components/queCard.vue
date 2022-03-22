@@ -1,27 +1,27 @@
 <template>
 
-  <a-table :data-source="data" :scroll="{y: 100 }" :pagination='false' :customRow="customRow">
+  <a-table :data-source="data" :scroll="{y: 100 }" :pagination='true' :customRow="customRow">
     <a-table-column key="que" title="question" data-index="que" :width="240" :height="50"/>
-    <!-- <a-table-column key="k_accu" title="k" data-index="k_accu" :width="30">
+    <a-table-column key="k_accu" title="k" data-index="k_accu" :width="30">
       <template slot-scope="k_accu">
         <em-barchart :rect_data="k_accu"/>
       </template>
-    </a-table-column> -->
-    <!-- <a-table-column key="em" title="em" data-index="em" :width="30" :disabled="false">
+    </a-table-column>
+    <a-table-column key="em" title="em" data-index="em" :width="30" :disabled="false">
       <template slot-scope="em">
       <a-radio :default-checked="em" />
       </template>
-    </a-table-column> -->
+    </a-table-column>
   </a-table>
 </template>
 <script>
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 import axios from 'axios';
 import bus from './bus';
-// import emBarchart from './emBarchart.vue';
-const DataUrl = 'http://10.192.9.11:5000/query_que';
+import emBarchart from './emBarchart.vue';
+const DataUrl = 'http://10.192.9.11:8000/query_que';
 export default {
-  // components: { emBarchart },
+  components: { emBarchart },
     name:'QueCArd',
   data() {
     return {

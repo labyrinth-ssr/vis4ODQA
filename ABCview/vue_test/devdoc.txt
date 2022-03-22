@@ -202,3 +202,27 @@ que table
 
 解决显示的问题：
 父级组件：
+
+前端：
+关于12层显示的问题，，，
+换一个选择框，
+post：que/ctx/reader/reranker/ threshold 
+
+依赖：文件名，区分，以及k
+
+搞清生命周期
+我需要在画图前拿到数据，画图是在拿到服务器数据后，服务器数据在post后，post在init中，init在mount时，所以询问：mount前时可以把data传到吗，在beforeCreat里面有一个监听，仅仅改变数据，但是此时恐怕并没有data这个东西
+有些东西不确定，一定要搞清楚，初始值要设好
+此时点击需要监听到后调用方法
+接着选择
+
+完成视图转换：
+两个视图与其它组件：que、ctx、
+区别：thre,
+v-if 没有create,
+初始情况：渲染12层，使用初始data
+button 变动改变父组件的值（emit
+在layer中，thre变动更新tree，也就是经典的emit，update
+变动到single后，single 此时父组件已经保存了que，ctx，的值这些需要提前放进single，也就是 ，可能是用props 这个先待定。
+有个问题：model变化的监听到底是谁，
+在layer view点击就是layer view变化，在model view点击就是，我先使用父组件管理。

@@ -68,7 +68,7 @@ export default {
     methods: {
         getAll(input_idx, stage_idx){
             const path =
-        "http://10.192.9.11:5000/query_context_view/";
+        "http://10.192.9.11:8000/query_context_view/";
           axios
             .post(path, {
                 ctx_id: input_idx,

@@ -1,13 +1,11 @@
 <template>
-
   <div id="app">
-
     <div id="leftCol">
       <div id="leftUp">
         <que-sankey></que-sankey>
       </div>
       <div id="leftMiddle">
-        <que-card @showsingletree="showSingleTree"></que-card>
+        <que-card ></que-card>
       </div>
       <div id="leftBottom">
         <context-table></context-table>>
@@ -18,31 +16,30 @@
         <div id="attrTree_container">
           <!-- <ThresholdSelected /> -->
           <div id="left-tree">
-            <single-attr-tree v-if="flag"></single-attr-tree>
-            <attr-tree v-else></attr-tree>
+            <tree/>
+            <!-- <single-attr-tree v-if="flag"></single-attr-tree>
+            <attr-tree v-else></attr-tree> -->
           </div>
           <div id="right-selector">
-            <threshold-selected @showsingletree="showSingleTree"></threshold-selected>
+            <threshold-selected ></threshold-selected>
           </div>
         </div>
       </div>
       <div id="downRow">
         <div id="left-instance">
-          <instance-view @showsingletree="showSingleTree"></instance-view>
-
+          <instance-view ></instance-view>
         </div>
         <div id="right-selector">
           <threshold-instance-view />
         </div>
       </div>
     </div>
-
   </div>
 
 </template>
 
 <script>
-  import SingleAttrTree from './components/SingleAttrTree.vue'
+  // import SingleAttrTree from './components/SingleAttrTree.vue'
   // import queThreBox from "./components/queThreBox.vue";
   import QueSankey from "./components/QueSankey.vue";
   import QueCard from './components/queCard.vue';
@@ -50,7 +47,8 @@ import ThresholdSelected from './components/ThresholdSelected.vue';
 import ContextTable from './components/contextTable.vue';
 import InstanceView from './components/InstanceView.vue';
 import ThresholdInstanceView from './components/ThresholdInstanceView.vue';
-import AttrTree from './components/AttrTree.vue';
+// import AttrTree from './components/AttrTree.vue';
+import Tree from './components/Tree.vue';
 
   export default {
     name: "App",
@@ -58,12 +56,13 @@ import AttrTree from './components/AttrTree.vue';
       // queThreBox,
       QueSankey,
       QueCard,
-      SingleAttrTree,
+      // SingleAttrTree,
       ThresholdSelected,
       ContextTable,
       InstanceView,
       ThresholdInstanceView,
-      AttrTree
+      // AttrTree,
+        Tree
     },
     data(){
       return{
@@ -99,8 +98,8 @@ import AttrTree from './components/AttrTree.vue';
   }
 
   #leftCol {
-    flex: left;
-    width: 400px;
+    float: left;
+    width: 35%;
   }
 
   #rightCol {

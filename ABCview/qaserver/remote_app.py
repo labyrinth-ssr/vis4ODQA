@@ -9,10 +9,12 @@ import regex as re
 import copy
 from functools import reduce
 
-from tree_func import singleTreeHeight,one_tree,attribution_tree,fileTreeHeight
+from tree_func import singleTreeHeight,one_tree
 from sentence_span import getSentenceSpan 
 from que_freq import getQueSunburst,queTreeToLink
 from head_importance import process_impo,process_layer
+from attribution_tree_multilayer import attribution_tree
+from tree_height import fileTreeHeight
 
 all_layer_node_link=[]
 list_tokenPool=[]
@@ -24,7 +26,7 @@ ctxs=[]
 ret={}
 k=20
 ques=[]
-# sentence_id = 9
+sentence_id = 1
 # top_k_accu=[]
 
 
@@ -90,12 +92,14 @@ def query_que_sunburst():
         pass
     return jsonify(que_sankey_data)
 
+
 @app.route('/query_que',methods=['GET','POST'])
 def query_que():
     global reader_str,ques
     if request.method=='POST':
         ques=[]
         senIds=request.get_json()
+        print('senid',senIds)
         top_k_accu=[]
         quelist=reader_str
         for index in senIds:
@@ -112,52 +116,23 @@ def query_que():
     else: pass
     return jsonify({'results':ques})
 
-@app.route('/query_attr_tree',methods=['GET', 'POST'])
-def query_attr_tree():
+@app.route('/query_attr_tree/<int:top_kth>',methods=['GET', 'POST'])
+def query_attr_tree(top_kth):
     global all_layer_node_link, tokens,list_tokenPool
-    # top_kth=0
     if request.method=='POST':
         all_layer_node_link=[]
         post_data=request.get_json()
         threshold=post_data['threshold']
-        top_kth = post_data['top_kth']
-        que_id=post_data['que_id']
-        model=post_data['model']
-        attr_filename=''
-        sal_filename=''
-        with open('./generated_data/tokens/input_tokens for_question'+str(que_id)+'.json', 'r') as f2:
-            tokens = json.load(f2)[top_kth]
-
-        if (model=='que'):
-            attr_filename='relevant_q/attr_mat/mat_relevant_'
-            sal_filename='relevant_q/attr_vec/vec_relevant_'
-            noneed_cls=True
-            is_ctx=False
-        elif (model=='ctx'):
-            attr_filename='relevant_ctx/attr_mat/mat_relevant_'
-            sal_filename='relevant_ctx/attr_vec/vec_relevant_'
-            noneed_cls=True
-            is_ctx=True
-            que_id=que_id*20+top_kth #the file id,not the que id
-        elif (model == 'reranker'):
-            attr_filename='rank/attr_mat/mat_rank_'
-            sal_filename='rank/attr_vec/vec_rank_'
-            noneed_cls=False
-            is_ctx=False
-        elif (model == 'reader'):
-            attr_filename='cutted_attr_mat/cutted_mat_start_'
-            sal_filename='attr_vec/vec_end_'
-            noneed_cls=True
-            is_ctx=False
         # layer=post_data['layer']
         tokenPool=set()
-        with open ('./generated_data/'+sal_filename+str(que_id)+'.json','r') as f1:
+        with open ('./generated_data/attr_vec/vec_end_'+str(sentence_id)+'.json','r') as f1:
             saliency=json.load(f1)
-        with open ('./generated_data/'+attr_filename+str(que_id)+'.json') as f3:
+        with open('./generated_data/tokens/input_tokens for_question'+str(sentence_id)+'.json', 'r') as f2:
+            tokens = json.load(f2)[top_kth]
+        with open ('./generated_data/cutted_attr_mat/cutted_mat_start_'+str(sentence_id)+'.json') as f3:
             all_attr=json.load(f3)
         for i in range(0,12):
-            print('layer:',i)
-            py_data=attribution_tree(all_attr,tokens,threshold,i,top_kth,is_ctx,noneed_cls)
+            py_data=attribution_tree(all_attr,tokens,threshold,i,top_kth,False,True)
             valued_nodes=[]
             layerSaliency=saliency[i][top_kth]
             nodes_list = []
@@ -199,6 +174,9 @@ def query_attr_tree():
         'tree_height':fileTreeHeight(all_layer_node_link),
         'sentence_span':getSentenceSpan(tokens)
    })
+# attr_vec/vec_end_
+# cutted_attr_mat/cutted_mat_start_'+str(sentence_id)
+
 
 @app.route('/query_single_attr_tree/<int:top_kth>',methods=['GET', 'POST'])
 def query_single_attr_tree(top_kth):
@@ -209,8 +187,8 @@ def query_single_attr_tree(top_kth):
         post_data=request.get_json()
         threshold=post_data['threshold']
         layer=post_data['layer']
-        que_id=post_data['queId']
-        with open('./generated_data/tokens/input_tokens for_question'+str(que_id)+'.json', 'r') as f2:
+        print('sentence_id', sentence_id)
+        with open('./generated_data/tokens/input_tokens for_question'+str(sentence_id)+'.json', 'r') as f2:
             tokens = json.load(f2)[top_kth]
         sep_save=0
         for i in range(0,len(tokens)):
@@ -222,13 +200,13 @@ def query_single_attr_tree(top_kth):
         ctx_tokens.extend(tokens[sep_save+1:])
         ctx_tokens.append('[SEP]')
 
-        ret['q_node_link']=one_tree(0,'relevant_q/attr_mat/mat_relevant_'+str(que_id), 'relevant_q/attr_vec/vec_relevant_'+str(que_id),layer,threshold['que'],top_kth,tokenPool,ret['tree_height']['q'],False,True,q_tokens)
+        ret['q_node_link']=one_tree(0,'relevant_q/attr_mat/mat_relevant_'+str(sentence_id), 'relevant_q/attr_vec/vec_relevant_'+str(sentence_id),layer,threshold['que'],top_kth,tokenPool,ret['tree_height']['q'],False,True,q_tokens)
         ret['tree_height']['q']=singleTreeHeight(ret['q_node_link'])
-        ret['ctx_node_link']= one_tree(len(q_tokens)-1,'relevant_ctx/attr_mat/mat_relevant_'+str(que_id*20+top_kth),'relevant_ctx/attr_vec/vec_relevant_'+str(que_id*20+top_kth),layer,threshold['ctx'],top_kth,tokenPool,ret['tree_height']['ctx'],True,True,ctx_tokens)
+        ret['ctx_node_link']= one_tree(len(q_tokens)-1,'relevant_ctx/attr_mat/mat_relevant_'+str(sentence_id*20),'relevant_ctx/attr_vec/vec_relevant_'+str(sentence_id*20),layer,threshold['ctx'],top_kth,tokenPool,ret['tree_height']['ctx'],True,True,ctx_tokens)
         ret['tree_height']['ctx']=singleTreeHeight(ret['ctx_node_link'])
-        ret['reranker_node_link']= one_tree(0,'rank/attr_mat/mat_rank_'+str(que_id), 'rank/attr_vec/vec_rank_'+str(que_id),layer,threshold['reranker'],top_kth,tokenPool,ret['tree_height']['reranker'],False,False,tokens)
+        ret['reranker_node_link']= one_tree(0,'rank/attr_mat/mat_rank_'+str(sentence_id), 'rank/attr_vec/vec_rank_'+str(sentence_id),layer,threshold['reranker'],top_kth,tokenPool,ret['tree_height']['reranker'],False,False,tokens)
         ret['tree_height']['reranker']=singleTreeHeight(ret['reranker_node_link'])
-        ret['reader_node_link']= one_tree(0,'cutted_attr_mat/cutted_mat_start_'+str(que_id),'attr_vec/vec_end_'+str(que_id),layer,threshold['reader'],top_kth,tokenPool,ret['tree_height']['reader'],False,True,tokens)
+        ret['reader_node_link']= one_tree(0,'cutted_attr_mat/cutted_mat_start_'+str(sentence_id),'attr_vec/vec_end_'+str(sentence_id),layer,threshold['reader'],top_kth,tokenPool,ret['tree_height']['reader'],False,False,tokens)
         ret['tree_height']['reader']=singleTreeHeight(ret['reader_node_link'])
         list_tokenPool=list(tokenPool)
         list_tokenPool.sort()
@@ -306,9 +284,11 @@ def summary_for_barchart(whole_wc, barchart_thre):
     # return q_list_ordered, ctx_list_ordered
 
 
-@app.route('/query_word_cloud/<int:sentence_id>', methods=['GET', 'POST'])
-def query_word_cloud(sentence_id):
+@app.route('/query_word_cloud/<int:sentence_selected>', methods=['GET', 'POST'])
+def query_word_cloud(sentence_selected):
     if request.method == "POST":
+        global sentence_id
+        sentence_id = sentence_selected
         postdata = request.get_json()
         que_sal_thre = postdata['que_sal_thre']
         barchart_thre = postdata['barchart_thre']
@@ -483,4 +463,4 @@ def query_context_view():
     return ret
 
 if __name__ == "__main__":
-    app.run(debug=True,host='0.0.0.0',port=8000)
+    app.run(debug=True,host='0.0.0.0')

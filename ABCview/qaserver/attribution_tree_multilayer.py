@@ -21,7 +21,6 @@ def attribution_tree(att_allk:list, tokens:list, threshold: int, layer: int,top_
 
     proportion_all *= (proportion_all > threshold).astype(int)
     seq_length = len(proportion_all[0])
-    print("seq_len",seq_length)
 
     height_list = [0 for i in range(seq_length)]
     # -1: not appear  0: appear but not fixed  1: fixed   
@@ -51,7 +50,7 @@ def attribution_tree(att_allk:list, tokens:list, threshold: int, layer: int,top_
             edges.append((top_token_index, i))
             weight[top_token_index][i]=proportion_all[layer][top_token_index][i]
             layerId[top_token_index][i]=layer
-
+    
     for layer_index in range(layer-1, -1, -1):
         for i_token in range(1, seq_length):
             for j_token in range(0, seq_length):
@@ -86,9 +85,7 @@ def attribution_tree(att_allk:list, tokens:list, threshold: int, layer: int,top_
         G.add_node(token)
 
     for (i_token, j_token) in edges:
-        print(i_token,j_token)
         # print(tagged_tokens)
-        print(tagged_tokens[i_token],tagged_tokens[j_token])
 
         G.add_edges_from([(tagged_tokens[i_token], tagged_tokens[j_token], {'weight': weight[i_token][j_token],'layer':layerId[i_token][j_token]})])
     M = G.number_of_edges()

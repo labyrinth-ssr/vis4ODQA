@@ -14,31 +14,34 @@ import bus from "./bus";
 
 export default {
   name: "AttrTree",
-  created() {
-    bus.$on("dispatchsentencetoshow", (val) => {
-      this.ctx_selected = val;
-      this.init();
-    }),
+  Created() {
+      bus.$on('layer_tree_model',(model)=>{
+        console.log('set model');
+        this.model = model;
+        this.set_para();
+      })
       bus.$on("dispatchthreshold", (val) => {
         this.threshold = val;
-
-        this.set_para(this.threshold, this.layer);
+        this.set_para(/* this.threshold, this.layer */);
       }),
       bus.$on("set_layer", (val) => {
         this.layer = val;
-        this.set_para(this.threshold, this.layer);
+        this.set_para(/* this.threshold, this.layer */);
       });
   },
   data() {
     return {
       data: [],
-      ctx_selected: 1,
+      // ctx_selected: 1,
       tokens: [],
       nodes: [],
       threshold: 0.5,
       layer: 10,
       valued_nodes: [],
       sentence_span: [],
+      model:'reader',
+      top_kth:0,
+      que_id:1
     };
   },
   methods: {
@@ -61,10 +64,11 @@ export default {
       var margin = { top: 20, right: 10, bottom: 50, left: 10 },
         width = 1000,
         height = 400;
+
+      const svg_width=1000;
       var color = d3.scaleOrdinal(d3.schemePaired);
 
       const textData_index = tokenPool.map((a) => a + "");
-      const layer_width = 35;
 
       const x = d3
         .scaleBand()
@@ -76,7 +80,7 @@ export default {
         .select("#attr-tree")
         .append("svg")
         .attr("id", "AttrTreeSvg")
-        .attr("width", "2000")
+        .attr("width", svg_width)
         .attr("height", height + margin.top + margin.bottom)
         .style("background-color", "white")
         .style("border-radius", "10px");
@@ -128,6 +132,12 @@ export default {
           .attr("font-size", "12px")
           .attr("fill", "black");
       }
+      // const x_padding=margin.left;
+
+      const sum_tree_height = tree_height.reduce((prev, cur) => prev + cur, 0);
+      const layer_width = ((svg_width-margin.right)-(11*margin.left))/sum_tree_height;
+
+      //35*24=700+140=840
 
       var pos = 0;
       for (let index = 0; index < 12; index++) {
@@ -234,7 +244,7 @@ export default {
 
       // add the link titles
       link.append("title").text(function (d) {
-        return d.source.name + " → " + d.target.name;
+        return d.source.name + " → " + d.target.name + "\nlayer:" + d.layer;
       });
       const sentence_span = this.sentence_span;
       // add in the graph
@@ -279,7 +289,7 @@ export default {
         .style("opacity", 1)
         .append("title")
         .text(function (d) {
-          return d.name;
+          return d.name + "\nsentence:" + sentence_span[d.node];
         });
 
       node
@@ -314,8 +324,7 @@ export default {
       this.valued_nodes = valued_nodes;
     },
     getAll() {
-      const path =
-        "http://localhost:5000/query_attr_tree/" + this.ctx_selected;
+      const path = "http://localhost:8000/query_attr_tree"
       axios
         .get(path)
         .then((res) => {
@@ -330,14 +339,14 @@ export default {
           console.error(error);
         });
     },
-    set_para(threshold, layer) {
-      const path =
-        "http://localhost:5000/query_attr_tree/" + this.ctx_selected;
+    set_para() {
+      const path = "http://localhost:8000/query_attr_tree"
       axios
         .post(path, {
-          sts_id: this.ctx_selected,
-          threshold: threshold,
-          layer: layer - 1,
+          top_kth:this.top_kth,
+          que_id:this.que_id,
+          threshold: this.threshold,
+          layer: this.layer - 1,
         })
         .then(() => {
           this.getAll();
@@ -345,13 +354,16 @@ export default {
     },
     init() {
       console.log("tree init");
+      console.log('model:',this.model)
       const path =
-        "http://10.192.9.11:5000/query_attr_tree/" + this.ctx_selected;
+        "http://10.192.9.11:8000/query_attr_tree"
       axios
         .post(path, {
-          sts_id: this.ctx_selected,
+          top_kth:this.top_kth,
+          que_id:this.que_id,
           threshold: this.threshold,
           layer: this.layer - 1,
+          model:this.model
         })
         .then(() => {
           axios
@@ -377,6 +389,7 @@ export default {
     },
   },
   beforeMount() {
+    console.log('mount',this.model)
     this.init();
   },
 };
