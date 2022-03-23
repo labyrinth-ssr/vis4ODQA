@@ -101,9 +101,9 @@ export default {
       };
     //   d3.select("#SingleAttrTreeSvg").remove();
     //   d3.select("#SingleAttrTreeSvg").selectAll("*").remove();
-      const margin = { top: 50, right: 10, bottom: 50, left: 50 },
+      const margin = { top: 20, right: 10, bottom: 20, left: 20 },
         // width = 1000,
-        height = 240;
+        height = 300;
       // var color = d3.scaleOrdinal(d3.schemePaired);
 
       const textData_index = this.tokenPool.map((a) => a + "");
@@ -114,12 +114,12 @@ export default {
         .domain(textData_index)
         .range([0, height])
         .padding(0);
-      const svg_width=700;
+      const svg_width=880;
       var svg = d3
         .select("#single-attr-tree")
         .append("svg")
         .attr("id", "SingleAttrTreeSvg")
-        .attr("width", "700")
+        .attr("width", svg_width)
         .attr("height", height + margin.top + margin.bottom)
         .style("background-color", "white")
         .style("border-radius", "10px");
@@ -299,7 +299,6 @@ export default {
         .attr("text-anchor", "middle");
 
       d3.select("#SingleAttrTreeSvg")
-        .style("background-color", "white")
         .style("border-radius", "10px")
         .style("margin", "10px")
         .style("margin-left", "0px");
@@ -307,8 +306,8 @@ export default {
         }
     const tree_padding=40;
       // const layer_width = 60;
-      const tree_height_sum=this.tree_height.q+this.tree_height.ctx+d3.max([this.tree_height.q,this.tree_height.ctx])+d3.max([this.tree_height.q,this.tree_height.ctx]);
-      const layer_width = (( svg_width-margin.right-margin.right)+tree_padding-(2*tree_padding))/tree_height_sum;
+      const tree_height_sum=this.tree_height.reranker+this.tree_height.reader+d3.max([this.tree_height.q,this.tree_height.ctx]);
+      const layer_width = (( svg_width-margin.right-margin.left)-(2*tree_padding))/tree_height_sum;
 
 
         draw(this.q_node_link,0,this.tree_height.q*layer_width)

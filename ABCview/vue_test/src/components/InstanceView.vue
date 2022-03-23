@@ -1,5 +1,5 @@
 <template>
-  <div id="instance-view"></div>
+  <div id="instance-view" class="view"></div>
 </template>
 
 <script>
@@ -928,7 +928,7 @@ export default {
 <style scoped>
 #instance-view {
   margin: 0px;
-  margin-left: 10px;
+  /* margin-left: 10px; */
   height: 100%;
   /* text-align: center; */
   width: 100%;

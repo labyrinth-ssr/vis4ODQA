@@ -4,21 +4,20 @@
       <div id="leftUp">
         <que-sankey></que-sankey>
       </div>
+      <div id='context-view' class="view">
       <div id="leftMiddle">
         <que-card ></que-card>
       </div>
       <div id="leftBottom">
         <context-table></context-table>>
       </div>
+      </div>
     </div>
     <div id="rightCol">
       <div id="upRow">
         <div id="attrTree_container">
-          <!-- <ThresholdSelected /> -->
           <div id="left-tree">
             <tree/>
-            <!-- <single-attr-tree v-if="flag"></single-attr-tree>
-            <attr-tree v-else></attr-tree> -->
           </div>
           <div id="right-selector">
             <threshold-selected ></threshold-selected>
@@ -41,8 +40,8 @@
 <script>
   // import SingleAttrTree from './components/SingleAttrTree.vue'
   // import queThreBox from "./components/queThreBox.vue";
-  import QueSankey from "./components/QueSankey.vue";
-  import QueCard from './components/queCard.vue';
+import QueSankey from "./components/QueSankey.vue";
+import QueCard from './components/queCard.vue';
 import ThresholdSelected from './components/ThresholdSelected.vue';
 import ContextTable from './components/contextTable.vue';
 import InstanceView from './components/InstanceView.vue';
@@ -88,60 +87,97 @@ import Tree from './components/Tree.vue';
   }
 
   #app {
-    background: rgba(155, 223, 255, 0.123);
+    background: white;
     display: flex;
     height: 100%;
     width: 100%;
-    box-sizing: border-box;
+    overflow: hidden;
+
+    /* box-sizing: border-box;
     overflow: auto;
-    flex-direction: row;
+    flex-direction: row; */
   }
 
   #leftCol {
-    float: left;
-    width: 35%;
+    flex: 0 0 23%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 
-  #rightCol {
-    margin-left: 10px;
-  }
+  /* #rightCol {
+    flex: 0 0
+  } */
 
   #leftUp {
-    height: 40%;
+    flex: 0 0 38%;
+    overflow: hidden;
+  }
+  /* 62 -40=22 */
+  #context-view {
+    display: flex;
+    overflow: hidden;
+    flex-direction: column;
+
   }
 
   #leftMiddle {
-    /* top: 40%; */
-    /* height: 55%; */
-    padding-left: 25px;
+    overflow: hidden;
+    margin: 0 5%;
   }
 
     #leftBottom {
     /* top: 40%; */
     /* height: 55%; */
-    padding-left: 25px;
+    flex: 0 0 64%;
+    overflow: hidden;
+    margin: 0 5%;
   }
+
+  #rightCol {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
   #attrTree_container {
-    box-sizing: border-box;
-    position: relative;
+    /* position: relative; */
     width: 100%;
     height: 100%;
     display: flex;
+    overflow: hidden;
   }
 
   #upRow {
-    top: 0%;
-    height: 50%;
+    flex: 0 0 50%;
+    overflow: hidden;
+  }
+
+    #left-tree{
+    flex: 0 0 80%;
+    overflow: hidden;
+    /* width: 800px; */
   }
 
   #downRow {
     display: flex;
+    overflow: hidden;
+
   }
-  #left-tree{
-    width: 800px;
-  }
+
   #left-instance{
-    width: 900px;
+    flex: 0 0 80%;
+    /* width: 900px; */
+    overflow: hidden;
+
+  }
+
+  .view{
+    margin: 10px;
+    border: 1px solid #ccc!important;
+    padding:0.01em 16px;
+    border-radius:16px;
+    box-shadow: 2.5px 2.5px 10px rgb(180, 180, 180);
   }
 
 </style>

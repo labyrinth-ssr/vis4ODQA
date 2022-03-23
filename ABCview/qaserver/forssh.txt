@@ -2,3 +2,6 @@ xingershangxue201698SZK@
 /home/newdisk/zekai.shao/DPR/generated_data/
 scp -P 15654 -r zekai.shao@10.192.9.11:/home/newdisk/zekai.shao/DPR/generated_data/summary ./
 ssh zekai.shao@10.192.9.11 -p 15654
+
+lsof -i:端口号
+

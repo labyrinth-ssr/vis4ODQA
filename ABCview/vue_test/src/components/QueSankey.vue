@@ -1,5 +1,5 @@
 <template>
-  <div id="que_sankey">
+  <div id="que_sankey" class="view">
   </div>
 </template>
 
@@ -38,11 +38,11 @@ export default {
       const em_avg=this.accu_em.em_avg;
       const accu_avg=this.accu_em.k_accu_avg;
       //accu_em_data)
-      const margin = { top: 10, right: 10, bottom: 10, left: 10 };
-      const svg_size = { width: 400, height: 800 };
+      const margin = { top: 10, right: 15, bottom: 10, left: 15 };
+      const svg_size = { width: 350, height: 300 };
       const sankey_size = {
         width: 80,
-        height: 380,
+        height: 350-margin.left-margin.right,
       };
       // const attn_size = { width: 15, height: 15 };
 
@@ -53,7 +53,8 @@ export default {
         .attr("width", svg_size.width)
         .attr("height", svg_size.height)
         .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        .attr("transform", "translate(" + (margin.left+sankey_size.height) + "," + margin.top + ")rotate(90)");
+
       const sankey_nodewidth=15
       const color = d3.scaleOrdinal(d3.schemePaired);
       var sankey = d3Sankey()
@@ -142,9 +143,9 @@ export default {
           );
         })
         .attr("text-anchor", "middle");
-      svg.attr("transform", "translate(400,10)rotate(90)");
 
-      const bias=8
+      // svg.attr("transform", "translate(400,10)rotate(90)");
+
       const sankey_matrix_gap=30
 
       const attn_color = d3
@@ -164,7 +165,7 @@ export default {
       const barchart_padding=15
 
       var attn_g = d3.select("#mySvg").append("g").attr("id", "attn_g")
-      .attr('transform','translate('+(margin.left-bias)+','+(margin.top+sankey_size.width+rect_padding+sankey_matrix_gap+barchart_padding)+')');
+      .attr('transform','translate('+(/* margin.left */0)+','+(margin.top+sankey_size.width+rect_padding+sankey_matrix_gap+barchart_padding)+')');
 
       // 确定col的横坐标：绑定所有attndata数据后，将根据每条attn，选出匹配link的index
       //取出所有的y1排序后将index存入links
@@ -254,7 +255,7 @@ const max_accu=d3.max(accu_em_data.map(ele=>ele.accu))
         const e_scale=d3.scaleLinear().domain([0,max_em]).range([0,sankey_matrix_gap])
         const bar_width=8
         var accu_em_g = d3.select("svg").append("g").attr("id", "ae_g")
-      .attr('transform','translate('+(margin.left-bias)+','+(margin.top+sankey_size.width+barchart_padding)+')');
+      .attr('transform','translate('+(/* margin.left-bias */0)+','+(margin.top+sankey_size.width+barchart_padding)+')');
         //sankeydata)
         /* var accu_em= */accu_em_g
         .append("g")

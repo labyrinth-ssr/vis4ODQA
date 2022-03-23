@@ -127,7 +127,6 @@ def query_attr_tree():
         sal_filename=''
         with open('./generated_data/tokens/input_tokens for_question'+str(que_id)+'.json', 'r') as f2:
             tokens = json.load(f2)[top_kth]
-
         if (model=='que'):
             attr_filename='relevant_q/attr_mat/mat_relevant_'
             sal_filename='relevant_q/attr_vec/vec_relevant_'
@@ -155,6 +154,10 @@ def query_attr_tree():
             saliency=json.load(f1)
         with open ('./generated_data/'+attr_filename+str(que_id)+'.json') as f3:
             all_attr=json.load(f3)
+        if(is_ctx):
+            for i in range (12):
+                temp=(np.array(all_attr[i]))[:len(tokens),:len(tokens)]
+                all_attr[i]=temp.tolist()
         for i in range(0,12):
             print('layer:',i)
             py_data=attribution_tree(all_attr,tokens,threshold,i,top_kth,is_ctx,noneed_cls)

@@ -1,5 +1,5 @@
 <template>
-    <div id="tree">
+    <div id="tree" class="view">
         <!-- <single-attr-tree v-if="show_single_tree" :queid_prop='que_id' :ctx_prop='ctx_selected'></single-attr-tree>
         <attr-tree v-else :queid_prop='que_id' :model='layer_tree_model'></attr-tree> -->
         <component :is="current_tree" :queid_prop='que_id' :ctx_prop='ctx_selected' :model_prop='model'/>

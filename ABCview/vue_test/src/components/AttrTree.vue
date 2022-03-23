@@ -40,12 +40,6 @@ export default {
         this.layer = val;
         this.set_para(/* this.threshold, this.layer */);
       })
-      // bus.$on("dispatchqueid", (val)=>{
-      //   //)
-      //   console.log('attr tree on que id')
-      //   this.que_id = val
-      //   this.set_para();
-      // })
   },
   props:['ctx_prop','queid_prop','model_prop'],
   data() {
@@ -81,11 +75,10 @@ export default {
       };
       d3.select("#AttrTreeSvg").remove();
       d3.select("#AttrTreeSvg").selectAll("*").remove();
-      var margin = { top: 20, right: 10, bottom: 50, left: 10 },
-        width = 1000,
-        height = 400;
+      var margin = { top: 20, right: 10, bottom: 20, left: 10 },
+        height = 300;
 
-      const svg_width=1000;
+      const svg_width=880;
       var color = d3.scaleOrdinal(d3.schemePaired);
 
       const textData_index = tokenPool.map((a) => a + "");
@@ -102,7 +95,6 @@ export default {
         .attr("id", "AttrTreeSvg")
         .attr("width", svg_width)
         .attr("height", height + margin.top + margin.bottom)
-        .style("background-color", "white")
         .style("border-radius", "10px");
 
       const g2 = svg
@@ -154,14 +146,16 @@ export default {
       }
       // const x_padding=margin.left;
 
+      const tree_padding = 10;
+
       const sum_tree_height = tree_height.reduce((prev, cur) => prev + cur, 0);
-      const layer_width = ((svg_width-margin.right)-(11*margin.left))/sum_tree_height;
+      const layer_width = ((svg_width-margin.right-margin.left)-(11*tree_padding))/sum_tree_height;
 
       //35*24=700+140=840
 
       var pos = 0;
       for (let index = 0; index < 12; index++) {
-        width = tree_height[index] * layer_width;
+        var width = tree_height[index] * layer_width;
         if (sankeyDataList[index].links.length == 0) {
           continue;
         }
@@ -176,7 +170,7 @@ export default {
           width,
           pos
         );
-        pos = pos + width + 10;
+        pos = pos + width + tree_padding;
       }
     },
     draw(sankeydata, x, color, index, height, svg, margin, width, pos) {
