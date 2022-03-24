@@ -5,6 +5,7 @@
         <que-sankey></que-sankey>
       </div>
       <div id='context-view' class="view">
+        <h2>Context View</h2>
       <div id="leftMiddle">
         <que-card ></que-card>
       </div>
@@ -15,22 +16,15 @@
     </div>
     <div id="rightCol">
       <div id="upRow">
-        <div id="attrTree_container">
-          <div id="left-tree">
             <tree/>
-          </div>
-          <div id="right-selector">
-            <threshold-selected ></threshold-selected>
-          </div>
-        </div>
       </div>
       <div id="downRow">
-        <div id="left-instance">
+        <!-- <div id="left-instance"> -->
           <instance-view ></instance-view>
-        </div>
-        <div id="right-selector">
-          <threshold-instance-view />
-        </div>
+        <!-- </div> -->
+        <!-- <div id="right-selector"> -->
+          <!-- <threshold-instance-view /> -->
+        <!-- </div> -->
       </div>
     </div>
   </div>
@@ -42,10 +36,9 @@
   // import queThreBox from "./components/queThreBox.vue";
 import QueSankey from "./components/QueSankey.vue";
 import QueCard from './components/queCard.vue';
-import ThresholdSelected from './components/ThresholdSelected.vue';
 import ContextTable from './components/contextTable.vue';
 import InstanceView from './components/InstanceView.vue';
-import ThresholdInstanceView from './components/ThresholdInstanceView.vue';
+// import ThresholdInstanceView from './components/ThresholdInstanceView.vue';
 // import AttrTree from './components/AttrTree.vue';
 import Tree from './components/Tree.vue';
 
@@ -56,10 +49,9 @@ import Tree from './components/Tree.vue';
       QueSankey,
       QueCard,
       // SingleAttrTree,
-      ThresholdSelected,
       ContextTable,
       InstanceView,
-      ThresholdInstanceView,
+      // ThresholdInstanceView,
       // AttrTree,
         Tree
     },
@@ -99,10 +91,11 @@ import Tree from './components/Tree.vue';
   }
 
   #leftCol {
-    flex: 0 0 23%;
+    flex: 0 0 35%;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    margin-bottom: 10px;
   }
 
   /* #rightCol {
@@ -110,8 +103,10 @@ import Tree from './components/Tree.vue';
   } */
 
   #leftUp {
-    flex: 0 0 38%;
+    flex: 0 0 50%;
     overflow: hidden;
+    justify-content: space-between;
+
   }
   /* 62 -40=22 */
   #context-view {
@@ -129,7 +124,7 @@ import Tree from './components/Tree.vue';
     #leftBottom {
     /* top: 40%; */
     /* height: 55%; */
-    flex: 0 0 64%;
+    flex: 0 0 45%;
     overflow: hidden;
     margin: 0 5%;
   }
@@ -138,6 +133,7 @@ import Tree from './components/Tree.vue';
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    justify-content: space-between;
   }
 
   #attrTree_container {
@@ -151,6 +147,8 @@ import Tree from './components/Tree.vue';
   #upRow {
     flex: 0 0 50%;
     overflow: hidden;
+    padding-bottom:0px;
+    /* margin-bottom: 10px; */
   }
 
     #left-tree{
@@ -162,7 +160,8 @@ import Tree from './components/Tree.vue';
   #downRow {
     display: flex;
     overflow: hidden;
-
+    flex:0 0 50%;
+    margin-top: 0px;
   }
 
   #left-instance{
@@ -173,11 +172,34 @@ import Tree from './components/Tree.vue';
   }
 
   .view{
-    margin: 10px;
+    margin: 5px;
     border: 1px solid #ccc!important;
-    padding:0.01em 16px;
+    padding:15px 5px 5px 5px;
     border-radius:16px;
     box-shadow: 2.5px 2.5px 10px rgb(180, 180, 180);
+    overflow: hidden;
+    height: 95%;
   }
+
+  ::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  cursor: pointer;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.15);
+  transition: color 0.2s ease;
+}
+h2 {
+  font-size: 15px;
+}
 
 </style>

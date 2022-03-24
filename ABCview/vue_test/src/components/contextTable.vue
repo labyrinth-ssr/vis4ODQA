@@ -40,13 +40,13 @@ export default {
         return{
             SVGPadding:{
                 left:0,
-                top:20
+                top:5
             },
             textTokenPadding:{
                 top:1, bottom:1,
                 left:3, right:3,
             },
-            width:316,
+            width:460,
             height:100,
             select:[],
             tokens: [

@@ -61,13 +61,15 @@ def getQueSunburst(threshold,layer,head,reader_list)->list:
 
 def queTreeToLink(tree_data:list)->dict:
     ret={'nodes':[],'links':[]}
-    nodes=set()
+    node_cnt=0
+    nodes=[]
     for parent in tree_data:
         if (not parent['name']==''):
+            nodes.append('p_'+parent['name'])
             for child in parent['children']:
-                ret['links'].append({'source':parent['name']+'_p','target':child['name']+'_c','value':len(child['senId']),'senIds':child['senId']})
-                nodes.add(parent['name']+'_p')
-                nodes.add(child['name']+'_c')
+                ret['links'].append({'source':'p_'+parent['name'],'target':str(node_cnt)+'_'+child['name'],'value':len(child['senId']),'senIds':child['senId']})
+                nodes.append(str(node_cnt)+'_'+child['name'])
+                node_cnt+=1
     for node in nodes:
-        ret['nodes'].append({'node':node,'name':node.split('_',1)[0]})
+        ret['nodes'].append({'node':node,'name':node.split('_',1)[1]})
     return ret

@@ -1,66 +1,10 @@
 <template>
-  <div id="sliders-button-container">
-    <div id="sliders-container">
-      <div id="threshold-instanceview">
-        <a-slider
-          :marks="marks_threshold"
-          :max="0.05"
-          :min="0.01"
-          :step="0.01"
-          :default-value="0.03"
-          @afterChange="que_sal_thre"
-        />
-        <!-- <a-slider
-          :marks="marks_threshold"
-          :max="0.05"
-          :min="0.01"
-          :step="0.01"
-          :default-value="0.03"
-          @afterChange="ctx_sal_thre"
-        />
-        <a-slider
-          :marks="marks_threshold"
-          :max="0.05"
-          :min="0.01"
-          :step="0.01"
-          :default-value="0.03"
-          @afterChange="reranker_sal_thre"
-        />
-        <a-slider
-          :marks="marks_threshold"
-          :max="0.05"
-          :min="0.01"
-          :step="0.01"
-          :default-value="0.03"
-          @afterChange="reader_sal_thre"
-        /> -->
-        <a-slider
-          :marks="marks_barchart_threshold"
-          :max="7"
-          :min="3"
-          :step="1"
-          :default-value="5"
-          @afterChange="barchart_thre"
-        />
+      <div id="ins-thre">
+        <a-slider id="sal_thre" :marks="marks_threshold" :max="0.05" :min="0.01" :step="0.01" :default-value="0.03"
+          @afterChange="que_sal_thre" />
+        <a-slider id="bar_thre" :marks="marks_barchart_threshold" :max="7" :min="3" :step="1" :default-value="5"
+          @afterChange="barchart_thre" />
       </div>
-      <!-- <div id="layer-selected">
-        <a-slider
-          :marks="marks_layer"
-          :max="12"
-          :min="1"
-          :step="1"
-          :default-value="12"
-          @afterChange="change_layer"
-        />
-      </div> -->
-    </div>
-    <!-- <div id="input-container">
-      <div id="input-box">
-        <a-input v-model="input_value" @pressEnter="input_sentenceId" />
-      </div>
-    </div> -->
-      
-  </div>
 </template>
 
 <script>
@@ -73,15 +17,6 @@ export default {
       this.threshold = value;
       bus.$emit("que_sal_thre", value);
     },
-    // ctx_sal_thre(value) {
-    //   bus.$emit("ctx_sal_thre", value);
-    // },
-    // reranker_sal_thre(value) {
-    //   bus.$emit("reranker_sal_thre", value);
-    // },
-    // reader_sal_thre(value) {
-    //   bus.$emit("reader_sal_thre", value);
-    // },
     barchart_thre(value) {
       bus.$emit("barchart_thre", value);
     },
@@ -109,25 +44,17 @@ export default {
 </script>
 
 <style>
-#sliders-button-container {
-  /* display: flex; */
-  width: 40;
-  height: 100%;
-  overflow: visible;
+#ins-thre {
+  display:flex;
+  justify-content: space-evenly;
+  padding: 0 10%;
+  flex:0 0 70%;
 }
-#slider2-container{
-  overflow: visible;
+#sal_thre{
+  flex: 0 0 30%;
 }
-#threshold-instanceview {
-  position: relative;
-  left: 10%;
-  width: 50%;
-  height: 50%;
+#bar_thre{
+  flex: 0 0 30%;
 }
-#title {
-  margin: 0px 40px;
-}
-#sliders-container{
-  width:300px
-}
+
 </style>

@@ -1,8 +1,8 @@
 <template>
 
-  <a-table :data-source="data" :scroll="{y: 100 }" :pagination='true' :customRow="customRow">
+  <a-table :data-source="data" :scroll="{y: 100 }" :pagination='pagination' :customRow="customRow">
     <a-table-column key="que" title="question" data-index="que" :width="240" :height="50"/>
-    <a-table-column key="k_accu" title="k" data-index="k_accu" :width="30">
+    <a-table-column key="k_accu" title="k" data-index="k_accu" :width="60">
       <template slot-scope="k_accu">
         <em-barchart :rect_data="k_accu"/>
       </template>
@@ -16,6 +16,7 @@
 </template>
 <script>
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
+import * as d3 from "d3";
 import axios from 'axios';
 import bus from './bus';
 import emBarchart from './emBarchart.vue';
@@ -25,9 +26,13 @@ export default {
     name:'QueCArd',
   data() {
     return {
+      pagination: {
+        size:'small',
+      },
       data: [],
       loading: false,
       busy: false,
+      
       columns:[
         {title:'question',
         dataIndex:'que',
@@ -38,12 +43,13 @@ export default {
           title: 'k',
           dataIndex: 'k_accu',
           key: 'k_accu',
-        sorter: true,
+          sorter: (a,b) => a.k_accu-b.k_accu,
         }
       ],
       senIds:[]
     };
   },
+  
   created(){
     bus.$on('dispatchSenIds',(val)=>{
       this.senIds=val
@@ -79,17 +85,18 @@ export default {
     customRow(record){
       return{
         on:{
-          click:()=>{
-            //record)
-            this.showSingleTree()
+          click:(e)=>{
             bus.$emit('dispatchqueid',record.id)
+            console.log(e.srcElement)
+            d3.selectAll('.ant-table-row-cell-break-word')
+            .style('background-color', '#ffffff')
+            d3.select(e.srcElement)
+            .style('background-color', '#e6f7ff')
           }
         }
       }
-    },
-    showSingleTree(){
-      this.$emit('showsingletree',true)
     }
+
   },
 };
 </script>
@@ -114,6 +121,10 @@ export default {
 svg {
     display: block;
     max-width: 100%; 
+}
+.ant-table-pagination.ant-pagination {
+    float: right;
+    margin: 0px;
 }
 </style>
 

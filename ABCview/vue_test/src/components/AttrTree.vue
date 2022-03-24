@@ -32,13 +32,22 @@ export default {
     }
   },
   created() {
-      bus.$on("dispatchthreshold", (val) => {
-        this.threshold = val;
-        this.set_para(/* this.threshold, this.layer */);
+
+     bus.$on("que_thre", (val) => {
+        this.threshold=val
+        this.set_para();
       }),
-      bus.$on("set_layer", (val) => {
-        this.layer = val;
-        this.set_para(/* this.threshold, this.layer */);
+      bus.$on("ctx_thre", (val) => {
+        this.threshold=val
+        this.set_para();
+      }),
+      bus.$on("reranker_thre", (val) => {
+        this.threshold=val
+        this.set_para();
+      }),
+      bus.$on("reader_thre", (val) => {
+        this.threshold=val
+        this.set_para();
       })
   },
   props:['ctx_prop','queid_prop','model_prop'],
@@ -272,6 +281,7 @@ export default {
       // add the rectangles for the graph
       node
         .append("circle")
+        .attr('id',d=>'node'+d.node)
         .attr("class", "nodeRect")
         .attr("cx", function (d) {
           return d.x0 + sankey.nodeWidth() / 2;
@@ -285,11 +295,15 @@ export default {
         .on("click", function (event, data) {
           bus.$emit("dispatchtokentoshow", data.index);
         })
-        .on("mouseover", function (event, data) {
-          bus.$emit("highlightToken", data.index);
+                .on('mouseover',function(e,d){
+          
+          d3.selectAll('#node'+d.node)
+          .style('stroke','black')
+          .style('stroke-width',3)
         })
-        .on("mouseleave", function (e, data) {
-          bus.$emit("unhighlight", data.index);
+        .on('mouseleave',function(e,d){
+          d3.selectAll('#node'+d.node)
+          .style('stroke','none')
         })
         .style("fill", function (d) {
           if (d.targetLinks.length + d.sourceLinks.length === 0) {

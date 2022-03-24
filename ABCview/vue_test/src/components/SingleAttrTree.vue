@@ -251,9 +251,11 @@ export default {
         .append("g")
         .attr("class", "node");
 
+
       node
         .append("circle")
         .attr("class", "nodeRect")
+        .attr('id',d=>'node'+d.node)
         .attr("cx", function (d) {
           return d.x0 + sankey.nodeWidth() / 2;
         })
@@ -274,10 +276,21 @@ export default {
         })
         .style("stroke", "none")
         .style("opacity", 1)
+        .on('mouseover',function(e,d){
+          
+          d3.selectAll('#node'+d.node)
+          .style('stroke','black')
+          .style('stroke-width',3)
+        })
+        .on('mouseleave',function(e,d){
+          d3.selectAll('#node'+d.node)
+          .style('stroke','none')
+        })
         .append("title")
         .text(function (d) {
           return d.name+'\nsentence:'+sentence_span[d.node];
         });
+
       node
         .attr("class", "textG")
         .append("text")

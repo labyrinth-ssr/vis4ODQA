@@ -1,16 +1,21 @@
 <template>
-  <div id="sliders-button-container">
-    <div id="sliders-container">
       <div id="threshold-selected">
         <a-slider :marks="marks_threshold" :max="0.5" :min="0.1" :default-value="0.5" :step="0.01"
-          @afterChange="que_thre" />
+          @afterChange="que_thre" :disabled='disables[0]'  class="tree-thre"/>
         <a-slider :marks="marks_threshold" :max="0.5" :min="0.1" :default-value="0.5" :step="0.01"
-          @afterChange="ctx_thre" />
+          @afterChange="ctx_thre" :disabled='disables[1]' class="tree-thre"/>
         <a-slider :marks="marks_reranker_threshold" :max="0.8" :min="0.4" :default-value="0.7" :step="0.01"
-          @afterChange="reranker_thre" />
+          @afterChange="reranker_thre" :disabled='disables[2]' class="tree-thre"/>
         <a-slider :marks="marks_threshold" :max="0.5" :min="0.1" :default-value="0.5" :step="0.01"
-          @afterChange="reader_thre" />
-        <a-radio-group v-model="layer_model" @change="onChange">
+          @afterChange="reader_thre" :disabled='disables[3]' class="tree-thre"/>
+        <a-select default-value="que" style="width: 100px" @change="onChange" class="tree-selector">
+          <a-select-option value="que"> question </a-select-option>
+          <a-select-option value="ctx"> context </a-select-option>
+          <a-select-option value="reranker"> reranker </a-select-option>
+          <a-select-option value="reader"> reader </a-select-option>
+          <a-select-option value="single"> model comparison </a-select-option>
+        </a-select>
+        <!-- <a-radio-group v-model="layer_model" @change="onChange">
           <a-radio-button value="que">
             question
           </a-radio-button>
@@ -26,7 +31,7 @@
           <a-radio-button value="single">
             model-comparison
           </a-radio-button>
-        </a-radio-group>
+        </a-radio-group> -->
         <!-- <a-button @click="showSingleTree(true)">model-comparison</a-button> -->
       </div>
       <!-- <div id="layer-selected">
@@ -39,14 +44,12 @@
           @afterChange="change_layer"
         />
       </div> -->
-    </div>
     <!-- <div id="input-container">
       <div id="input-box">
         <a-input v-model="input_value" @pressEnter="input_sentenceId" />
       </div>
     </div> -->
-      
-  </div>
+
 </template>
 
 <script>
@@ -55,9 +58,18 @@ import bus from "./bus";
 export default {
   name: "ThresholdSelected",
   methods: {
-    onChange(e) {
+
+    onChange(val) {
       //`checked = ${e.target.value}`);
-      bus.$emit('change_tree',e.target.value)
+      bus.$emit('change_model',eval)
+      // console.log(e.target)
+      switch (val) {
+        case 'que':this.disables=[false,true,true,true];break;
+        case 'ctx':this.disables = [true, false,true,true];break;
+        case 'reranker':this.disables = [true, true,false,true];break;
+        case 'reader':this.disables = [true, true,true,false];break;
+        case 'single':this.disables = [false, false,false,false];break;
+      }
       // if(e.target.value=='single'){
       // bus.$emit('showsingletree',true)
       // }
@@ -94,8 +106,9 @@ export default {
   },
   data() {
     return {
+      disables:[false,false,false,false],
       input_value:1,
-      layer_model:'reader',
+      layer_model:'single',
       marks_threshold: {
         0.1: "0.1",
         // 0.2: "0.2",
@@ -141,16 +154,27 @@ export default {
 #slider2-container{
   overflow: visible;
 }
-#threshold-selected {
-  position: relative;
-  left: 10%;
-  width: 50%;
-  height: 50%;
-}
+
 #title {
   margin: 0px 40px;
 }
 #sliders-container{
   width:300px
+}
+
+.tree-thre .tree-selector{
+  flex: 0 0 10%;
+}
+
+.ant-slider-mark {
+    position: absolute;
+    top:-9px;
+    left:-15px;
+    width: 100%;
+    font-size: 10px;
+}
+.ant-slider-with-marks {
+    margin-bottom: 0px;
+    width: 80px;
 }
 </style>

@@ -24,6 +24,7 @@ ctxs=[]
 ret={}
 k=20
 ques=[]
+retriever_whole=[]
 # sentence_id = 9
 # top_k_accu=[]
 
@@ -32,8 +33,8 @@ with open ('./generated_data/reader_results.json','r') as f_reader:
     reader_str=json.load(f_reader)
 with open ('./generated_data/retriever_results.json','r') as f2:
     retriver_str=json.load(f2)
-with open ('./generated_data/summary/retriever_q_relevant.json','r') as f:
-    str4d=np.array(json.load(f))
+print('reader and retriever file opened')
+
 
 app = Flask(__name__)
 CORS(app, resources={r'/*': {'origins': '*'}})
@@ -49,31 +50,49 @@ def query_em_accu():
         ems.append(1 if ele['top_20_has_answer'] else 0)
     ret['k_accu_avg']=sum(top_k_accu)/len(top_k_accu)
     ret['em_avg']=sum(ems)/len(ems)
+    node_cnt=0
     for parent in que_tree_list:
         if (not parent['name']==''):
             for child in parent['children']:
                 sens=child['senId']
                 link_em=sum([ems[id] for id in sens])/len(sens)
                 link_accu=sum([top_k_accu[id] for id in sens])/len(sens)
-                ret['accu_em'].append({'source':parent['name']+'_p','target':child['name']+'_c','em':link_em,'accu':link_accu})
+                ret['accu_em'].append({'source':'p_'+parent['name'],'target':str(node_cnt)+'_'+child['name'],'em':link_em,'accu':link_accu})
+                node_cnt+=1
     return jsonify(ret)
 
-@app.route('/query_attn_head',methods=['GET'])
+@app.route('/query_attn_head',methods=['GET','POST'])
 def query_attn_head():
-    global impo_list,que_tree_list,str4d
-    str3d=np.sum(str4d,axis=1)/20
-    sum=np.zeros([12,12])
-    for parent in que_tree_list:
-        if (not parent['name']==''):
-            for child in parent['children']:
-                senIds=child['senId']
-                for i in senIds:
-                    sum += np.array(str3d[i])
-                sum /= len(senIds)
-                suml=np.sum(sum,axis=1)
-                impo_dict={'source':parent['name'],'target':child['name'],'head_impo':process_impo(sum.tolist()),
-                'layer_impo':process_layer(suml.tolist())}
-                impo_list.append(impo_dict)
+    global impo_list,que_tree_list
+    if request.method=='POST':
+        model=request.get_json()['model']
+        if (model=='que'):
+            sum_fname='retriever_q_relevant'
+        elif (model == 'ctx'):
+            sum_fname='retriever_ctx_relevant'
+        elif (model == 'reranker'):
+            sum_fname='reader_rank'
+        elif (model == 'reader'):
+            sum_fname='reader_start'
+        elif (model == 'single'):
+            sum_fname='retriever_q_relevant'
+        impo_list =[]
+        with open ('./generated_data/summary/'+sum_fname+'.json','r') as f:
+            str4d=np.array(json.load(f))
+        str3d=np.sum(str4d,axis=1)/20
+        sum=np.zeros([12,12])
+        for parent in que_tree_list:
+            if (not parent['name']==''):
+                for child in parent['children']:
+                    senIds=child['senId']
+                    for i in senIds:
+                        sum += np.array(str3d[i])
+                    sum /= len(senIds)
+                    suml=np.sum(sum,axis=1)
+                    impo_dict={'source':parent['name'],'target':child['name'],'head_impo':process_impo(sum.tolist()),
+                    'layer_impo':process_layer(suml.tolist())}
+                    impo_list.append(impo_dict)
+    else: pass
     return jsonify(impo_list)
 
 @app.route('/query_que_sunburst',methods=['GET', 'POST'])
@@ -127,6 +146,11 @@ def query_attr_tree():
         sal_filename=''
         with open('./generated_data/tokens/input_tokens for_question'+str(que_id)+'.json', 'r') as f2:
             tokens = json.load(f2)[top_kth]
+        sep_save=0
+        for i in range(0,len(tokens)):
+            if(tokens[i]=='[SEP]'):
+                sep_save=i
+                break
         if (model=='que'):
             attr_filename='relevant_q/attr_mat/mat_relevant_'
             sal_filename='relevant_q/attr_vec/vec_relevant_'
@@ -138,15 +162,19 @@ def query_attr_tree():
             noneed_cls=True
             is_ctx=True
             que_id=que_id*20+top_kth #the file id,not the que id
+            ctx_tokens=['[CLS]']
+            ctx_tokens.extend(tokens[sep_save+1:])
+            ctx_tokens.append('[SEP]')
+            tokens==ctx_tokens
         elif (model == 'reranker'):
             attr_filename='rank/attr_mat/mat_rank_'
             sal_filename='rank/attr_vec/vec_rank_'
-            noneed_cls=False
+            noneed_cls=True
             is_ctx=False
         elif (model == 'reader'):
             attr_filename='cutted_attr_mat/cutted_mat_start_'
             sal_filename='attr_vec/vec_end_'
-            noneed_cls=True
+            noneed_cls=False
             is_ctx=False
         # layer=post_data['layer']
         tokenPool=set()
@@ -171,6 +199,8 @@ def query_attr_tree():
             for ele in py_data:
                 tar_index = ele[0].split('+')[1]
                 soc_index = ele[1].split('+')[1]
+                if(noneed_cls and (tar_index =='0' or soc_index=='0')):
+                    continue
                 link_dict = {'source':
                             soc_index, 'target': tar_index, 'value': ele[2]['weight'],'layer':ele[2]['layer']}
                 links_list.append(link_dict)
@@ -231,9 +261,9 @@ def query_single_attr_tree(top_kth):
         ret['tree_height']['q']=singleTreeHeight(ret['q_node_link'])
         ret['ctx_node_link']= one_tree(len(q_tokens)-1,'relevant_ctx/attr_mat/mat_relevant_'+str(que_id*20+top_kth),'relevant_ctx/attr_vec/vec_relevant_'+str(que_id*20+top_kth),layer,threshold['ctx'],top_kth,tokenPool,ret['tree_height']['ctx'],True,True,ctx_tokens)
         ret['tree_height']['ctx']=singleTreeHeight(ret['ctx_node_link'])
-        ret['reranker_node_link']= one_tree(0,'rank/attr_mat/mat_rank_'+str(que_id), 'rank/attr_vec/vec_rank_'+str(que_id),layer,threshold['reranker'],top_kth,tokenPool,ret['tree_height']['reranker'],False,False,tokens)
+        ret['reranker_node_link']= one_tree(0,'rank/attr_mat/mat_rank_'+str(que_id), 'rank/attr_vec/vec_rank_'+str(que_id),layer,threshold['reranker'],top_kth,tokenPool,ret['tree_height']['reranker'],False,True,tokens)
         ret['tree_height']['reranker']=singleTreeHeight(ret['reranker_node_link'])
-        ret['reader_node_link']= one_tree(0,'cutted_attr_mat/cutted_mat_start_'+str(que_id),'attr_vec/vec_end_'+str(que_id),layer,threshold['reader'],top_kth,tokenPool,ret['tree_height']['reader'],False,True,tokens)
+        ret['reader_node_link']= one_tree(0,'cutted_attr_mat/cutted_mat_start_'+str(que_id),'attr_vec/vec_end_'+str(que_id),layer,threshold['reader'],top_kth,tokenPool,ret['tree_height']['reader'],False,False,tokens)
         ret['tree_height']['reader']=singleTreeHeight(ret['reader_node_link'])
         list_tokenPool=list(tokenPool)
         list_tokenPool.sort()
@@ -358,7 +388,7 @@ def query_word_cloud(sentence_id):
         retriever_token_id = list(range(len(tokens_in_each_pair) + 1))
         q_id_list = retriever_token_id[:sep_index + 1]
         ctx_id_list = retriever_token_id[sep_index + 1:]
-        q_in_each_pair_zip = np.array(q_in_each_pair[:sep_index + 1]) / 10
+        q_in_each_pair_zip = np.array(q_in_each_pair[:sep_index + 1]) / 15
         q_in_each_pair_zip = q_in_each_pair_zip.tolist()
         # FIXME：否则用下面的
         # q_whole_wc.append(list(zip(tokens_in_each_pair[:sep_index + 1], q_in_each_pair[:sep_index + 1])))
@@ -394,10 +424,11 @@ def query_word_cloud(sentence_id):
     # print(em_result)
     order_result = [prediction['prediction']['passage_idx'] for prediction in
                     reader_results['predictions'] if prediction['prediction']['passage_idx'] < 10]
+    print('order_result', order_result)
     has_answer_list = [ctx['has_answer'] for ctx in retriever_results['ctxs'][:10]]
     # print(has_answer_list)
-    rank_whole_wc = [x for i, x in sorted(zip(order_result, rank_whole_wc[:10]))]
-    span_whole_wc = [x for i, x in sorted(zip(order_result, span_whole_wc[:10]))]
+    # rank_whole_wc = [x for i, x in sorted(zip(order_result, rank_whole_wc[:10]))]
+    # span_whole_wc = [x for i, x in sorted(zip(order_result, span_whole_wc[:10]))]
     q_whole = copy.copy(q_whole_wc)
     ctx_whole = copy.copy(ctx_whole_wc)
     rank_whole = copy.copy(rank_whole_wc)
@@ -474,9 +505,11 @@ def query_context_view():
         postdata = request.get_json()
         ctx_id = postdata['ctx_id']
         stage_id = postdata['stage_id']
+        print('ctx_id',ctx_id)
         if stage_id == 0:
             ret = {'tokens': retriever_whole[ctx_id], 'select': retriever_select[ctx_id]}
         elif stage_id == 1:
+            print(rank_whole[ctx_id])
             ret = {'tokens': rank_whole[ctx_id], 'select': rank_select[ctx_id]}
         elif stage_id == 2:
             ret = {'tokens': span_whole[ctx_id], 'select': span_select[ctx_id]}
