@@ -8,3 +8,7 @@ lsof -i:端口号
 不用急着立刻测试，测试成本比较高
 
 模型的不同部分是否负责不同类别的question，模型的不同部分是否负责不同的task（比如reader需要做span extractor和reranker）
+
+left col
+overlap:left up margnin
+uprow:margin

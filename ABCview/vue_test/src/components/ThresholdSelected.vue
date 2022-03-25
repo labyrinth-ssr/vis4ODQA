@@ -61,7 +61,7 @@ export default {
 
     onChange(val) {
       //`checked = ${e.target.value}`);
-      bus.$emit('change_model',eval)
+      bus.$emit('change_model',val)
       // console.log(e.target)
       switch (val) {
         case 'que':this.disables=[false,true,true,true];break;

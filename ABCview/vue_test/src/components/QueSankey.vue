@@ -505,7 +505,7 @@ export default {
     },
     init() {
 
-      const requestOne = axios.get( sankey_path);
+      const requestOne = axios.get(sankey_path);
       const requestTwo = axios.get(sum_path);
       const requestThree = axios.get(bar_path);
       axios
@@ -528,16 +528,16 @@ export default {
           
 
           axios.all([requestOne, requestTwo, requestThree]).then(
-            axios.spread((...responses) => {
+
+
+            axios.spread((sankey,sum,barchart) => {
               console.log('get all')
-              const responseOne = responses[0];
-              const responseTwo = responses[1];
-              this.node_link = responseOne.data;
-              this.attn = responseTwo.data;
-              console.log(responses[2].data)
-              this.accu_em = responses[2].data;
+              console.log({sankey,sum,barchart})
+              this.node_link = sankey.data;
+              this.attn = sum.data;
+              this.accu_em = barchart.data;
               console.log(this.node_link)
-          console.log(this.attn)
+              console.log(this.attn)
               this.draw();
             })
           );

@@ -22,7 +22,7 @@ export default {
         this.set_para_update();
     },
     ctx_prop:function(newval){
-      this.ctx_prop=newval;
+      this.ctx_selected=newval;
         this.set_para_update();
     }
   },
@@ -370,7 +370,7 @@ export default {
     init() {
       console.log("tree init");
       const path =
-        "http://10.192.9.11:8000/query_single_attr_tree/" + this.ctx_prop;
+        "http://10.192.9.11:8000/query_single_attr_tree/" + this.ctx_selected;
       axios
         .post(path, {
           threshold: this.threshold,
