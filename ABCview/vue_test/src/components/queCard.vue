@@ -9,7 +9,8 @@
     </a-table-column>
     <a-table-column key="em" title="em" data-index="em" :width="30" :disabled="false">
       <template slot-scope="em">
-      <a-radio :default-checked="em" />
+        <em-circle :cir_data="em"/>
+      <!-- <a-radio :default-checked="em" /> -->
       </template>
     </a-table-column>
   </a-table>
@@ -20,9 +21,10 @@ import * as d3 from "d3";
 import axios from 'axios';
 import bus from './bus';
 import emBarchart from './emBarchart.vue';
+import EmCircle from './emCircle.vue';
 const DataUrl = 'http://10.192.9.11:8000/query_que';
 export default {
-  components: { emBarchart },
+  components: { emBarchart, EmCircle },
     name:'QueCArd',
   data() {
     return {

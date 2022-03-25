@@ -72,20 +72,20 @@ export default {
       this.getAll();
     },
     drawAll(sankeyDataList, tokenPool, tree_height) {
-      const sentence_color = function (i) {
-        if (i == 1) {
-          return 7;
-        } else if (i == 2) {
-          return 8;
-        } else if (i == 5) {
-          return 9;
-        }
-        return i;
-      };
+      // const sentence_color = function (i) {
+      //   if (i == 1) {
+      //     return 7;
+      //   } else if (i == 2) {
+      //     return 8;
+      //   } else if (i == 5) {
+      //     return 9;
+      //   }
+      //   return i;
+      // };
       d3.select("#AttrTreeSvg").remove();
       d3.select("#AttrTreeSvg").selectAll("*").remove();
       var margin = { top: 20, right: 10, bottom: 20, left: 10 },
-        height = 300;
+        height = 270;
 
       const svg_width=880;
       var color = d3.scaleOrdinal(d3.schemePaired);
@@ -106,53 +106,53 @@ export default {
         .attr("height", height + margin.top + margin.bottom)
         .style("border-radius", "10px");
 
-      const g2 = svg
-        .append("g")
-        .attr("id", "colourScale")
-        .attr(
-          "transform",
-          "translate(" + margin.left + "," + (height + margin.top) + ")"
-        );
+      // const g2 = svg
+      //   .append("g")
+      //   .attr("id", "colourScale")
+      //   .attr(
+      //     "transform",
+      //     "translate(" + margin.left + "," + (height + margin.top) + ")"
+      //   );
 
-      g2.append("text").attr("y", 10).text("layer").attr("fill", "black");
-      for (let i = 0; i < 12; i++) {
-        g2.append("rect")
-          .attr("width", "10")
-          .attr("x", i * 10 + 60)
-          .attr("height", "10")
-          .attr("fill", d3.interpolateOrRd((i / 11) * 0.7 + 0.1))
-          .attr("opacity", "1");
+      // g2.append("text").attr("y", 10).text("layer").attr("fill", "black");
+      // for (let i = 0; i < 12; i++) {
+      //   g2.append("rect")
+      //     .attr("width", "10")
+      //     .attr("x", i * 10 + 60)
+      //     .attr("height", "10")
+      //     .attr("fill", d3.interpolateOrRd((i / 11) * 0.7 + 0.1))
+      //     .attr("opacity", "1");
 
-        g2.append("text")
-          .text(`${i}`)
-          .attr("x", i * 10 + 60)
-          .attr("y", 20)
-          .attr("font-size", "12px")
-          .attr("fill", "black");
-      }
-      const g3 = svg
-        .append("g")
-        .attr("id", "colourScale")
-        .attr(
-          "transform",
-          "translate(" + margin.left + "," + (height + margin.top + 30) + ")"
-        );
-      g3.append("text").attr("y", 10).text("sentence").attr("fill", "black");
-      for (let i = 0; i < 7; i++) {
-        g3.append("rect")
-          .attr("width", "10")
-          .attr("x", i * 10 + 60)
-          .attr("height", "10")
-          .attr("fill", d3.schemeTableau10[sentence_color(i)])
-          .attr("opacity", "1");
+      //   g2.append("text")
+      //     .text(`${i}`)
+      //     .attr("x", i * 10 + 60)
+      //     .attr("y", 20)
+      //     .attr("font-size", "12px")
+      //     .attr("fill", "black");
+      // }
+      // const g3 = svg
+      //   .append("g")
+      //   .attr("id", "colourScale")
+      //   .attr(
+      //     "transform",
+      //     "translate(" + margin.left + "," + (height + margin.top + 30) + ")"
+      //   );
+      // g3.append("text").attr("y", 10).text("sentence").attr("fill", "black");
+      // for (let i = 0; i < 7; i++) {
+      //   g3.append("rect")
+      //     .attr("width", "10")
+      //     .attr("x", i * 10 + 60)
+      //     .attr("height", "10")
+      //     .attr("fill", d3.schemeTableau10[sentence_color(i)])
+      //     .attr("opacity", "1");
 
-        g3.append("text")
-          .text(`${i}`)
-          .attr("x", i * 10 + 60)
-          .attr("y", 20)
-          .attr("font-size", "12px")
-          .attr("fill", "black");
-      }
+      //   g3.append("text")
+      //     .text(`${i}`)
+      //     .attr("x", i * 10 + 60)
+      //     .attr("y", 20)
+      //     .attr("font-size", "12px")
+      //     .attr("fill", "black");
+      // }
       // const x_padding=margin.left;
 
       const tree_padding = 10;
@@ -161,7 +161,6 @@ export default {
       const layer_width = ((svg_width-margin.right-margin.left)-(11*tree_padding))/sum_tree_height;
 
       //35*24=700+140=840
-
       var pos = 0;
       for (let index = 0; index < 12; index++) {
         var width = tree_height[index] * layer_width;
@@ -177,7 +176,7 @@ export default {
           svg,
           margin,
           width,
-          pos
+          pos,
         );
         pos = pos + width + tree_padding;
       }
@@ -279,6 +278,7 @@ export default {
         .attr("class", "node");
       // .attr('id','nodeBox')
       // add the rectangles for the graph
+      const _this=this
       node
         .append("circle")
         .attr('id',d=>'node'+d.node)
@@ -290,7 +290,7 @@ export default {
           return d.y0;
         })
         .attr("r", function (d) {
-          return Math.max(0, d.saliency) * 30 + 5;
+          return _this.model=='que'? (Math.max(0, d.saliency/15) * 30 + 5):(Math.max(0, d.saliency) * 30 + 5);
         })
         .on("click", function (event, data) {
           bus.$emit("dispatchtokentoshow", data.index);

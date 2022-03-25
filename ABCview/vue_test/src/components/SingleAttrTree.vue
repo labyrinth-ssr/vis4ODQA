@@ -103,7 +103,7 @@ export default {
     //   d3.select("#SingleAttrTreeSvg").selectAll("*").remove();
       const margin = { top: 20, right: 10, bottom: 20, left: 20 },
         // width = 1000,
-        height = 300;
+        height = 270;
       // var color = d3.scaleOrdinal(d3.schemePaired);
 
       const textData_index = this.tokenPool.map((a) => a + "");
@@ -124,51 +124,50 @@ export default {
         .style("background-color", "white")
         .style("border-radius", "10px");
 
-      const g2 = svg
-        .append("g")
-        .attr("id", "colourScale")
-        .attr(
-          "transform",
-          "translate(" + margin.left + "," + (height + margin.top) + ")"
-        );
-      g2.append("text").attr("y", 10).text("layer").attr("fill", "black");
-      for (let i = 0; i < 12; i++) {
-        g2.append("rect")
-          .attr("width", "10")
-          .attr("x", i * 10 + 60)
-          .attr("height", "10")
-          .attr("fill", d3.interpolateOrRd((i / 11) * 0.7 + 0.1))
-          .attr("opacity", "1");
-        g2.append("text")
-          .text(`${i}`)
-          .attr("x", i * 10 + 60)
-          .attr("y", 20)
-          .attr("font-size", "12px")
-          .attr("fill", "black");
-      }
-      const g3 = svg
-        .append("g")
-        .attr("id", "colourScale")
-        .attr(
-          "transform",
-          "translate(" + margin.left + "," + (height + margin.top + 30) + ")"
-        );
-      g3.append("text").attr("y", 10).text("sentence").attr("fill", "black");
-      for (let i = 0; i < 7; i++) {
-        g3.append("rect")
-          .attr("width", "10")
-          .attr("x", i * 10 + 60)
-          .attr("height", "10")
-          .attr("fill", d3.schemeTableau10[sentence_color(i)])
-          .attr("opacity", "1");
-        g3.append("text")
-          .text(`${i}`)
-          .attr("x", i * 10 + 60)
-          .attr("y", 20)
-          .attr("font-size", "12px")
-          .attr("fill", "black");
-      }
-
+      // const g2 = svg
+      //   .append("g")
+      //   .attr("id", "colourScale")
+      //   .attr(
+      //     "transform",
+      //     "translate(" + margin.left + "," + (height + margin.top) + ")"
+      //   );
+      // g2.append("text").attr("y", 10).text("layer").attr("fill", "black");
+      // for (let i = 0; i < 12; i++) {
+      //   g2.append("rect")
+      //     .attr("width", "10")
+      //     .attr("x", i * 10 + 60)
+      //     .attr("height", "10")
+      //     .attr("fill", d3.interpolateOrRd((i / 11) * 0.7 + 0.1))
+      //     .attr("opacity", "1");
+      //   g2.append("text")
+      //     .text(`${i}`)
+      //     .attr("x", i * 10 + 60)
+      //     .attr("y", 20)
+      //     .attr("font-size", "12px")
+      //     .attr("fill", "black");
+      // }
+      // const g3 = svg
+      //   .append("g")
+      //   .attr("id", "colourScale")
+      //   .attr(
+      //     "transform",
+      //     "translate(" + margin.left + "," + (height + margin.top + 30) + ")"
+      //   );
+      // g3.append("text").attr("y", 10).text("sentence").attr("fill", "black");
+      // for (let i = 0; i < 7; i++) {
+      //   g3.append("rect")
+      //     .attr("width", "10")
+      //     .attr("x", i * 10 + 60)
+      //     .attr("height", "10")
+      //     .attr("fill", d3.schemeTableau10[sentence_color(i)])
+      //     .attr("opacity", "1");
+      //   g3.append("text")
+      //     .text(`${i}`)
+      //     .attr("x", i * 10 + 60)
+      //     .attr("y", 20)
+      //     .attr("font-size", "12px")
+      //     .attr("fill", "black");
+      // }
         function draw(sankeydata,start_x,width) {
                   // var links_data = sankeydata.links;
       // links_data.sort(function (a, b) {
@@ -265,7 +264,7 @@ export default {
           );
         })
         .attr("r", function (d) {
-          return Math.max(0, d.saliency) * 30 + 5;
+          return (Math.max(0, d.saliency) * 30 + 5);
         })
         .style("fill", function (d) {
           if (d.targetLinks.length + d.sourceLinks.length === 0) {

@@ -133,7 +133,7 @@ def query_que():
 
 @app.route('/query_attr_tree',methods=['GET', 'POST'])
 def query_attr_tree():
-    global all_layer_node_link, tokens,list_tokenPool
+    global all_layer_node_link,list_tokenPool,tokens
     # top_kth=0
     if request.method=='POST':
         all_layer_node_link=[]
@@ -144,6 +144,8 @@ def query_attr_tree():
         model=post_data['model']
         attr_filename=''
         sal_filename=''
+        is_ctx=False
+        noneed_cls=True
         with open('./generated_data/tokens/input_tokens for_question'+str(que_id)+'.json', 'r') as f2:
             tokens = json.load(f2)[top_kth]
         sep_save=0
@@ -152,43 +154,49 @@ def query_attr_tree():
                 sep_save=i
                 break
         if (model=='que'):
-            attr_filename='relevant_q/attr_mat/mat_relevant_'
+        #     attr_filename='relevant_q/attr_mat/mat_relevant_'
             sal_filename='relevant_q/attr_vec/vec_relevant_'
-            noneed_cls=True
-            is_ctx=False
+        #     noneed_cls=True
+        #     is_ctx=False
         elif (model=='ctx'):
-            attr_filename='relevant_ctx/attr_mat/mat_relevant_'
-            sal_filename='relevant_ctx/attr_vec/vec_relevant_'
-            noneed_cls=True
             is_ctx=True
-            que_id=que_id*20+top_kth #the file id,not the que id
+            # attr_filename='relevant_ctx/attr_mat/mat_relevant_'
+            sal_filename='relevant_ctx/attr_vec/vec_relevant_'
+            # noneed_cls=True
+            # is_ctx=True
+            # que_id=que_id*20+top_kth #the file id,not the que id
             ctx_tokens=['[CLS]']
             ctx_tokens.extend(tokens[sep_save+1:])
             ctx_tokens.append('[SEP]')
-            tokens==ctx_tokens
+            tokens=ctx_tokens
         elif (model == 'reranker'):
-            attr_filename='rank/attr_mat/mat_rank_'
+        #     attr_filename='rank/attr_mat/mat_rank_'
             sal_filename='rank/attr_vec/vec_rank_'
-            noneed_cls=True
-            is_ctx=False
+        #     noneed_cls=True
+        #     is_ctx=False
         elif (model == 'reader'):
-            attr_filename='cutted_attr_mat/cutted_mat_start_'
+        #     attr_filename='cutted_attr_mat/cutted_mat_start_'
             sal_filename='attr_vec/vec_end_'
             noneed_cls=False
-            is_ctx=False
+        #     is_ctx=False
         # layer=post_data['layer']
         tokenPool=set()
         with open ('./generated_data/'+sal_filename+str(que_id)+'.json','r') as f1:
             saliency=json.load(f1)
-        with open ('./generated_data/'+attr_filename+str(que_id)+'.json') as f3:
-            all_attr=json.load(f3)
-        if(is_ctx):
-            for i in range (12):
-                temp=(np.array(all_attr[i]))[:len(tokens),:len(tokens)]
-                all_attr[i]=temp.tolist()
+        # with open ('./generated_data/'+attr_filename+str(que_id)+'.json') as f3:
+        #     all_attr=json.load(f3)
+        # if(is_ctx):
+        #     for i in range (12):
+        #         temp=(np.array(all_attr[i]))[:len(tokens),:len(tokens)]
+        #         all_attr[i]=temp.tolist()
+    
+        thre_index=int(threshold*10//1-3)
+        with open('./generated_data/tree_generation_results/'+model+'/sample_'+str(que_id)+'.json','r') as tree_f:
+            tree_data=json.load(tree_f)[top_kth][thre_index]
         for i in range(0,12):
             print('layer:',i)
-            py_data=attribution_tree(all_attr,tokens,threshold,i,top_kth,is_ctx,noneed_cls)
+            # py_data=attribution_tree(all_attr,tokens,threshold,i,top_kth,is_ctx,noneed_cls)
+            py_data=tree_data[i]
             valued_nodes=[]
             if(is_ctx):
                 layerSaliency=saliency[i]
@@ -256,14 +264,13 @@ def query_single_attr_tree(top_kth):
         ctx_tokens=['[CLS]']
         ctx_tokens.extend(tokens[sep_save+1:])
         ctx_tokens.append('[SEP]')
-
-        ret['q_node_link']=one_tree(0,'relevant_q/attr_mat/mat_relevant_'+str(que_id), 'relevant_q/attr_vec/vec_relevant_'+str(que_id),layer,threshold['que'],top_kth,tokenPool,ret['tree_height']['q'],False,True,q_tokens)
+        ret['q_node_link']=one_tree(0,'que/sample_'+str(que_id), 'relevant_q/attr_vec/vec_relevant_'+str(que_id),layer,threshold['que'],top_kth,tokenPool,ret['tree_height']['q'],False,True,q_tokens)
         ret['tree_height']['q']=singleTreeHeight(ret['q_node_link'])
-        ret['ctx_node_link']= one_tree(len(q_tokens)-1,'relevant_ctx/attr_mat/mat_relevant_'+str(que_id*20+top_kth),'relevant_ctx/attr_vec/vec_relevant_'+str(que_id*20+top_kth),layer,threshold['ctx'],top_kth,tokenPool,ret['tree_height']['ctx'],True,True,ctx_tokens)
+        ret['ctx_node_link']= one_tree(len(q_tokens)-1,'ctx/sample_'+str(que_id),'relevant_ctx/attr_vec/vec_relevant_'+str(que_id*20+top_kth),layer,threshold['ctx'],top_kth,tokenPool,ret['tree_height']['ctx'],True,True,ctx_tokens)
         ret['tree_height']['ctx']=singleTreeHeight(ret['ctx_node_link'])
-        ret['reranker_node_link']= one_tree(0,'rank/attr_mat/mat_rank_'+str(que_id), 'rank/attr_vec/vec_rank_'+str(que_id),layer,threshold['reranker'],top_kth,tokenPool,ret['tree_height']['reranker'],False,True,tokens)
+        ret['reranker_node_link']= one_tree(0,'reranker/sample_'+str(que_id), 'rank/attr_vec/vec_rank_'+str(que_id),layer,threshold['reranker'],top_kth,tokenPool,ret['tree_height']['reranker'],False,True,tokens)
         ret['tree_height']['reranker']=singleTreeHeight(ret['reranker_node_link'])
-        ret['reader_node_link']= one_tree(0,'cutted_attr_mat/cutted_mat_start_'+str(que_id),'attr_vec/vec_end_'+str(que_id),layer,threshold['reader'],top_kth,tokenPool,ret['tree_height']['reader'],False,False,tokens)
+        ret['reader_node_link']= one_tree(0,'reader/sample_'+str(que_id),'attr_vec/vec_end_'+str(que_id),layer,threshold['reader'],top_kth,tokenPool,ret['tree_height']['reader'],False,False,tokens)
         ret['tree_height']['reader']=singleTreeHeight(ret['reader_node_link'])
         list_tokenPool=list(tokenPool)
         list_tokenPool.sort()

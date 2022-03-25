@@ -57,17 +57,20 @@ def singleTreeHeight (node_link:dict)->int:
     return tree_height
 
 #ctx cls与q sep重叠，不跳过
-def one_tree(node_begin_index:int, mat_dir:str,vec_dir:str, layer:int,threshold:int,top_kth:int,tokenPool:set,treeHeight:int,ctx_flag:bool,noneed_cls:bool,tokens)->dict:
+def one_tree(node_begin_index:int, tree_dir:str,vec_dir:str, layer:int,threshold:int,top_kth:int,tokenPool:set,treeHeight:int,ctx_flag:bool,noneed_cls:bool,tokens)->dict:
+    thre_index=int(threshold*10//1-3)
     with open ('./generated_data/'+vec_dir+'.json','r') as f1:
         saliency=json.load(f1)
-    with open ('./generated_data/'+mat_dir+'.json','r') as f3:
-        all_attr=json.load(f3)
-    if(ctx_flag):
-        for i in range (12):
-            # print ('length',len(all_attr),len(tokens))
-            temp=(np.array(all_attr[i]))[:len(tokens),:len(tokens)]
-            all_attr[i]=temp.tolist()
-    py_data=attribution_tree(all_attr,tokens,threshold,layer,top_kth,ctx_flag,noneed_cls)
+    with open('./generated_data/tree_generation_results/'+tree_dir+'.json','r') as tree_f:
+        tree_data=json.load(tree_f)[top_kth][thre_index]
+    # with open ('./generated_data/'+mat_dir+'.json','r') as f3:
+        # all_attr=json.load(f3)
+    # if(ctx_flag):
+    #     for i in range (12):
+    #         # print ('length',len(all_attr),len(tokens))
+    #         temp=(np.array(all_attr[i]))[:len(tokens),:len(tokens)]
+    #         all_attr[i]=temp.tolist()
+    py_data=tree_data[layer]
     valued_nodes=[]
     if (not ctx_flag):
         layerSaliency=saliency[layer][top_kth]

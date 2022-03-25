@@ -18,12 +18,21 @@ export default {
             const scale=d3.scaleLinear()
               .domain([0,1])
               .range([0,svg_width]);
-            d3.select(this.$el)
+
+            const em_g=d3.select(this.$el)
             .append('g')
-            .append('rect')
+
+            
+            em_g.append('rect')
             .attr('width', scale(data))
             .attr('height',svg_height)
-            .attr('fill','steelblue')
+            .attr('fill','#EFE5AE')
+
+            em_g.append('text')
+            .attr("x",scale(data))
+            .attr('y',10)
+            .text(data*100+'%')
+            .style('font-size','10px')
         }
     }
 }

@@ -46,7 +46,7 @@ export default {
                 top:1, bottom:1,
                 left:3, right:3,
             },
-            width:460,
+            width:495,
             height:100,
             select:[],
             tokens: [
@@ -294,7 +294,7 @@ export default {
                 })
             })
 
-            d3.select('#tokensvg').attr('height',document.getElementById("token-group").getBBox().height)
+            d3.select('#tokensvg').attr('height',document.getElementById("token-group").getBBox().height+SVGPadding.top)
             // Create legend for the saliency map view
             // let legendGroup = svg.append('g')
             //     .attr('class', 'legend-group')
@@ -358,10 +358,15 @@ export default {
 <style>
 #contexttable{
   overflow: auto;
+  height:166px;
 
 }
 
 .node-group g:hover {
     fill:grey;
+}
+
+.ant-pagination {
+    font-size: 10px;
 }
 </style>

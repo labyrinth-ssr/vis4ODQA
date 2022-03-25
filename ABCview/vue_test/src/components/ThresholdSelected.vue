@@ -1,14 +1,18 @@
 <template>
       <div id="threshold-selected">
-        <a-slider :marks="marks_threshold" :max="0.5" :min="0.1" :default-value="0.5" :step="0.01"
+        <h5 class='thre-title'>que_thre</h5>
+        <a-slider :marks="marks_threshold" :max="0.7" :min="0.3" :default-value="0.7" :step="0.01"
           @afterChange="que_thre" :disabled='disables[0]'  class="tree-thre"/>
-        <a-slider :marks="marks_threshold" :max="0.5" :min="0.1" :default-value="0.5" :step="0.01"
+        <h5 class='thre-title'>ctx_thre</h5>
+        <a-slider :marks="marks_threshold" :max="0.7" :min="0.3" :default-value="0.7" :step="0.01"
           @afterChange="ctx_thre" :disabled='disables[1]' class="tree-thre"/>
-        <a-slider :marks="marks_reranker_threshold" :max="0.8" :min="0.4" :default-value="0.7" :step="0.01"
+        <h5 class='thre-title'>reranker_thre</h5>
+        <a-slider :marks="marks_threshold" :max="0.7" :min="0.3" :default-value="0.7" :step="0.01"
           @afterChange="reranker_thre" :disabled='disables[2]' class="tree-thre"/>
-        <a-slider :marks="marks_threshold" :max="0.5" :min="0.1" :default-value="0.5" :step="0.01"
+        <h5 class='thre-title'>reader_thre</h5>
+        <a-slider :marks="marks_threshold" :max="0.7" :min="0.3" :default-value="0.7" :step="0.01"
           @afterChange="reader_thre" :disabled='disables[3]' class="tree-thre"/>
-        <a-select default-value="que" style="width: 100px" @change="onChange" class="tree-selector">
+        <a-select default-value="single" style="width: 100px" @change="onChange" class="tree-selector">
           <a-select-option value="que"> question </a-select-option>
           <a-select-option value="ctx"> context </a-select-option>
           <a-select-option value="reranker"> reranker </a-select-option>
@@ -109,20 +113,33 @@ export default {
       disables:[false,false,false,false],
       input_value:1,
       layer_model:'single',
+      // { number: { style: object, label: string|VNode } } 
       marks_threshold: {
-        0.1: "0.1",
+        0.3: {
+          style:{
+            transform: 'translateX(-140%)',
+            left: '0%'
+          },
+          label: '0.3'
+        },
         // 0.2: "0.2",
         // 0.3: "0.3",
         // 0.4: "0.4",
-        0.5: "0.5",
+        0.7: {
+          style:{
+            transform: 'translateX(65%)',
+            left: '100%'
+          },
+          label: '0.7'
+        }
       },
-      marks_reranker_threshold: {
-        0.4: "0.4",
-        // 0.5: "0.5",
-        // 0.6: "0.6",
-        // 0.7: "0.7",
-        0.8: "0.8"
-      },
+      // marks_reranker_threshold: {
+      //   0.4: "0.4",
+      //   // 0.5: "0.5",
+      //   // 0.6: "0.6",
+      //   // 0.7: "0.7",
+      //   0.8: "0.8"
+      // },
       marks_layer:{
         1: '1',
         2: '2',
@@ -168,13 +185,17 @@ export default {
 
 .ant-slider-mark {
     position: absolute;
-    top:-9px;
-    left:-15px;
+    top:-4px;
     width: 100%;
     font-size: 10px;
 }
 .ant-slider-with-marks {
     margin-bottom: 0px;
-    width: 80px;
+    width: 50px;
+}
+.thre-title{
+  font-size:8px;
+  margin-top:10px;
+      margin-left: 30px;
 }
 </style>

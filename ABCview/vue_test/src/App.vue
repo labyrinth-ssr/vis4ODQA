@@ -113,6 +113,8 @@ import Tree from './components/Tree.vue';
     display: flex;
     overflow: hidden;
     flex-direction: column;
+    justify-content: space-between;
+
 
   }
 
@@ -124,9 +126,9 @@ import Tree from './components/Tree.vue';
     #leftBottom {
     /* top: 40%; */
     /* height: 55%; */
-    flex: 0 0 45%;
+    flex: 0 0 48%;
     overflow: hidden;
-    margin: 0 5%;
+    margin: 0 2%;
   }
 
   #rightCol {
@@ -174,7 +176,7 @@ import Tree from './components/Tree.vue';
   .view{
     margin: 5px;
     border: 1px solid #ccc!important;
-    padding:15px 5px 5px 5px;
+    padding:5px 5px 5px 2px;
     border-radius:16px;
     box-shadow: 2.5px 2.5px 10px rgb(180, 180, 180);
     overflow: hidden;

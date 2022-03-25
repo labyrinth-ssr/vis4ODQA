@@ -60,10 +60,10 @@ export default {
       const accu_avg = this.accu_em.k_accu_avg;
       //accu_em_data)
       const margin = { top: 10, right: 15, bottom: 10, left: 15 };
-      const svg_size = { width: 350, height: 275 };
+      const svg_size = { width: 450, height: 275 };
       const sankey_size = {
         width: 80,
-        height: 350 - margin.left - margin.right,
+        height: 450 - margin.left - margin.right,
       };
       // const attn_size = { width: 15, height: 15 };
 
@@ -83,7 +83,7 @@ export default {
             ")rotate(90)"
         );
 
-      const sankey_nodewidth = 15;
+      const sankey_nodewidth = 10;
       const node_color = [
         "#8F6FAE",
         "#F38E1A",
@@ -102,7 +102,7 @@ export default {
       const color_scl = d3.scaleOrdinal(color);
       var sankey = d3Sankey()
         .nodeWidth(sankey_nodewidth)
-        .nodePadding(10)
+        .nodePadding(6)
         .size([sankey_size.width, sankey_size.height])
         .nodeId(function id(d) {
           return d.node;
@@ -117,7 +117,7 @@ export default {
         .data(graph.links)
         .enter()
         .append("path")
-        .attr("id", (d) => "link" + d.id)
+        .attr("id", (d) => "link" + d.index)
         .attr("class", "link")
         .attr("d", d3SankeyLinkHorizontal())
         .attr("fill", "none")
@@ -138,7 +138,7 @@ export default {
         })
         .append("title")
         .text(function (d) {
-          return d.source.name + "->" + d.target.name;
+          return d.source.name + "->" + d.target.name+'\n'+d.value;
         });
       //link);
 
@@ -282,7 +282,7 @@ export default {
         .attr("height", rect_height)
         .attr("fill", (d) => attn_color(d.val))
         .append("title")
-        .text((d) => d.val);
+        .text((d) => 'layer attr:\n'+d.val.toFixed(3));
       // var queSankeySvg=
 
       d3.select("#queSankeySvg")
@@ -350,13 +350,13 @@ export default {
         .attr("transform", (d) => {
           const link_data = sankeydata.links;
 
-          const link_index = link_data.filter(
+          d.id= link_data.filter(
             (link) =>
               link.source.node == d.source && link.target.node == d.target
           )[0].index;
           return (
             "translate(" +
-            (sankey_size.height - link_index * (rect_width + rect_padding)) +
+            (sankey_size.height - d.id * (rect_width + rect_padding)) +
             ",0)"
           );
         })
@@ -382,22 +382,17 @@ export default {
 
       accu_avg_rec
         .append("title")
-        .text((d) => d.accu)
+        .text((d) => 'topk accu:\n'+d.accu.toFixed(3))
         .append("g");
 
       accu_avg_rec
         .on("mouseover", function (e, d) {
-          //d)
-          // bus.$emit('sendque',d.id)
-          //this)
           if (d.accu >= accu_avg) {
             d3.select(this).style("fill-opacity", 0.8);
           }
           d3.select("#link" + d.id).style("opacity", 0.8);
         })
         .on("mouseleave", function (e, d) {
-          // bus.$emit('sendque',d.id)
-          //this)
           if (d.accu >= accu_avg) {
             d3.select(this).style("fill-opacity", 1);
           }
@@ -416,27 +411,21 @@ export default {
           return d.accu < accu_avg ? "#EFE5AE" : "none";
         });
 
-      accu_rec.append("title").text((d) => d.accu);
+      accu_rec.append("title").text((d) => 'topk accu:\n'+d.accu.toFixed(3));
 
       accu_rec
         .on("mouseover", function (e, d) {
-          // bus.$emit('sendque',d.id)
-          //this)
           if (d.accu < accu_avg) {
             d3.select(this).style("fill-opacity", 0.8);
           }
           d3.select("#link" + d.id).style("opacity", 0.8);
         })
         .on("mouseleave", function (e, d) {
-          // bus.$emit('sendque',d.id)
-          //this)
           if (d.accu < accu_avg) {
             d3.select(this).style("fill-opacity", 1);
           }
           d3.select("#link" + d.id).style("opacity", 0.5);
         });
-
-      // const scale_max=d3.max([max_em,max_accu])
 
       d3.selectAll(".que_ae")
         .append("rect")
@@ -447,8 +436,20 @@ export default {
           return d.em < em_avg ? "none" : "#BBCCDD";
         })
         .attr("stroke", "#BBCCDD")
+        .on("mouseover", function (e, d) {
+          if (d.em >= em_avg) {
+            d3.select(this).style("fill-opacity", 0.8);
+          }
+          d3.select("#link" + d.id).style("opacity", 0.8);
+        })
+        .on("mouseleave", function (e, d) {
+          if (d.em >= em_avg) {
+            d3.select(this).style("fill-opacity", 1);
+          }
+          d3.select("#link" + d.id).style("opacity", 0.5);
+        })
         .append("title")
-        .text((d) => d.em)
+        .text((d) => 'em:\n'+d.em.toFixed(3))
         .append("g");
 
       d3.selectAll(".que_ae")
@@ -462,8 +463,20 @@ export default {
         .attr("stroke", (d) => {
           return d.em < em_avg ? "#BBCCDD" : "none";
         })
+        .on("mouseover", function (e, d) {
+          if (d.em < em_avg) {
+            d3.select(this).style("fill-opacity", 0.8);
+          }
+          d3.select("#link" + d.id).style("opacity", 0.8);
+        })
+        .on("mouseleave", function (e, d) {
+          if (d.em < em_avg) {
+            d3.select(this).style("fill-opacity", 1);
+          }
+          d3.select("#link" + d.id).style("opacity", 0.5);
+        })
         .append("title")
-        .text((d) => d.em);
+        .text((d) => 'em:\n'+d.em.toFixed(3));
 
       //Link generator used for both examples
       var linkGen = d3
@@ -482,11 +495,11 @@ export default {
         );
 
       const saneky_revert_scale = (x, y) => {
-        return [sankey_size.height - y-margin.left+3, x+2];
+        return [sankey_size.height - y-margin.left+3, x+6];
       };
       const matrix_revert_scale = (x, y) => {
         return [
-          x - 0.5 * rect_width-margin.left+3,
+          x - 0.5 * rect_width-margin.left+6,
           margin.top + sankey_size.width + barchart_padding + y,
         ];
       };
@@ -569,7 +582,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style >
 .over_avg {
   /* height: 10px; */
   background: linear-gradient(
@@ -584,6 +597,22 @@ export default {
     transparent
   );
   background-size: 5px 5px;
+}
+
+.ant-pagination.mini .ant-pagination-jump-prev, .ant-pagination.mini .ant-pagination-jump-next {
+    height: 10px;
+    }
+    .ant-pagination.mini .ant-pagination-item {
+    min-width: 5px;
+    height: 5px;
+    margin: 0;
+    line-height: 5px;
+}
+.ant-pagination.mini .ant-pagination-prev, .ant-pagination.mini .ant-pagination-next {
+    min-width: 5px;
+    height: 5px;
+    margin: 0;
+    line-height: 5px;
 }
 </style>
 
