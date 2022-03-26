@@ -2,7 +2,7 @@
 
   <a-table :data-source="data" :scroll="{y: 100 }" :pagination='pagination' :customRow="customRow">
     <a-table-column key="que" title="question" data-index="que" :width="240" :height="50"/>
-    <a-table-column key="k_accu" title="k" data-index="k_accu" :width="60">
+    <a-table-column key="k_accu" title="accu" data-index="k_accu" :width="60" :sorter="accu_sorter">
       <template slot-scope="k_accu">
         <em-barchart :rect_data="k_accu"/>
       </template>
@@ -34,20 +34,21 @@ export default {
       data: [],
       loading: false,
       busy: false,
+      accu_sorter:(a,b) => a.k_accu-b.k_accu,
       
-      columns:[
-        {title:'question',
-        dataIndex:'que',
-        key:'que',
-        width:200
-        },
-        {
-          title: 'k',
-          dataIndex: 'k_accu',
-          key: 'k_accu',
-          sorter: (a,b) => a.k_accu-b.k_accu,
-        }
-      ],
+      // columns:[
+      //   {title:'question',
+      //   dataIndex:'que',
+      //   key:'que',
+      //   width:200
+      //   },
+      //   {
+      //     title: 'k',
+      //     dataIndex: 'k_accu',
+      //     key: 'k_accu',
+      //     sorter: (a,b) => a.k_accu-b.k_accu,
+      //   }
+      // ],
       senIds:[]
     };
   },

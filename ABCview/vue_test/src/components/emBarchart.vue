@@ -22,17 +22,21 @@ export default {
             const em_g=d3.select(this.$el)
             .append('g')
 
-            
+            function roundFun(value, n) {
+                return Math.round(value*Math.pow(10,n))/Math.pow(10,n);
+            }
             em_g.append('rect')
             .attr('width', scale(data))
             .attr('height',svg_height)
             .attr('fill','#EFE5AE')
 
             em_g.append('text')
+            // .attr('transform','translate('+(-20)+',0)')
             .attr("x",scale(data))
             .attr('y',10)
-            .text(data*100+'%')
+            .text(roundFun(data*100,2)+'%')
             .style('font-size','10px')
+            .style('text-anchor',parseInt(scale(data))<20?'start':'end')
         }
     }
 }
