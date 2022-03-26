@@ -1,13 +1,20 @@
 <template>
-  <div id="instance-view" class="view"></div>
+  <div id="instance-view" class="view">
+    <div id="ins-head">
+    <h2 id="ins-title">Instance View</h2>
+      <threshold-instance-view id="ins-thre"/>
+    </div>
+  </div>
 </template>
 
 <script>
 import * as d3 from "d3";
 import axios from "axios";
 import bus from "./bus";
+import ThresholdInstanceView from './ThresholdInstanceView.vue';
 
 export default {
+  components: { ThresholdInstanceView },
   name: "InstanceView",
   created() {
     var val = [0, 0]
@@ -642,7 +649,7 @@ export default {
     init() {
       console.log("instanceview init");
       const path =
-        "http://10.192.9.11:5000/query_word_cloud/" + this.question_selected;
+        "http://10.192.9.11:8000/query_word_cloud/" + this.question_selected;
           axios
           .post(path, {
                 que_sal_thre: this.que_sal_thre,
@@ -675,9 +682,24 @@ export default {
 </script>
 
 <style scoped>
-#instance-view {
+#ins-head{
+  display:flex;
+
+}
+#ins-title{
+  flex:0 0 30%;
+}
+/* #ins-thre {
+} */
+#threshold-instanceview {
+  display:flex;
+  justify-content: space-evenly;
+  padding: 0 10%;
+  flex:0 0 70%;
+}
+#ins-thre {
   margin: 0px;
-  margin-left: 10px;
+  /* margin-left: 10px; */
   height: 100%;
   /* text-align: center; */
   width: 100%;
