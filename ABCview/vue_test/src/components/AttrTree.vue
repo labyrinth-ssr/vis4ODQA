@@ -278,7 +278,6 @@ export default {
         .attr("class", "node");
       // .attr('id','nodeBox')
       // add the rectangles for the graph
-      const _this=this
       node
         .append("circle")
         .attr('id',d=>'node'+d.node)
@@ -290,7 +289,7 @@ export default {
           return d.y0;
         })
         .attr("r", function (d) {
-          return _this.model=='que'? (Math.max(0, d.saliency/15) * 30 + 5):(Math.max(0, d.saliency) * 30 + 5);
+          return (Math.max(0, d.saliency) * 30 + 5);
         })
         .on("click", function (event, data) {
           bus.$emit("dispatchtokentoshow", data.index);
