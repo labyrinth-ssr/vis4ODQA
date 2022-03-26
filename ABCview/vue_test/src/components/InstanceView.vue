@@ -145,19 +145,19 @@ export default {
 
       var q_s = d3
         .scaleLinear()
-        .domain([0.03, q_max_saliency])
+        .domain([0.01, q_max_saliency])
         .range([0.6, 1.2]);
       var ctx_s = d3
         .scaleLinear()
-        .domain([0.03, ctx_max_saliency])
+        .domain([0.01, ctx_max_saliency])
         .range([0.6, 1.2]);
       var rank_s = d3
         .scaleLinear()
-        .domain([0.03, rank_max_saliency])
+        .domain([0.01, rank_max_saliency])
         .range([0.6, 1.2]);
       var span_s = d3
         .scaleLinear()
-        .domain([0.03, span_max_saliency])
+        .domain([0.01, span_max_saliency])
         .range([0.6, 1.2]);
 
       let cell_width = width;
@@ -244,7 +244,7 @@ export default {
               ")"
           );
         var rank_lineLength = this.drawParagraph(
-          this.rank_tokens[row_idx],
+          this.rank_tokens[this.order_result[row_idx]],
           rank_svg,
           cell_width * 1.2,
           rank_s
@@ -270,7 +270,7 @@ export default {
               ")"
           );
         var span_lineLength = this.drawParagraph(
-          this.span_tokens[row_idx],
+          this.span_tokens[this.order_result[row_idx]],
           span_svg,
           cell_width * 1.2,
           span_s
@@ -323,7 +323,7 @@ export default {
           [separator_width + margin.left + q_max_length + ctx_max_length,
            margin.top +
               bar_chart_height +
-              this.order_result[row_idx] * height +
+              this.order_result.indexOf(row_idx) * height +
               8]
         );
 
@@ -356,7 +356,7 @@ export default {
 
         rank_rect
           .append("rect")
-          .attr("class", "rect" + this.order_result.indexOf(row_idx))
+          .attr("class", "rect" + this.order_result[row_idx])
           .attr(
             "x",
             separator_width + margin.left + q_max_length + ctx_max_length
@@ -368,27 +368,27 @@ export default {
           .style("opacity", 0.1)
           .style("stroke", "black")
           .on("mouseover", () => {
-            d3.selectAll(".rect" + this.order_result.indexOf(row_idx)).style(
+            d3.selectAll(".rect" + this.order_result[row_idx]).style(
               "fill",
               "#333333"
             );
           })
           .on("mouseleave", () => {
-            d3.selectAll(".rect" + this.order_result.indexOf(row_idx)).style(
+            d3.selectAll(".rect" + this.order_result[row_idx]).style(
               "fill",
               "white"
             );
           })
           .on("click", () => {
-            var val = [row_idx, 1];
+            var val = [this.order_result[row_idx], 1];
             this.showSingleTree();
             bus.$emit("inputtoshow", val);
-            bus.$emit("update_ctx", this.order_result.indexOf(row_idx));
+            bus.$emit("update_ctx", this.order_result[row_idx]);
           });
 
         svg
           .append("line")
-          .attr("class", "line" + this.order_result.indexOf(row_idx))
+          .attr("class", "line" + this.order_result[row_idx])
           .style("stroke", line_color)
           .attr(
             "x1",
@@ -398,7 +398,7 @@ export default {
               ctx_max_length +
               rank_max_length
           )
-          .attr("y1", margin.top + bar_chart_height + row_idx * height + 8)
+          .attr("y1", margin.top + bar_chart_height + this.order_result.indexOf(row_idx)* height + 8)
           .attr(
             "x2",
             separator_width * 2 +
@@ -407,11 +407,11 @@ export default {
               ctx_max_length +
               rank_max_length
           )
-          .attr("y2", margin.top + bar_chart_height + row_idx * height + 8);
+          .attr("y2", margin.top + bar_chart_height + this.order_result.indexOf(row_idx) * height + 8);
 
         span_rect
           .append("rect")
-          .attr("class", "rect" + this.order_result.indexOf(row_idx))
+          .attr("class", "rect" + this.order_result[row_idx])
           .attr(
             "x",
             separator_width * 2 +
@@ -427,22 +427,22 @@ export default {
           .style("opacity", 0.1)
           .style("stroke", "black")
           .on("mouseover", () => {
-            d3.selectAll(".rect" + this.order_result.indexOf(row_idx)).style(
+            d3.selectAll(".rect" + this.order_result[row_idx]).style(
               "fill",
               "#333333"
             );
           })
           .on("mouseleave", () => {
-            d3.selectAll(".rect" + this.order_result.indexOf(row_idx)).style(
+            d3.selectAll(".rect" + this.order_result[row_idx]).style(
               "fill",
               "white"
             );
           })
           .on("click", () => {
-            var val = [row_idx, 2];
+            var val = [this.order_result[row_idx], 2];
             this.showSingleTree();
             bus.$emit("inputtoshow", val);
-            bus.$emit("update_ctx", this.order_result.indexOf(row_idx));
+            bus.$emit("update_ctx", this.order_result[row_idx]);
           });
 
         svg
