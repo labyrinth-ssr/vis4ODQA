@@ -57,7 +57,7 @@ def singleTreeHeight (node_link:dict)->int:
     return tree_height
 
 #ctx cls与q sep重叠，不跳过
-def one_tree(node_begin_index:int, tree_dir:str,vec_dir:str, layer:int,threshold:int,top_kth:int,tokenPool:set,treeHeight:int,ctx_flag:bool,noneed_cls:bool,tokens)->dict:
+def one_tree(node_begin_index:int, tree_dir:str,vec_dir:str, layer:int,threshold:int,top_kth:int,tokenPool:set,treeHeight:int,model:str,noneed_cls:bool,tokens)->dict:
     thre_index=int(threshold*10//1-3)
     with open ('./generated_data/'+vec_dir+'.json','r') as f1:
         saliency=json.load(f1)
@@ -72,7 +72,7 @@ def one_tree(node_begin_index:int, tree_dir:str,vec_dir:str, layer:int,threshold
     #         all_attr[i]=temp.tolist()
     py_data=tree_data[layer]
     valued_nodes=[]
-    if (not ctx_flag):
+    if (not (model=='ctx')):
         layerSaliency=saliency[layer][top_kth]
     else: 
         layerSaliency=saliency[layer]
@@ -90,7 +90,7 @@ def one_tree(node_begin_index:int, tree_dir:str,vec_dir:str, layer:int,threshold
         links_list.append(link_dict)
     nodecnt=0
     for inx, val in enumerate(tokens):# remember to delete static data
-        nodes_list.append({'node': str(inx+node_begin_index), 'name': val, 'saliency': layerSaliency[nodecnt]})
+        nodes_list.append({'node': str(inx+node_begin_index), 'name': val, 'saliency': layerSaliency[nodecnt]if (not model=='que') else layerSaliency[nodecnt]/15})
         nodecnt+=1
     data = reduce(run_function, [[], ] + nodes_list)
     for ele in links_list:

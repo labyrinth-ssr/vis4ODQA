@@ -46,12 +46,13 @@ export default {
   methods: {
     handleChange(value) {
       this.model = value;
-      this.init();
+      this.update_head();
     },
     // update() {
 
     // },
     draw() {
+      d3.select("#queSankeySvg").selectAll("*").remove();
       var sankeydata = this.node_link;
       //sankeydata)
       var attndata = this.attn;
