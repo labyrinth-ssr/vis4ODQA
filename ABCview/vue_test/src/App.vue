@@ -8,6 +8,7 @@
         <h2>Context View</h2>
       <div id="leftMiddle">
         <que-card ></que-card>
+        <h3>Passage</h3>
       </div>
       <div id="leftBottom">
         <context-table></context-table>>
@@ -177,8 +178,8 @@ import Tree from './components/Tree.vue';
     margin: 5px;
     border: 1px solid #ccc!important;
     padding:5px 5px 5px 2px;
-    border-radius:16px;
-    box-shadow: 2.5px 2.5px 10px rgb(180, 180, 180);
+    border-radius:6px;
+    /* box-shadow: 2.5px 2.5px 10px rgb(180, 180, 180); */
     overflow: hidden;
     height: 95%;
   }
@@ -202,6 +203,11 @@ import Tree from './components/Tree.vue';
 }
 h2 {
   font-size: 15px;
+  background:#f1f1f1;
 }
+#ins-head{
+  background-color: #f1f1f1;
+}
+
 
 </style>

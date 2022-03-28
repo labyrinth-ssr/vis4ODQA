@@ -258,26 +258,30 @@ export default {
           })
 
                   var linkGen = d3
-        .linkVertical()
+        .linkHorizontal()
         .source(() =>
-          [margin.left + q_max_length + ctx_max_length,
-          margin.top + bar_chart_height + row_idx * height + 8]
-        )
-        .target(() =>
-          [separator_width + margin.left + q_max_length + ctx_max_length,
-           margin.top +
+          [(separator_width + margin.left + q_max_length + ctx_max_length),
+           (margin.top +
               bar_chart_height +
               this.order_result.indexOf(row_idx) * height +
-              8]
+              8)]
+        )
+        .target(() =>
+          [(margin.left + q_max_length + ctx_max_length),
+          (margin.top + bar_chart_height + row_idx * height + 8)]
         );
 
         svg
+        .append('g')
+          // .attr('transform', 'rotate(180)')
+
           .append("path")
           .attr("class", "line" + row_idx)
           .style("stroke", line_color) // colour the line
           .attr("d", linkGen)
           .attr("stroke-width", 1)
         .attr("fill", "none")
+
 
           // svg.append("line")
           // .attr("class", "line"+row_idx)  // line的class应该没啥用
@@ -400,7 +404,7 @@ export default {
       .padding([0.05])
       const color = d3.scaleOrdinal()
       .domain([2,3])
-      .range(['#377eb8','#4daf4a'])
+      .range(['#AFD8E6','#F3BC47'])
 
       const y = d3.scaleLinear()
       .domain([0, 10])
@@ -693,7 +697,7 @@ export default {
 } */
 #threshold-instanceview {
   display:flex;
-  justify-content: space-evenly;
+  /* justify-content: space-evenly; */
   padding: 0 10%;
   flex:0 0 70%;
 }

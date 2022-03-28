@@ -182,6 +182,12 @@ export default {
 .tree-thre .tree-selector{
   flex: 0 0 10%;
 }
+.tree-thre{
+  margin-left: 30px;
+}
+.tree-selector{
+  margin-left: 75px;
+}
 
 .ant-slider-mark {
     position: absolute;
@@ -196,6 +202,6 @@ export default {
 .thre-title{
   font-size:8px;
   margin-top:10px;
-      margin-left: 30px;
+      margin-left: 40px;
 }
 </style>

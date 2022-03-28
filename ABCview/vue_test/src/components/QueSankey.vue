@@ -60,7 +60,7 @@ export default {
       const em_avg = this.accu_em.em_avg;
       const accu_avg = this.accu_em.k_accu_avg;
       //accu_em_data)
-      const margin = { top: 10, right: 15, bottom: 10, left: 15 };
+      const margin = { top: 10, right: 15, bottom: 10, left: 20 };
       const svg_size = { width: 450, height: 275 };
       const sankey_size = {
         width: 80,
@@ -202,9 +202,10 @@ export default {
       sankeydata.links.sort((a, b) => {
         return a.y1 - b.y1;
       });
-      const rect_padding = 5;
+      const rect_x_padding = 7;
+      const rect_y_padding =5;
       const rect_height = 6;
-      const rect_width = sankey_size.height / links_data.length - rect_padding;
+      const rect_width = sankey_size.height / links_data.length - rect_x_padding;
       links_data.forEach((ele, index) => {
         ele.index = index;
       });
@@ -222,7 +223,7 @@ export default {
             "," +
             (margin.top +
               sankey_size.width +
-              rect_padding +
+              rect_x_padding +
               sankey_matrix_gap +
               barchart_padding) +
             ")"
@@ -245,7 +246,7 @@ export default {
           d.link_index = link_index;
           return (
             "translate(" +
-            (sankey_size.height - link_index * (rect_width + rect_padding)) +
+            (sankey_size.height - link_index * (rect_width + rect_x_padding)) +
             ",0)"
           );
         })
@@ -277,7 +278,7 @@ export default {
       d3.selectAll(".layer_attn")
         .append("rect")
         .attr("y", (d) => {
-          return d.layer * (rect_height + rect_padding);
+          return d.layer * (rect_height + rect_y_padding);
         })
         .attr("width", rect_width)
         .attr("height", rect_height)
@@ -327,7 +328,7 @@ export default {
         .scaleLinear()
         .domain([0, max_em])
         .range([0, sankey_matrix_gap]);
-      const bar_width = 8;
+      const bar_width = rect_width/2;
       var accu_em_g = d3
         .select("#queSankeySvg")
         .append("g")
@@ -357,7 +358,7 @@ export default {
           )[0].index;
           return (
             "translate(" +
-            (sankey_size.height - d.id * (rect_width + rect_padding)) +
+            (sankey_size.height - d.id * (rect_width + rect_x_padding)) +
             ",0)"
           );
         })
@@ -490,17 +491,17 @@ export default {
         )
         .target((d) =>
           matrix_revert_scale(
-            sankey_size.height - d.index * (rect_width + rect_padding),
+            sankey_size.height - d.index * (rect_width + rect_x_padding),
             0
           )
         );
 
       const saneky_revert_scale = (x, y) => {
-        return [sankey_size.height - y-margin.left+3, x+6];
+        return [sankey_size.height - y-margin.left+8, x+6];
       };
       const matrix_revert_scale = (x, y) => {
         return [
-          x - 0.5 * rect_width-margin.left+6,
+          x - 0.5 * rect_width-margin.left+8,
           margin.top + sankey_size.width + barchart_padding + y,
         ];
       };

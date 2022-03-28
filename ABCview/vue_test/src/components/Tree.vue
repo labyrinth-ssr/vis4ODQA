@@ -63,5 +63,6 @@ export default {
 }
 #tree-head{
   display:flex;
+  background-color: #f1f1f1;
 }
 </style>
