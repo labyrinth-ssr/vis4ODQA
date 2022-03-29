@@ -276,7 +276,7 @@ const sentence_color = function (i) {
 
       // add the link titles
       link.append("title").text(function (d) {
-        return d.source.name + " → " + d.target.name + "\nlayer:" + d.layer;
+        return d.source.name + " → " + d.target.name + "\nlayer:" + d.layer+'\nattr:'+d.value.toFixed(3);
       });
       const sentence_span = this.sentence_span;
       // add in the graph
@@ -326,7 +326,7 @@ const sentence_color = function (i) {
         .style("opacity", 1)
         .append("title")
         .text(function (d) {
-          return d.name + "\nsentence:" + sentence_span[d.node];
+          return d.name + "\nsentence:" + sentence_span[d.node]+'\nsal:'+d.saliency.toFixed(3);
         });
 
       node
