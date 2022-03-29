@@ -188,7 +188,7 @@ export default {
   margin-left: 30px;
 }
 .tree-selector{
-  margin-left: 90px;
+  margin-left: 36px;
 }
 
 .ant-slider-mark {
