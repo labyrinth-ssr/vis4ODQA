@@ -1,6 +1,6 @@
 <template>
 
-  <a-table :data-source="data" :scroll="{y: 100 }" :pagination='pagination' :customRow="customRow">
+  <a-table :data-source="data" :scroll="{y: 93 }" :pagination='pagination' :customRow="customRow" >
     <a-table-column key="que" title="question" data-index="que" :width="240" :height="50"/>
     <a-table-column key="k_accu" title="accu" data-index="k_accu" :width="60" :sorter="accu_sorter">
       <template slot-scope="k_accu">
@@ -128,6 +128,22 @@ svg {
 .ant-table-pagination.ant-pagination {
     float: right;
     margin: 0px;
+}
+
+.ant-pagination.mini .ant-pagination-prev,.ant-pagination.mini .ant-pagination-next {
+    min-width: 0px;
+    height: 12px;
+    margin: 0;
+    line-height: 0px;
+}
+.ant-pagination.mini .ant-pagination-item {
+    min-width: 6px;
+    height: 13px;
+    margin: 0;
+    line-height: 11px;
+}
+.ant-table-body{
+  max-height: 93px;
 }
 </style>
 

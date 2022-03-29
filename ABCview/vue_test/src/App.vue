@@ -8,7 +8,6 @@
         <h2>Context View</h2>
       <div id="leftMiddle">
         <que-card ></que-card>
-        <h3>Passage</h3>
       </div>
       <div id="leftBottom">
         <context-table></context-table>>
@@ -96,7 +95,7 @@ import Tree from './components/Tree.vue';
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
   }
 
   /* #rightCol {
@@ -114,9 +113,6 @@ import Tree from './components/Tree.vue';
     display: flex;
     overflow: hidden;
     flex-direction: column;
-    justify-content: space-between;
-
-
   }
 
   #leftMiddle {
@@ -127,7 +123,7 @@ import Tree from './components/Tree.vue';
     #leftBottom {
     /* top: 40%; */
     /* height: 55%; */
-    flex: 0 0 48%;
+    flex: 0 0 53%;
     overflow: hidden;
     margin: 0 2%;
   }
@@ -177,11 +173,11 @@ import Tree from './components/Tree.vue';
   .view{
     margin: 5px;
     border: 1px solid #ccc!important;
-    padding:5px 5px 5px 2px;
+    /* padding:5px 5px 5px 2px; */
     border-radius:6px;
     /* box-shadow: 2.5px 2.5px 10px rgb(180, 180, 180); */
     overflow: hidden;
-    height: 95%;
+    height: 98%;
   }
 
   ::-webkit-scrollbar-track {
@@ -204,6 +200,7 @@ import Tree from './components/Tree.vue';
 h2 {
   font-size: 15px;
   background:#f1f1f1;
+  margin-bottom: 0em;
 }
 #ins-head{
   background-color: #f1f1f1;

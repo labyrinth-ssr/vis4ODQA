@@ -418,7 +418,7 @@ const sentence_color = function (i) {
               );
             })
             .then(() => {
-              bus.$emit("init_tokens", this.valued_nodes);
+              // bus.$emit("init_tokens", this.valued_nodes);
             })
             .catch((error) => {
               console.error(error);
@@ -428,6 +428,8 @@ const sentence_color = function (i) {
   },
   beforeMount() {
     this.model = this.model_prop
+    this.que_id=this.queid_prop
+    this.top_kth=this.ctx_prop
     console.log('mount',this.model)
     this.init();
   },

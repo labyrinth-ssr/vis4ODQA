@@ -444,6 +444,8 @@ const g2 = svg
     },
   },
   beforeMount() {
+    this.question_id=this.queid_prop
+    this.ctx_selected=this.ctx_prop
     this.init();
   },
 };

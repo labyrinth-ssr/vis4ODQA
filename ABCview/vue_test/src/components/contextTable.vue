@@ -1,5 +1,8 @@
 <template>
+<div>
+<h5 id="ctx-top-k">top_{{ctx_id}}th {{stage}}</h5>
     <div id="contexttable"></div> 
+</div>
 </template>
 
 <script>
@@ -9,35 +12,24 @@ import bus from './bus';
 export default {
     name:"ContextTable",
     created(){
-        bus.$on('highlighttoken',val=>{
-            d3.select('#node-'+val).selectChild('rect').style('stroke', 'black').style('stroke-width', 2)
-
-        })
-        bus.$on('unhighlighttoken',val=>{
-            d3.select('#node-'+val).selectChild('rect').style('stroke', 'hsl(180, 1%, 80%)')
-        })
-        bus.$on('dispatchtokentoshow',val=>{
-            if( d3.select('#node-'+val).attr('stroke')=='#ff6131'){
-                        d3.select('#node-'+val).attr("stroke",undefined)
-                    }
-                    else d3.select('#node-'+val).attr("stroke","#ff6131")
-        })
         bus.$on('reset_tokens',()=>{
             d3.selectAll('.node').attr("stroke",undefined)
         })
-        bus.$on('init_tokens',valued_nodes_group=>{
-            d3.selectAll('.node').attr("stroke",undefined)
-        valued_nodes_group.forEach(node_id => {
-          d3.select('#node-'+node_id).attr("stroke","#ff6131")
-    //       valued_nodes_group.forEach(function(node){
-    //     bus.$emit('dispatchtokentoshow',node)
-    //   })
+    //     bus.$on('init_tokens',valued_nodes_group=>{
+    //         d3.selectAll('.node').attr("stroke",undefined)
+    //     valued_nodes_group.forEach(node_id => {
+    //       d3.select('#node-'+node_id).attr("stroke","#ff6131")
+    // //       valued_nodes_group.forEach(function(node){
+    // //     bus.$emit('dispatchtokentoshow',node)
+    // //   })
           
-      });
-    })
+    //   });
+    // })
     },
     data(){
         return{
+            ctx_id:0,
+            stage:'retriver',
             SVGPadding:{
                 left:0,
                 top:5
@@ -57,6 +49,16 @@ export default {
         // //'do nothing')
         bus.$on("inputtoshow",val =>{
         this.getAll(val[0], val[1])
+        this.ctx_id=val[0]
+        if(val[1]==0){
+            this.stage='retriever'
+        }
+        else if(val[1]==1){
+            this.stage='reranker'
+        }
+        else if(val[1]==2){
+            this.stage='span extractor'
+        }
         d3.select('#tokensvg').remove();   //删除整个SVG
         d3.select('#tokensvg')
             .selectAll('*')
@@ -368,5 +370,8 @@ export default {
 
 .ant-pagination {
     font-size: 10px;
+}
+#ctx-top-k{
+    font-size: 8px;
 }
 </style>

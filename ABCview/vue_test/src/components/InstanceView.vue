@@ -707,6 +707,8 @@ export default {
   height: 100%;
   /* text-align: center; */
   width: 100%;
+  margin-top: -10px;
+
   /* overflow: auto; */
 }
 </style>

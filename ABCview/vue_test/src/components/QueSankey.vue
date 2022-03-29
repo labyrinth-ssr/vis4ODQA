@@ -2,7 +2,7 @@
   <div id="que_sankey" class="view">
     <h2>Summary View</h2>
     <svg id="queSankeySvg"/>
-    <a-select default-value="que" style="width: 120px" @change="handleChange">
+    <a-select default-value="que" style="width: 120px;margin-left:22px;" @change="handleChange">
       <a-select-option value="que"> question </a-select-option>
       <a-select-option value="ctx"> context </a-select-option>
       <a-select-option value="reranker"> reranker </a-select-option>
@@ -61,10 +61,10 @@ export default {
       const accu_avg = this.accu_em.k_accu_avg;
       //accu_em_data)
       const margin = { top: 10, right: 15, bottom: 10, left: 20 };
-      const svg_size = { width: 450, height: 275 };
+      const svg_size = { width: 520, height: 275 };
       const sankey_size = {
         width: 80,
-        height: 450 - margin.left - margin.right,
+        height: 520 - margin.left - margin.right,
       };
       // const attn_size = { width: 15, height: 15 };
 
@@ -219,7 +219,7 @@ export default {
         .attr(
           "transform",
           "translate(" +
-            /* margin.left */ 0 +
+            /* margin.left */ (-10) +
             "," +
             (margin.top +
               sankey_size.width +
@@ -336,7 +336,7 @@ export default {
         .attr(
           "transform",
           "translate(" +
-            /* margin.left-bias */ 0 +
+            /* margin.left-bias */ (-10) +
             "," +
             (margin.top + sankey_size.width + barchart_padding) +
             ")"
@@ -501,7 +501,7 @@ export default {
       };
       const matrix_revert_scale = (x, y) => {
         return [
-          x - 0.5 * rect_width-margin.left+8,
+          x - 0.5 * rect_width-margin.left+3,
           margin.top + sankey_size.width + barchart_padding + y,
         ];
       };

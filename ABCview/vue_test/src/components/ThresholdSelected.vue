@@ -12,6 +12,7 @@
         <h5 class='thre-title'>reader_thre</h5>
         <a-slider :marks="marks_threshold" :max="0.7" :min="0.3" :default-value="0.7" :step="0.01"
           @afterChange="reader_thre" :disabled='disables[3]' class="tree-thre"/>
+        <h5 class='thre-title'>top_{{ top_kth }}th</h5>
         <a-select default-value="single" style="width: 100px" @change="onChange" class="tree-selector">
           <a-select-option value="que"> question </a-select-option>
           <a-select-option value="ctx"> context </a-select-option>
@@ -61,6 +62,7 @@ import bus from "./bus";
 
 export default {
   name: "ThresholdSelected",
+  props:['top_kth'],
   methods: {
 
     onChange(val) {
@@ -186,7 +188,7 @@ export default {
   margin-left: 30px;
 }
 .tree-selector{
-  margin-left: 75px;
+  margin-left: 90px;
 }
 
 .ant-slider-mark {
@@ -202,6 +204,6 @@ export default {
 .thre-title{
   font-size:8px;
   margin-top:10px;
-      margin-left: 40px;
+      margin-left: 32px;
 }
 </style>

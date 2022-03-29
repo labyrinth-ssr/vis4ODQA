@@ -2,7 +2,7 @@
     <div id="tree" class="view">
       <div id="tree-head">
       <h2>Tree View</h2>
-      <threshold-selected/>
+      <threshold-selected :top_kth="ctx_selected"/>
       </div>
         <!-- <single-attr-tree v-if="show_single_tree" :queid_prop='que_id' :ctx_prop='ctx_selected'></single-attr-tree>
         <attr-tree v-else :queid_prop='que_id' :model='layer_tree_model'></attr-tree> -->
@@ -59,7 +59,9 @@ export default {
   justify-content: space-evenly;
   /* padding: 0 10%; */
   flex:0 0 90%;
-  width: 100%;
+  width: 92%;
+      margin-top: -11px;
+    margin-bottom: -2px;
 }
 #tree-head{
   display:flex;
