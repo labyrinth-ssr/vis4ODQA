@@ -77,6 +77,9 @@ import Tree from './components/Tree.vue';
     padding: 0;
     margin: 0;
   }
+  @page{
+   size: auto;
+}
 
   #app {
     background: white;
@@ -91,7 +94,7 @@ import Tree from './components/Tree.vue';
   }
 
   #leftCol {
-    flex: 0 0 35%;
+    flex: 0 0 /* 35% */537.6px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -103,7 +106,7 @@ import Tree from './components/Tree.vue';
   } */
 
   #leftUp {
-    flex: 0 0 50%;
+    flex: 0 0 /* 50% */360.8px;
     overflow: hidden;
     justify-content: space-between;
 
@@ -113,26 +116,30 @@ import Tree from './components/Tree.vue';
     display: flex;
     overflow: hidden;
     flex-direction: column;
+    flex:0 0 350.8px;
   }
 
   #leftMiddle {
     overflow: hidden;
     margin: 0 5%;
+    flex: 0 0 /* 53% */140.6px;
+
   }
 
     #leftBottom {
     /* top: 40%; */
     /* height: 55%; */
-    flex: 0 0 53%;
+    flex: 0 0 /* 53% */220.6px;
     overflow: hidden;
     margin: 0 2%;
   }
 
   #rightCol {
     display: flex;
+    flex: 0 0 998.4px;
     flex-direction: column;
     overflow: hidden;
-    justify-content: space-between;
+    /* justify-content: space-between; */
   }
 
   #attrTree_container {
@@ -144,7 +151,7 @@ import Tree from './components/Tree.vue';
   }
 
   #upRow {
-    flex: 0 0 50%;
+    flex: 0 0 360.8px;
     overflow: hidden;
     padding-bottom:0px;
     /* margin-bottom: 10px; */
@@ -159,7 +166,7 @@ import Tree from './components/Tree.vue';
   #downRow {
     display: flex;
     overflow: hidden;
-    flex:0 0 50%;
+    flex:0 0 360.8px;
     margin-top: 0px;
   }
 
